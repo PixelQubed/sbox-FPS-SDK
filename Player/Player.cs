@@ -20,5 +20,7 @@ namespace Source1
 			CollisionGroup = CollisionGroup.Player;
 			EnableLagCompensation = true;
 		}
+
+		public virtual float StepSize => 18;
 	}
 }

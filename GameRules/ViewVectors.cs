@@ -9,6 +9,7 @@ namespace Source1
 
 		public Vector3 DuckHullMin { get; set; }
 		public Vector3 DuckHullMax { get; set; }
+		public Vector3 DuckViewPosition { get; set; }
 
 		public Vector3 ObserverHullMax { get; set; }
 		public Vector3 ObserverHullMin { get; set; }
