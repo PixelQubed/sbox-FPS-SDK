@@ -209,6 +209,12 @@ namespace Source1
 			Velocity = mover.Velocity;
 		}
 
+		public virtual bool CanAccelerate()
+		{
+			// Sure, why not.
+			return true;
+		}
+
 		/// <summary>
 		/// Add our wish direction and speed onto our velocity
 		/// </summary>
@@ -216,12 +222,14 @@ namespace Source1
 		{
 			// This gets overridden because some games (CSPort) want to allow dead (observer) players
 			// to be able to move around.
-			// if ( !CanAccelerate() )
-			//     return;
+			 if ( !CanAccelerate() )
+			     return;
 
 			// Cap speed
 			if ( speedLimit > 0 && wishspeed > speedLimit )
+			{
 				wishspeed = speedLimit;
+			}
 
 			// See if we are changing direction a bit
 			var currentspeed = Velocity.Dot( wishdir );
@@ -253,7 +261,6 @@ namespace Source1
 			//   return;
 
 			// Not on ground - no friction
-
 
 			// Calculate speed
 			var speed = Velocity.Length;

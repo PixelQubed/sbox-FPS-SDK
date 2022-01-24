@@ -26,7 +26,6 @@ namespace Source1
 
 		public virtual float GetCurrentGravity()
 		{
-			Log.Info( sv_gravity );
 			return sv_gravity * GameRules.Instance.GetGravityMultiplier();
 		}
 	}
