@@ -3,7 +3,7 @@ using System;
 
 namespace Source1
 {
-	public partial class S1GameMovement : PawnController
+	public partial class S1GameMovement
 	{
 		//
 		// Sprint
@@ -21,7 +21,7 @@ namespace Source1
 
 		public virtual float GetSprintSpeed()
 		{
-			return 140;
+			return 320;
 		}
 
 		//
@@ -59,7 +59,7 @@ namespace Source1
 
 		public virtual float GetWalkSpeed()
 		{
-			return 80;
+			return 150;
 		}
 
 		//
@@ -68,7 +68,7 @@ namespace Source1
 
 		public virtual float GetNormalSpeed()
 		{
-			return 80;
+			return 190;
 		}
 
 		public virtual float GetWishSpeed()
