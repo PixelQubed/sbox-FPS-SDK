@@ -17,8 +17,20 @@ namespace Source1
 			EyeRot = Input.Rotation;
 		}
 
+		Entity LastPawn;
+		public virtual void OnPawnUpdated( Entity pawn, Entity prev )
+		{
+			SetDuckedEyeOffset( 0 );
+		}
+
 		public override void Simulate()
 		{
+			if ( LastPawn != Pawn )
+			{
+				LastPawn = Pawn;
+				OnPawnUpdated( Pawn, LastPawn );
+			}
+
 			EyeRot = Input.Rotation;
 
 			// Velocity += BaseVelocity * ( 1 + Time.Delta * 0.5f );
