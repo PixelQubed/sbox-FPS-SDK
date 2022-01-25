@@ -72,7 +72,6 @@ namespace Source1
 
 		public virtual void TryUnduck()
 		{
-			Log.Info( "TryUnduck()" );
 			if ( Input.Released( InputButton.Duck ) )
 			{
 				TimeSinceDucked = 0;
@@ -134,7 +133,6 @@ namespace Source1
 
 		public virtual void FinishDuck()
 		{
-			Log.Info( "FinishDuck()" );
 			IsDucking = false;
 
 			// If we are already ducked, dont do anything.
@@ -146,7 +144,6 @@ namespace Source1
 
 			if ( !InAir() )
 			{
-				// Wtf does this do
 				newOrigin -= GetPlayerMins( true ) - GetPlayerMins( false );
 			}
 			else
@@ -155,8 +152,10 @@ namespace Source1
 				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 				var viewDelta = hullSizeNormal - hullSizeCrouch;
 
-				Position += viewDelta;
+				newOrigin += viewDelta;
 			}
+
+			Position = newOrigin;
 
 			// See if we are stuck?
 			FixPlayerCrouchStuck( true );
@@ -165,7 +164,6 @@ namespace Source1
 
 		public virtual void FinishUnduck()
 		{
-			Log.Info( "FinishUnduck()" );
 			var newOrigin = Position;
 
 			if ( !InAir() )

@@ -69,7 +69,7 @@ namespace Source1
 			if ( GroundEntity != null )
 			{
 				Velocity = Velocity.WithZ( 0 );
-				ApplyFriction( sv_friction * SurfaceFriction );
+				Friction(  );
 			}
 
 			//
@@ -237,32 +237,27 @@ namespace Source1
 			// Reduce wishspeed by the amount of veer.
 			var addspeed = wishspeed - currentspeed;
 
-			DebugOverlay.ScreenText(
-				$"addspeed:     {addspeed} \n" +
-				$"currentspeed: {currentspeed}\n" +
-				$"wishspeed:    {wishspeed}\n" +
-				$"speedLimit:   {speedLimit}" );
+			// DebugOverlay.ScreenText( $"{MathF.Floor( wishspeed )} - { MathF.Floor( currentspeed )} = {MathF.Floor( addspeed )}" );
 
 			// If not going to add any speed, done.
 			if ( addspeed <= 0 )
 				return;
 
 			// Determine amount of acceleration.
-			var accelspeed = acceleration * wishspeed * Time.Delta * SurfaceFriction;
+			var accelspeed = acceleration * wishspeed * Time.Delta;
 
 			// Cap at addspeed
 			if ( accelspeed > addspeed )
 				accelspeed = addspeed;
 
-			DebugOverlay.Line( Position, Position + Velocity * 100, Color.Red, 0 );
 			Velocity += wishdir * accelspeed;
-			DebugOverlay.Line( Position, Position + Velocity * 100, Color.Yellow, 0 );
+			// DebugOverlay.Line( Position, Position + Velocity * 100, Color.Yellow, 0 );
 		}
 
 		/// <summary>
 		/// Remove ground friction from velocity
 		/// </summary>
-		public virtual void ApplyFriction( float frictionAmount = 1.0f )
+		public virtual void Friction()
 		{
 			// If we are in water jump cycle, don't apply friction
 			//if ( player->m_flWaterJumpTime )
@@ -274,12 +269,18 @@ namespace Source1
 			var speed = Velocity.Length;
 			if ( speed < 0.1f ) return;
 
-			// Bleed off some speed, but if we have less than the bleed
-			//  threshold, bleed the threshold amount.
-			float control = (speed < sv_stopspeed) ? sv_stopspeed : speed;
+			float friction, control, drop = 0;
+			if ( !InAir() )
+			{
+				friction = sv_friction * SurfaceFriction;
 
-			// Add the amount to the drop amount.
-			var drop = control * Time.Delta * frictionAmount;
+				// Bleed off some speed, but if we have less than the bleed
+				//  threshold, bleed the threshold amount.
+				control = (speed < sv_stopspeed) ? sv_stopspeed : speed;
+
+				// Add the amount to the drop amount.
+				drop += control * friction * Time.Delta;
+			}
 
 			// scale the velocity
 			float newspeed = speed - drop;
@@ -302,25 +303,7 @@ namespace Source1
 			Accelerate( wishdir, wishspeed, sv_aircontrol, sv_airaccelerate );
 
 			Velocity += BaseVelocity;
-
 			Move();
-
-			Velocity -= BaseVelocity;
-		}
-
-		public virtual void WaterMove()
-		{
-			var wishdir = WishVelocity.Normal;
-			var wishspeed = WishVelocity.Length;
-
-			wishspeed *= 0.8f;
-
-			Accelerate( wishdir, wishspeed, 100, sv_accelerate );
-
-			Velocity += BaseVelocity;
-
-			Move();
-
 			Velocity -= BaseVelocity;
 		}
 

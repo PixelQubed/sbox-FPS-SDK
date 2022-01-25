@@ -17,7 +17,7 @@ namespace Source1
 		[ConVar.Replicated] public static float sv_accelerate { get; set; } = 10;
 
 		[ConVar.Replicated] public static float sv_airaccelerate { get; set; } = 10;
-		[ConVar.Replicated] public static float sv_aircontrol { get; set; } = 30;
+		[ConVar.Replicated] public static float sv_aircontrol { get; set; } = 100;
 		[ConVar.Replicated] public static float sv_wateraccelerate { get; set; } = 10;
 		[ConVar.Replicated] public static float sv_waterfriction { get; set; } = 1;
 		[ConVar.Replicated] public static float sv_footsteps { get; set; } = 1;
