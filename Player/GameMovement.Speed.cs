@@ -25,25 +25,6 @@ namespace Source1
 		}
 
 		//
-		// Duck
-		//
-
-		public virtual bool WishDuck()
-		{
-			return Input.Down( InputButton.Duck );
-		}
-
-		public virtual bool CanDuck()
-		{
-			return true;
-		}
-
-		public virtual float GetDuckSpeed()
-		{
-			return 60;
-		}
-
-		//
 		// Walk
 		//
 
@@ -73,7 +54,7 @@ namespace Source1
 
 		public virtual float GetWishSpeed()
 		{
-			if ( CanDuck() && WishDuck() ) return GetDuckSpeed();
+			if ( IsDucked ) return GetDuckSpeed();
 			if ( CanSprint() && WishSprint() ) return GetSprintSpeed();
 			if ( CanWalk() && WishWalk() ) return GetWalkSpeed();
 

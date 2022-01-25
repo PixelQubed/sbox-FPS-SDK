@@ -217,8 +217,8 @@ namespace Source1
 		public Vector3 GetPlayerViewOffset( bool ducked )
 		{
 			return (ducked
-				? GameRules.Instance.ViewVectors.DuckViewPosition
-				: GameRules.Instance.ViewVectors.ViewPosition
+				? GameRules.Instance.ViewVectors.DuckViewOffset
+				: GameRules.Instance.ViewVectors.ViewOffset
 				) * Player.Scale;
 		}
 

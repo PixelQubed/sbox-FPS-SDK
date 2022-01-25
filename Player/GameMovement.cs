@@ -19,7 +19,6 @@ namespace Source1
 
 		public override void Simulate()
 		{
-			EyePosLocal = GetViewPosition();
 			EyeRot = Input.Rotation;
 
 			// Velocity += BaseVelocity * ( 1 + Time.Delta * 0.5f );
@@ -90,12 +89,16 @@ namespace Source1
 			WishVelocity = WishVelocity.Normal * inSpeed;
 			WishVelocity *= GetWishSpeed();
 
-			switch(Pawn.MoveType)
+			switch (Pawn.MoveType)
 			{
 				case MoveType.MOVETYPE_WALK:
 					FullWalkMove();
 					break;
 			}
+
+			// DebugOverlay.Line( Position, Position + WishVelocity, 0, false );
+
+			DuckSimulate();
 
 			// FinishGravity
 			FinishGravity();
@@ -226,10 +229,7 @@ namespace Source1
 			     return;
 
 			// Cap speed
-			if ( speedLimit > 0 && wishspeed > speedLimit )
-			{
-				wishspeed = speedLimit;
-			}
+			if ( speedLimit > 0 ) wishspeed = MathF.Min( wishspeed, speedLimit );
 
 			// See if we are changing direction a bit
 			var currentspeed = Velocity.Dot( wishdir );
@@ -237,18 +237,26 @@ namespace Source1
 			// Reduce wishspeed by the amount of veer.
 			var addspeed = wishspeed - currentspeed;
 
+			DebugOverlay.ScreenText(
+				$"addspeed:     {addspeed} \n" +
+				$"currentspeed: {currentspeed}\n" +
+				$"wishspeed:    {wishspeed}\n" +
+				$"speedLimit:   {speedLimit}" );
+
 			// If not going to add any speed, done.
 			if ( addspeed <= 0 )
 				return;
 
 			// Determine amount of acceleration.
-			var accelspeed = acceleration * Time.Delta * wishspeed * SurfaceFriction;
+			var accelspeed = acceleration * wishspeed * Time.Delta * SurfaceFriction;
 
 			// Cap at addspeed
 			if ( accelspeed > addspeed )
 				accelspeed = addspeed;
 
+			DebugOverlay.Line( Position, Position + Velocity * 100, Color.Red, 0 );
 			Velocity += wishdir * accelspeed;
+			DebugOverlay.Line( Position, Position + Velocity * 100, Color.Yellow, 0 );
 		}
 
 		/// <summary>
@@ -373,8 +381,7 @@ namespace Source1
 			Move();
 		}
 
-
-		public virtual void CategorizePosition(  )
+		public virtual void CategorizePosition()
 		{
 			SurfaceFriction = 1.0f;
 

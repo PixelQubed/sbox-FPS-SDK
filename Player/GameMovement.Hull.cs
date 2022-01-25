@@ -23,12 +23,12 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerMins()
 		{
-			return GetPlayerMins( false );
+			return GetPlayerMins( IsDucked );
 		}
 
 		public virtual Vector3 GetPlayerMaxs()
 		{
-			return GetPlayerMaxs( false );
+			return GetPlayerMaxs( IsDucked );
 		}
 
 		public virtual Vector3 GetPlayerExtents()
@@ -43,17 +43,28 @@ namespace Source1
 			);
 		}
 
-		public virtual Vector3 GetViewPosition( bool ducked )
+		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
 			return (ducked
-				? GameRules.Instance.ViewVectors.DuckViewPosition
-				: GameRules.Instance.ViewVectors.ViewPosition
+				? GameRules.Instance.ViewVectors.DuckViewOffset
+				: GameRules.Instance.ViewVectors.ViewOffset
 				) * Pawn.Scale;
 		}
 
-		public virtual Vector3 GetViewPosition()
+		public virtual void SetDuckedEyeOffset( float duckFraction )
 		{
-			return GetViewPosition( false );
+			Vector3 vDuckHullMin = GetPlayerMins( true );
+			Vector3 vStandHullMin = GetPlayerMins( false );
+
+			float fMore = vDuckHullMin.z - vStandHullMin.z;
+
+			Vector3 vecDuckViewOffset = GetPlayerViewOffset( true );
+			Vector3 vecStandViewOffset = GetPlayerViewOffset( false );
+			Vector3 temp = EyePosLocal;
+
+			temp.z = ((vecDuckViewOffset.z - fMore) * duckFraction) +
+						(vecStandViewOffset.z * (1 - duckFraction));
+			EyePosLocal = temp;
 		}
 	}
 }

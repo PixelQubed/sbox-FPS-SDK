@@ -28,5 +28,10 @@ namespace Source1
 		{
 			return sv_gravity * GameRules.Instance.GetGravityMultiplier();
 		}
+
+		public virtual bool InAir()
+		{
+			return GroundEntity == null;
+		}
 	}
 }
