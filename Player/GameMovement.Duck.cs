@@ -58,7 +58,7 @@ namespace Source1
 						else
 						{
 							// Calc parametric time
-							float flDuckFraction = Easing.EaseInOut( flDuckSeconds / TIME_TO_DUCK );
+							float flDuckFraction = Easing.QuadraticInOut( flDuckSeconds / TIME_TO_DUCK );
 							SetDuckedEyeOffset( flDuckFraction );
 						}
 					}
@@ -156,7 +156,7 @@ namespace Source1
 								else
 								{
 									// Calc parametric time
-									float flDuckFraction = Easing.EaseInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
+									float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
 									SetDuckedEyeOffset( flDuckFraction );
 									m_bDucking = true;
 								}

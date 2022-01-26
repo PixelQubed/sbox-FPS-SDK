@@ -746,7 +746,7 @@ namespace Source1
 				}
 				else
 				{
-					float flDuckFraction = Easing.EaseInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
+					float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
 					SetDuckedEyeOffset( flDuckFraction );
 				}
 			}
