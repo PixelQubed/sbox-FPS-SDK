@@ -26,6 +26,18 @@ namespace Source1
 			return S1GameMovement.sv_maxspeed;
 		}
 
+		public virtual float GetSensitivityMultiplier()
+		{
+			return 1f;
+		}
+
+
+		[Event.BuildInput]
+		protected new virtual void BuildInput( InputBuilder builder )
+		{
+			builder.AnalogLook *= GetSensitivityMultiplier();
+		}
+
 		public virtual bool AllowAutoMovement { get; set; } = true;
 	}
 
