@@ -115,7 +115,7 @@ namespace Source1
 
 					// Try to unduck unless automovement is not allowed
 					// NOTE: When not onground, you can always unduck
-					if ( Player.AllowAutoMovement || bInAir || m_bDucking )
+					if ( S1Pawn.AllowAutoMovement || bInAir || m_bDucking )
 					{
 						// We released the duck button, we aren't in "duck" and we are not in the air - start unduck transition.
 						if ( Input.Released( InputButton.Duck ) )
@@ -209,7 +209,7 @@ namespace Source1
 				DebugOverlay.ScreenText( 4, $"m_flDuckJumpTime    {m_flDuckJumpTime}" );
 				DebugOverlay.ScreenText( 5, $"m_flJumpTime        {m_flJumpTime}" );
 				DebugOverlay.ScreenText( 6, $"m_bInDuckJump       {m_bInDuckJump}" );
-				DebugOverlay.ScreenText( 7, $"m_bAllowAutoMovement {Player.AllowAutoMovement}" );
+				DebugOverlay.ScreenText( 7, $"m_bAllowAutoMovement {S1Pawn.AllowAutoMovement}" );
 				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );
 			}
 		}

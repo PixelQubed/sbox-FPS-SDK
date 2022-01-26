@@ -5,13 +5,10 @@ namespace Source1
 {
 	public partial class S1GameMovement : PawnController
 	{
-		S1Player Player { get; set; }
-
-		protected float MaxSpeed;
-
+		S1Player S1Pawn { get; set; }
+		protected float MaxSpeed { get; set; }
+		protected float SurfaceFriction { get; set; }
 		bool IsSwimming { get; set; }
-
-		protected float SurfaceFriction;
 
 
 		public override void FrameSimulate()
@@ -21,24 +18,23 @@ namespace Source1
 			EyeRot = Input.Rotation;
 		}
 
-		public virtual void PlayerChanged( S1Player player, S1Player prev )
+		public virtual void PawnChanged( S1Player player, S1Player prev )
 		{
 
 		}
 
 		public override void Simulate()
 		{
-			if ( Player != Pawn )
+			if ( S1Pawn != Pawn )
 			{
 				var newPlayer = Pawn as S1Player;
-				PlayerChanged( newPlayer, Player );
-				Player = newPlayer;
+				PawnChanged( newPlayer, S1Pawn );
+				S1Pawn = newPlayer;
 			}
 
-			if ( Player == null ) return;
+			if ( S1Pawn == null ) return;
 
-			MaxSpeed = Player.GetMaxSpeed();
-
+			MaxSpeed = S1Pawn.GetMaxSpeed();
 			PlayerMove();
 		}
 
