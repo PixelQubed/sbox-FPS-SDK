@@ -5,7 +5,7 @@ namespace Source1
 {
 	public partial class S1GameMovement : PawnController
 	{
-		S1Player S1Pawn { get; set; }
+		S1Player Player { get; set; }
 		protected float MaxSpeed { get; set; }
 		protected float SurfaceFriction { get; set; }
 		bool IsSwimming { get; set; }
@@ -25,32 +25,18 @@ namespace Source1
 
 		public override void Simulate()
 		{
-			if ( S1Pawn != Pawn )
+			if ( Player != Pawn )
 			{
 				var newPlayer = Pawn as S1Player;
-				PawnChanged( newPlayer, S1Pawn );
-				S1Pawn = newPlayer;
+				PawnChanged( newPlayer, Player );
+				Player = newPlayer;
 			}
 
-			if ( S1Pawn == null ) return;
+			if ( Player == null ) return;
 
-			MaxSpeed = S1Pawn.GetMaxSpeed();
 			PlayerMove();
 		}
 
-
-		/// <summary>
-		/// m_vecForward
-		/// </summary>
-		protected Vector3 Forward;
-		/// <summary>
-		/// m_vecRight
-		/// </summary>
-		protected Vector3 Right;
-		/// <summary>
-		/// m_vecUp
-		/// </summary>
-		protected Vector3 Up;
 
 		public bool GameCodeMovedPlayer;
 
@@ -67,10 +53,6 @@ namespace Source1
 			// MoveHelper()->ResetTouchList();                    // Assume we don't touch anything
 
 			ReduceTimers();
-
-			Forward = Input.Forward;
-			Right = -Input.Left;
-			Up = Input.Up;
 
 			EyeRot = Input.Rotation;
 
@@ -212,11 +194,12 @@ namespace Source1
 
 			var wishspeed = WishVelocity.Length;
 			var wishdir = WishVelocity.Normal;
+			var maxspeed = GetMaxSpeed();
 
-			if ( wishspeed != 0 && wishspeed > MaxSpeed )
+			if ( wishspeed != 0 && wishspeed > maxspeed )
 			{
-				WishVelocity *= MaxSpeed / wishspeed;
-				wishspeed = MaxSpeed;
+				WishVelocity *= maxspeed / wishspeed;
+				wishspeed = maxspeed;
 			}
 
 			Velocity = Velocity.WithZ( 0 );
@@ -381,11 +364,12 @@ namespace Source1
 
 			var wishspeed = WishVelocity.Length;
 			var wishdir = WishVelocity.Normal;
+			var maxspeed = GetMaxSpeed();
 
-			if ( wishspeed != 0 && wishspeed > MaxSpeed )
+			if ( wishspeed != 0 && wishspeed > maxspeed )
 			{
-				WishVelocity *= MaxSpeed / wishspeed;
-				wishspeed = MaxSpeed;
+				WishVelocity *= maxspeed / wishspeed;
+				wishspeed = maxspeed;
 			}
 
 			Accelerate( wishdir, wishspeed, sv_airaccelerate, sv_aircontrol );
