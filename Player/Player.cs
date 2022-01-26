@@ -21,6 +21,16 @@ namespace Source1
 			EnableLagCompensation = true;
 		}
 
-		public virtual float StepSize => 18;
+		public virtual float GetMaxSpeed()
+		{
+			return S1GameMovement.sv_maxspeed;
+		}
+
+		public virtual bool AllowAutoMovement { get; set; } = true;
+	}
+
+	public static class PlayerFlags
+	{
+		public const string Ducked = "ducked";
 	}
 }

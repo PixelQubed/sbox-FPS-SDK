@@ -23,12 +23,26 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerMins()
 		{
-			return GetPlayerMins( IsDucked );
+			/*if ( player->IsObserver() )
+			{
+				return VEC_OBS_HULL_MIN_SCALED( player );
+			}
+			else*/
+			{
+				return GetPlayerMins( m_bDucked );
+			}
 		}
 
 		public virtual Vector3 GetPlayerMaxs()
 		{
-			return GetPlayerMaxs( IsDucked );
+			/*if ( player->IsObserver() )
+			{
+				return VEC_OBS_HULL_MIN_SCALED( player );
+			}
+			else*/
+			{
+				return GetPlayerMaxs( m_bDucked );
+			}
 		}
 
 		public virtual Vector3 GetPlayerExtents()

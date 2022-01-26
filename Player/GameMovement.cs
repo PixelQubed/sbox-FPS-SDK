@@ -5,6 +5,10 @@ namespace Source1
 {
 	public partial class S1GameMovement : PawnController
 	{
+		S1Player Player { get; set; }
+
+		protected float MaxSpeed;
+
 		bool IsSwimming { get; set; }
 
 		protected float SurfaceFriction;
@@ -17,190 +21,252 @@ namespace Source1
 			EyeRot = Input.Rotation;
 		}
 
-		Entity LastPawn;
-		public virtual void OnPawnUpdated( Entity pawn, Entity prev )
+		public virtual void PlayerChanged( S1Player player, S1Player prev )
 		{
-			SetDuckedEyeOffset( 0 );
+
 		}
 
 		public override void Simulate()
 		{
-			if ( LastPawn != Pawn )
+			if ( Player != Pawn )
 			{
-				LastPawn = Pawn;
-				OnPawnUpdated( Pawn, LastPawn );
+				var newPlayer = Pawn as S1Player;
+				PlayerChanged( newPlayer, Player );
+				Player = newPlayer;
 			}
+
+			if ( Player == null ) return;
+
+			MaxSpeed = Player.GetMaxSpeed();
+
+			PlayerMove();
+		}
+
+
+		/// <summary>
+		/// m_vecForward
+		/// </summary>
+		protected Vector3 Forward;
+		/// <summary>
+		/// m_vecRight
+		/// </summary>
+		protected Vector3 Right;
+		/// <summary>
+		/// m_vecUp
+		/// </summary>
+		protected Vector3 Up;
+
+		public bool GameCodeMovedPlayer;
+
+		protected float FallVelocity;
+
+		public virtual void PlayerMove()
+		{
+			CheckParameters();
+
+			// clear output applied velocity
+			// mv->m_outWishVel.Init();
+			// mv->m_outJumpVel.Init();
+
+			// MoveHelper()->ResetTouchList();                    // Assume we don't touch anything
+
+			ReduceTimers();
+
+			Forward = Input.Forward;
+			Right = -Input.Left;
+			Up = Input.Up;
 
 			EyeRot = Input.Rotation;
 
-			// Velocity += BaseVelocity * ( 1 + Time.Delta * 0.5f );
-			// BaseVelocity = Vector3.Zero;
-
-			// Rot = Rotation.LookAt( Input.Rotation.Forward.WithZ( 0 ), Vector3.Up );
-
-			// Check Stuck
-			// Unstuck - or return if stuck
-
-			// Set Ground Entity to null if  falling faster then 250
-
-			// store water level to compare later
-
-			// if not on ground, store fall velocity
-
-			// player->UpdateStepSound( player->m_pSurfaceData, mv->GetAbsOrigin(), mv->m_vecVelocity )
-
-
-			// RunLadderMode
-
-			CheckLadder();
-			IsSwimming = Pawn.WaterLevel.Fraction > 0.6f;
-
-			//
-			// Start Gravity
-			//
-			// TODO: Check in water?
-			StartGravity();
-
-			/*
-             if (player->m_flWaterJumpTime)
-	            {
-		            WaterJump();
-		            TryPlayerMove();
-		            // See if we are still in water?
-		            CheckWater();
-		            return;
-	            }
-            */
-
-			// if ( underwater ) do underwater movement
-
-			if ( WishJump() ) Jump();
-
-			// Fricion is handled before we add in any base velocity. That way, if we are on a conveyor,
-			// we don't slow when standing still, relative to the conveyor.
-			if ( GroundEntity != null )
+			if ( Pawn.MoveType != MoveType.MOVETYPE_NOCLIP &&
+				Pawn.MoveType != MoveType.None &&
+				Pawn.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
+				Pawn.MoveType != MoveType.MOVETYPE_OBSERVER &&
+				!IsDead() ) 
 			{
-				Velocity = Velocity.WithZ( 0 );
-				Friction(  );
+				/*
+				if ( CheckInterval( STUCK ) )
+				{
+					if ( CheckStuck() )
+					{
+						// Can't move, we're stuck
+						return;
+					}
+				}
+				*/
 			}
 
-			//
-			// Work out wish velocity.. just take input, rotate it to view, clamp to -1, 1
-			//
-			WishVelocity = new Vector3( Input.Forward, Input.Left, 0 );
-			var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
-			WishVelocity *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
-
-			// If we're not swimming or touching ladder, we can't wish to move vertically.
-			if ( !IsSwimming && !IsTouchingLadder ) 
+			// Now that we are "unstuck", see where we are (player->GetWaterLevel() and type, player->GetGroundEntity()).
+			if ( Velocity.z > 250.0f )
 			{
-				WishVelocity = WishVelocity.WithZ( 0 );
+				ClearGroundEntity();
 			}
 
-			// Normalize our wish velocity.
-			WishVelocity = WishVelocity.Normal * inSpeed;
-			WishVelocity *= GetWishSpeed();
+			// Store off the starting water level
+			// m_nOldWaterLevel = player->GetWaterLevel();
+
+			// If we are not on ground, store off how fast we are moving down
+			if ( !IsGrounded() )
+			{
+				FallVelocity = -Velocity.z;
+			}
+
+			// m_nOnLadder = 0;
+
+			UpdateDuckJumpEyeOffset();
+			Duck();
+
+			/*// Don't run ladder code if dead or on a train
+			if ( !IsDead() && !(player->GetFlags() & FL_ONTRAIN) )
+			{
+				// If was not on a ladder now, but was on one before, 
+				//  get off of the ladder
+
+				// TODO: this causes lots of weirdness.
+				//bool bCheckLadder = CheckInterval( LADDER );
+				//if ( bCheckLadder || player->GetMoveType() == MOVETYPE_LADDER )
+				{
+					if ( !LadderMove() &&
+						(player->GetMoveType() == MOVETYPE_LADDER) )
+					{
+						// Clear ladder stuff unless player is dead or riding a train
+						// It will be reset immediately again next frame if necessary
+						player->SetMoveType( MOVETYPE_WALK );
+						player->SetMoveCollide( MOVECOLLIDE_DEFAULT );
+					}
+				}
+			}*/
 
 			switch (Pawn.MoveType)
 			{
+				case MoveType.None:
+					break;
+
+				case MoveType.MOVETYPE_NOCLIP:
+					// FullNoClipMove( sv_noclipspeed.GetFloat(), sv_noclipaccelerate.GetFloat() );
+					break;
+
+				case MoveType.MOVETYPE_FLY:
+				case MoveType.MOVETYPE_FLYGRAVITY:
+					// FullTossMove();
+					break;
+
+				case MoveType.MOVETYPE_LADDER:
+					// FullLadderMove();
+					break;
+
 				case MoveType.MOVETYPE_WALK:
 					FullWalkMove();
 					break;
+
+				case MoveType.MOVETYPE_ISOMETRIC:
+					//IsometricMove();
+					// Could also try:  FullTossMove();
+					FullWalkMove();
+					break;
+
+				case MoveType.MOVETYPE_OBSERVER:
+					// FullObserverMove(); // clips against world&players
+					break;
 			}
+		}
 
-			// DebugOverlay.Line( Position, Position + WishVelocity, 0, false );
+		float SwimSoundTime;
 
-			DuckSimulate();
+		public virtual void ReduceTimers()
+		{
+			float frame_msec = 1000.0f * Time.Delta;
 
-			// FinishGravity
-			FinishGravity();
-
-			// If we stay on something, keep our z velocity 0.
-			if ( GroundEntity != null )
+			if ( m_flDucktime > 0 )
 			{
-				Velocity = Velocity.WithZ( 0 );
+				m_flDucktime -= frame_msec;
+				if ( m_flDucktime < 0 ) m_flDucktime = 0;
 			}
 
-			// CheckFalling(); // fall damage etc
-
-			// Land Sound
-			// Swim Sounds
-
-			/*
-			if ( Debug )
+			if ( m_flDuckJumpTime > 0 )
 			{
-				DebugOverlay.Box( Position + TraceOffset, mins, maxs, Color.Red );
-				DebugOverlay.Box( Position, mins, maxs, Color.Blue );
-
-				var lineOffset = 0;
-				if ( Host.IsServer ) lineOffset = 10;
-
-				DebugOverlay.ScreenText( lineOffset + 0, $"        Position: {Position}" );
-				DebugOverlay.ScreenText( lineOffset + 1, $"        Velocity: {Velocity}" );
-				DebugOverlay.ScreenText( lineOffset + 2, $"    BaseVelocity: {BaseVelocity}" );
-				DebugOverlay.ScreenText( lineOffset + 3, $"    GroundEntity: {GroundEntity} [{GroundEntity?.Velocity}]" );
-				DebugOverlay.ScreenText( lineOffset + 4, $" SurfaceFriction: {SurfaceFriction}" );
-				DebugOverlay.ScreenText( lineOffset + 5, $"    WishVelocity: {WishVelocity}" );
+				m_flDuckJumpTime -= frame_msec;
+				if ( m_flDuckJumpTime < 0 ) m_flDuckJumpTime = 0;
 			}
-			*/
+
+			if ( m_flJumpTime > 0 )
+			{
+				m_flJumpTime -= frame_msec;
+				if ( m_flJumpTime < 0 ) m_flJumpTime = 0;
+			}
+
+			if ( SwimSoundTime > 0 )
+			{
+				SwimSoundTime -= frame_msec;
+				if ( SwimSoundTime < 0 ) SwimSoundTime = 0;
+			}
 		}
 
 		public virtual void WalkMove()
 		{
-			var wishdir = WishVelocity.Normal;
-			var wishspeed = WishVelocity.Length;
+			var oldGround = GroundEntity;
+
+			WishVelocity = new Vector3( Input.Forward, Input.Left, 0 );
+			var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
+			WishVelocity *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
 
 			WishVelocity = WishVelocity.WithZ( 0 );
-			WishVelocity = WishVelocity.Normal * wishspeed;
+			WishVelocity = WishVelocity.Normal * inSpeed;
+			WishVelocity *= GetWishSpeed();
+
+			var wishspeed = WishVelocity.Length;
+			var wishdir = WishVelocity.Normal;
+
+			if ( wishspeed != 0 && wishspeed > MaxSpeed )
+			{
+				WishVelocity *= MaxSpeed / wishspeed;
+				wishspeed = MaxSpeed;
+			}
 
 			Velocity = Velocity.WithZ( 0 );
-			Accelerate( wishdir, wishspeed, 0, sv_accelerate );
+			Accelerate( wishdir, wishspeed, sv_accelerate );
 			Velocity = Velocity.WithZ( 0 );
 
-			//   Player.SetAnimParam( "forward", Input.Forward );
-			//   Player.SetAnimParam( "sideward", Input.Right );
-			//   Player.SetAnimParam( "wishspeed", wishspeed );
-			//    Player.SetAnimParam( "walkspeed_scale", 2.0f / 190.0f );
-			//   Player.SetAnimParam( "runspeed_scale", 2.0f / 320.0f );
-
-			//  DebugOverlay.Text( 0, Pos + Vector3.Up * 100, $"forward: {Input.Forward}\nsideward: {Input.Right}" );
-
-			// Add in any base velocity to the current velocity.
 			Velocity += BaseVelocity;
 
-			try
+			if ( Velocity.Length < 1 )
 			{
-				if ( Velocity.Length < 1.0f )
-				{
-					Velocity = Vector3.Zero;
-					return;
-				}
-
-				// first try just moving to the destination
-				var dest = (Position + Velocity * Time.Delta).WithZ( Position.z );
-
-				var pm = TraceBBox( Position, dest );
-
-				if ( pm.Fraction == 1 )
-				{
-					Position = pm.EndPos;
-					StayOnGround();
-					return;
-				}
-
-				StepMove();
-			}
-			finally
-			{
-
-				// Now pull the base velocity back out.   Base velocity is set if you are on a moving object, like a conveyor (or maybe another monster?)
+				Velocity = 0;
 				Velocity -= BaseVelocity;
+				return;
 			}
+
+			var dest = (Position + Velocity * Time.Delta).WithZ( Position.z );
+			var pm = TraceBBox( Position, dest );
+
+			if ( pm.Fraction == 1 )
+			{
+				Position = pm.EndPos;
+				Velocity -= BaseVelocity;
+				StayOnGround();
+				return;
+			}
+
+			if ( oldGround == null && Pawn.WaterLevel.Fraction == 0 )
+			{
+				Velocity -= BaseVelocity;
+				return;
+			}
+
+			/*// If we are jumping out of water, don't do anything more.
+			if ( player->m_flWaterJumpTime )
+			{
+				Velocity -= BaseVelocity;
+				return;
+			}*/
+
+			StepMove( dest );
+			Velocity -= BaseVelocity;
 
 			StayOnGround();
 		}
 
-		public virtual void StepMove()
+		public virtual void StepMove( Vector3 dest )
 		{
 			MoveHelper mover = new MoveHelper( Position, Velocity );
 			mover.Trace = mover.Trace.Size( GetPlayerMins(), GetPlayerMaxs() ).Ignore( Pawn );
@@ -233,7 +299,7 @@ namespace Source1
 		/// <summary>
 		/// Add our wish direction and speed onto our velocity
 		/// </summary>
-		public virtual void Accelerate( Vector3 wishdir, float wishspeed, float speedLimit, float acceleration )
+		public virtual void Accelerate( Vector3 wishdir, float wishspeed, float acceleration, float speedLimit = 0 )
 		{
 			// This gets overridden because some games (CSPort) want to allow dead (observer) players
 			// to be able to move around.
@@ -309,10 +375,24 @@ namespace Source1
 
 		public virtual void AirMove()
 		{
-			var wishdir = WishVelocity.Normal;
-			var wishspeed = WishVelocity.Length;
+			WishVelocity = new Vector3( Input.Forward, Input.Left, 0 );
+			var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
+			WishVelocity *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
 
-			Accelerate( wishdir, wishspeed, sv_aircontrol, sv_airaccelerate );
+			WishVelocity = WishVelocity.WithZ( 0 );
+			WishVelocity = WishVelocity.Normal * inSpeed;
+			WishVelocity *= GetWishSpeed();
+
+			var wishspeed = WishVelocity.Length;
+			var wishdir = WishVelocity.Normal;
+
+			if ( wishspeed != 0 && wishspeed > MaxSpeed )
+			{
+				WishVelocity *= MaxSpeed / wishspeed;
+				wishspeed = MaxSpeed;
+			}
+
+			Accelerate( wishdir, wishspeed, sv_airaccelerate, sv_aircontrol );
 
 			Velocity += BaseVelocity;
 			Move();
@@ -509,9 +589,187 @@ namespace Source1
 			Position = trace.EndPos;
 		}
 
+		public Entity TestPlayerPosition( Vector3 pos, ref TraceResult pm )
+		{
+			pm = TraceBBox( pos, pos );
+			return pm.Entity;
+		}
+
+		Surface SurfaceData { get; set; }
+
+		public virtual void CategorizeGroundSurface( TraceResult pm )
+		{
+			SurfaceData = pm.Surface;
+			SurfaceFriction = pm.Surface.Friction;
+
+			SurfaceFriction *= 1.25f;
+			if ( SurfaceFriction > 1.0f )
+				SurfaceFriction = 1.0f;
+		}
+
+		float ConstraintRadius { get; set; }
+		float ConstraintSpeedFactor { get; set; }
+		float ConstraintWidth { get; set; }
+		Vector3 ConstraintCenter { get; set; }
+
+		public virtual float ComputeConstraintSpeedFactor()
+		{
+			// If we have a constraint, slow down because of that too.
+			if ( ConstraintRadius == 0.0f ) return 1.0f;
+
+			float flDist = Position.Distance( ConstraintCenter );
+			float flDistSq = flDist * flDist;
+
+			float flOuterRadiusSq = ConstraintRadius * ConstraintRadius;
+			float flInnerRadiusSq = ConstraintRadius - ConstraintWidth;
+			flInnerRadiusSq *= flInnerRadiusSq;
+
+			// Only slow us down if we're inside the constraint ring
+			if ( (flDistSq <= flInnerRadiusSq) || (flDistSq >= flOuterRadiusSq) )
+				return 1.0f;
+
+			// Only slow us down if we're running away from the center
+			Vector3 vecDesired = Input.Forward * Input.Rotation.Forward;
+			vecDesired = VectorMA( vecDesired, Input.Left, Input.Rotation.Left);
+			vecDesired = VectorMA( vecDesired, Input.Up, Input.Rotation.Up);
+
+			Vector3 vecDelta = Position - ConstraintCenter;
+			vecDelta = vecDelta.Normal;
+			vecDesired = vecDesired.Normal;
+
+			if ( Vector3.Dot( vecDelta, vecDesired ) < 0.0f )
+				return 1.0f;
+
+			float flFrac = (MathF.Sqrt( flDistSq ) - (ConstraintRadius - ConstraintWidth)) / ConstraintWidth;
+
+			float flSpeedFactor = flFrac.LerpTo( 1.0f, ConstraintSpeedFactor );
+			return flSpeedFactor;
+		}
+
 		bool IsDead()
 		{
 			return Pawn.LifeState != LifeState.Alive;
+		}
+
+		protected Vector3 VectorMA( Vector3 start, float scale, Vector3 direction )
+		{
+			return new Vector3(
+				start.x + direction.x * scale,
+				start.y + direction.y * scale,
+				start.z + direction.z * scale
+			);
+		}
+
+		//-----------------------------------------------------------------------------
+		// Purpose: 
+		//-----------------------------------------------------------------------------
+		void CheckParameters()
+		{
+			/*
+			Rotation v_angle;
+
+			if ( Pawn.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
+				 Pawn.MoveType != MoveType.MOVETYPE_NOCLIP &&
+				 Pawn.MoveType != MoveType.MOVETYPE_OBSERVER )
+			{
+				float spd;
+				float maxspeed;
+
+				spd = (Input.Forward * Input.Forward) +
+					  (Input.Left * Input.Left) +
+					  (Input.Up * Input.Up);
+
+				// Slow down by the speed factor
+				float flSpeedFactor = 1.0f;
+				// if ( player->m_pSurfaceData )
+				// {
+					// flSpeedFactor = player->m_pSurfaceData->game.maxSpeedFactor;
+				// }
+
+				// If we have a constraint, slow down because of that too.
+				float flConstraintSpeedFactor = ComputeConstraintSpeedFactor();
+
+				MaxSpeed *= flSpeedFactor;
+
+				// Same thing but only do the sqrt if we have to.
+				if ( (spd != 0.0) && (spd > MaxSpeed * MaxSpeed) )
+				{
+					float fRatio = MaxSpeed / MathF.Sqrt( spd );
+					Input.Forward *= fRatio;
+					Input.Left *= fRatio;
+					Input.Up *= fRatio;
+				}
+			}
+
+			/* if ( player->GetFlags() & FL_FROZEN ||
+				 player->GetFlags() & FL_ONTRAIN ||
+				 IsDead() )
+			{
+				mv->m_flForwardMove = 0;
+				mv->m_flSideMove = 0;
+				mv->m_flUpMove = 0;
+			}*/
+
+			// DecayPunchAngle();
+
+			/*
+			// Take angles from command.
+			if ( !IsDead() )
+			{
+				v_angle = Input.Rotation;
+				v_angle = v_angle + player->m_Local.m_vecPunchAngle;
+
+				// Now adjust roll angle
+				if ( player->GetMoveType() != MOVETYPE_ISOMETRIC &&
+					 player->GetMoveType() != MOVETYPE_NOCLIP )
+				{
+					mv->m_vecAngles[ROLL] = CalcRoll( v_angle, mv->m_vecVelocity, sv_rollangle.GetFloat(), sv_rollspeed.GetFloat() );
+				}
+				else
+				{
+					mv->m_vecAngles[ROLL] = 0.0; // v_angle[ ROLL ];
+				}
+				mv->m_vecAngles[PITCH] = v_angle[PITCH];
+				mv->m_vecAngles[YAW] = v_angle[YAW];
+			}
+			else
+			{
+				mv->m_vecAngles = mv->m_vecOldAngles;
+			}*/
+
+			// Set dead player view_offset
+			if ( IsDead() )
+			{
+				// SetViewOffset()
+				// player->SetViewOffset( VEC_DEAD_VIEWHEIGHT_SCALED( player ) );
+			}
+		}
+
+		public bool IsGrounded()
+		{
+			return GroundEntity != null;
+		}
+
+		//-----------------------------------------------------------------------------
+		// 
+		//-----------------------------------------------------------------------------
+		void UpdateDuckJumpEyeOffset()
+		{
+			if ( m_flDuckJumpTime != 0.0f )
+			{
+				float flDuckMilliseconds = MathF.Max( 0.0f, m_flDucktime - m_flDuckJumpTime );
+				float flDuckSeconds = flDuckMilliseconds / GAMEMOVEMENT_DUCK_TIME;
+				if ( flDuckSeconds > TIME_TO_UNDUCK )
+				{
+					m_flDuckJumpTime = 0.0f;
+					SetDuckedEyeOffset( 0.0f );
+				}
+				else
+				{
+					float flDuckFraction = Easing.EaseInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
+					SetDuckedEyeOffset( flDuckFraction );
+				}
+			}
 		}
 	}
 }

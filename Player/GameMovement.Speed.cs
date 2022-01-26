@@ -54,7 +54,7 @@ namespace Source1
 
 		public virtual float GetWishSpeed()
 		{
-			if ( IsDucked ) return GetDuckSpeed();
+			if ( m_bDucked ) return GetDuckSpeed();
 			if ( CanSprint() && WishSprint() ) return GetSprintSpeed();
 			if ( CanWalk() && WishWalk() ) return GetWalkSpeed();
 
