@@ -29,7 +29,7 @@ namespace Source1
 			}
 			else*/
 			{
-				return GetPlayerMins( m_bDucked );
+				return GetPlayerMins( IsDucked );
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace Source1
 			}
 			else*/
 			{
-				return GetPlayerMaxs( m_bDucked );
+				return GetPlayerMaxs( IsDucked );
 			}
 		}
 

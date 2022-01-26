@@ -7,12 +7,12 @@ namespace Source1
 	{
 		[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
 
-		bool m_bDucking;
-		bool m_bDucked;
-		float m_flDucktime;
-		float m_flDuckJumpTime;
-		float m_flJumpTime;
-		bool m_bInDuckJump;
+		bool IsDucking;
+		bool IsDucked;
+		float DuckTime;
+		float DuckJumpTime;
+		float JumpTime;
+		bool InDuckJump;
 
 		public virtual float GetDuckSpeed()
 		{
@@ -24,15 +24,15 @@ namespace Source1
 			// Check to see if we are in the air.
 			bool bInAir = !IsGrounded();
 			bool bInDuck = Pawn.Tags.Has( PlayerFlags.Ducked );
-			bool bDuckJump = m_flJumpTime > 0.0f;
-			bool bDuckJumpTime = m_flDuckJumpTime > 0.0f;
+			bool bDuckJump = JumpTime > 0.0f;
+			bool bDuckJumpTime = DuckJumpTime > 0.0f;
 
 			// Handle death.
 			if ( IsDead() )
 				return;
 
 			// If the player is holding down the duck button, the player is in duck transition, ducking, or duck-jumping.
-			if ( Input.Down( InputButton.Duck ) || m_bDucking || bInDuck || bDuckJump )
+			if ( Input.Down( InputButton.Duck ) || IsDucking || bInDuck || bDuckJump )
 			{
 				// DUCK
 				if ( Input.Down( InputButton.Duck ) || bDuckJump )
@@ -40,14 +40,14 @@ namespace Source1
 					// Have the duck button pressed, but the player currently isn't in the duck position.
 					if ( Input.Pressed( InputButton.Duck ) && !bInDuck && !bDuckJump && !bDuckJumpTime )
 					{
-						m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
-						m_bDucking = true;
+						DuckTime = GAMEMOVEMENT_DUCK_TIME;
+						IsDucking = true;
 					}
 
 					// The player is in duck transition and not duck-jumping.
-					if ( m_bDucking && !bDuckJump && !bDuckJumpTime )
+					if ( IsDucking && !bDuckJump && !bDuckJumpTime )
 					{
-						float flDuckMilliseconds = MathF.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - m_flDucktime );
+						float flDuckMilliseconds = MathF.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - DuckTime );
 						float flDuckSeconds = flDuckMilliseconds * 0.001f;
 
 						// Finish in duck transition when transition time is over, in "duck", in air.
@@ -79,7 +79,7 @@ namespace Source1
 								if ( CanUnDuckJump( out trace ) )
 								{
 									FinishUnDuckJump( trace );
-									m_flDuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
+									DuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
 								}
 							}
 						}
@@ -88,7 +88,7 @@ namespace Source1
 				// UNDUCK (or attempt to...)
 				else
 				{
-					if ( m_bInDuckJump )
+					if ( InDuckJump )
 					{
 						// Check for a crouch override.
 						if ( !Input.Down( InputButton.Duck ) )
@@ -100,13 +100,13 @@ namespace Source1
 
 								if ( trace.Fraction < 1.0f )
 								{
-									m_flDuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
+									DuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
 								}
 							}
 						}
 						else
 						{
-							m_bInDuckJump = false;
+							InDuckJump = false;
 						}
 					}
 
@@ -115,26 +115,26 @@ namespace Source1
 
 					// Try to unduck unless automovement is not allowed
 					// NOTE: When not onground, you can always unduck
-					if ( Player.AllowAutoMovement || bInAir || m_bDucking )
+					if ( Player.AllowAutoMovement || bInAir || IsDucking )
 					{
 						// We released the duck button, we aren't in "duck" and we are not in the air - start unduck transition.
 						if ( Input.Released( InputButton.Duck ) )
 						{
 							if ( bInDuck && !bDuckJump )
 							{
-								m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
+								DuckTime = GAMEMOVEMENT_DUCK_TIME;
 							}
-							else if ( m_bDucking && !m_bDucked )
+							else if ( IsDucking && !IsDucked )
 							{
 								// Invert time if release before fully ducked!!!
 								float unduckMilliseconds = 1000.0f * TIME_TO_UNDUCK;
 								float duckMilliseconds = 1000.0f * TIME_TO_DUCK;
-								float elapsedMilliseconds = GAMEMOVEMENT_DUCK_TIME - m_flDucktime;
+								float elapsedMilliseconds = GAMEMOVEMENT_DUCK_TIME - DuckTime;
 
 								float fracDucked = elapsedMilliseconds / duckMilliseconds;
 								float remainingUnduckMilliseconds = fracDucked * unduckMilliseconds;
 
-								m_flDucktime = GAMEMOVEMENT_DUCK_TIME - unduckMilliseconds + remainingUnduckMilliseconds;
+								DuckTime = GAMEMOVEMENT_DUCK_TIME - unduckMilliseconds + remainingUnduckMilliseconds;
 							}
 						}
 
@@ -143,9 +143,9 @@ namespace Source1
 						if ( CanUnduck() )
 						{
 							// or unducking
-							if ( (m_bDucking || m_bDucked) )
+							if ( (IsDucking || IsDucked) )
 							{
-								float flDuckMilliseconds = Math.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - m_flDucktime );
+								float flDuckMilliseconds = Math.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - DuckTime );
 								float flDuckSeconds = flDuckMilliseconds * 0.001f;
 
 								// Finish ducking immediately if duck time is over or not on ground
@@ -158,7 +158,7 @@ namespace Source1
 									// Calc parametric time
 									float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
 									SetDuckedEyeOffset( flDuckFraction );
-									m_bDucking = true;
+									IsDucking = true;
 								}
 							}
 						}
@@ -166,12 +166,12 @@ namespace Source1
 						{
 							// Still under something where we can't unduck, so make sure we reset this timer so
 							//  that we'll unduck once we exit the tunnel, etc.
-							if ( m_flDucktime != GAMEMOVEMENT_DUCK_TIME )
+							if ( DuckTime != GAMEMOVEMENT_DUCK_TIME )
 							{
 								SetDuckedEyeOffset( 1.0f );
-								m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
-								m_bDucked = true;
-								m_bDucking = false;
+								DuckTime = GAMEMOVEMENT_DUCK_TIME;
+								IsDucked = true;
+								IsDucking = false;
 								Pawn.Tags.Add( PlayerFlags.Ducked );
 							}
 						}
@@ -191,7 +191,7 @@ namespace Source1
 			// his view height is at the standing height.
 			else if ( !IsDead() /*&& !player->IsObserver() */ )
 			{
-				if ( (m_flDuckJumpTime == 0.0f) && (MathF.Abs( EyePosLocal.z - GetPlayerViewOffset( false ).z ) > 0.1f) ) 
+				if ( (DuckJumpTime == 0.0f) && (MathF.Abs( EyePosLocal.z - GetPlayerViewOffset( false ).z ) > 0.1f) ) 
 				{
 					// set the eye height to the non-ducked height
 					SetDuckedEyeOffset( 0.0f );
@@ -203,12 +203,12 @@ namespace Source1
 			if ( sv_debug_duck && Host.IsServer ) 
 			{
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerFlags.Ducked )}" );
-				DebugOverlay.ScreenText( 1, $"m_bDucking          {m_bDucking}" );
-				DebugOverlay.ScreenText( 2, $"m_bDucked           {m_bDucked}" );
-				DebugOverlay.ScreenText( 3, $"m_flDucktime        {m_flDucktime}" );
-				DebugOverlay.ScreenText( 4, $"m_flDuckJumpTime    {m_flDuckJumpTime}" );
-				DebugOverlay.ScreenText( 5, $"m_flJumpTime        {m_flJumpTime}" );
-				DebugOverlay.ScreenText( 6, $"m_bInDuckJump       {m_bInDuckJump}" );
+				DebugOverlay.ScreenText( 1, $"m_bDucking          {IsDucking}" );
+				DebugOverlay.ScreenText( 2, $"m_bDucked           {IsDucked}" );
+				DebugOverlay.ScreenText( 3, $"m_flDucktime        {DuckTime}" );
+				DebugOverlay.ScreenText( 4, $"m_flDuckJumpTime    {DuckJumpTime}" );
+				DebugOverlay.ScreenText( 5, $"m_flJumpTime        {JumpTime}" );
+				DebugOverlay.ScreenText( 6, $"m_bInDuckJump       {InDuckJump}" );
 				DebugOverlay.ScreenText( 7, $"m_bAllowAutoMovement {Player.AllowAutoMovement}" );
 				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );
 			}
@@ -227,8 +227,8 @@ namespace Source1
 		void StartUnDuckJump()
 		{
 			Pawn.Tags.Add( PlayerFlags.Ducked );
-			m_bDucked = true;
-			m_bDucking = false;
+			IsDucked = true;
+			IsDucking = false;
 
 			EyePosLocal = GetPlayerViewOffset( true );
 
@@ -281,11 +281,11 @@ namespace Source1
 				vecEnd.z = Position.z + (-36.0f * trace.Fraction);
 
 				// Test a normal hull.
-				bool bWasDucked = m_bDucked;
-				m_bDucked = false;
+				bool bWasDucked = IsDucked;
+				IsDucked = false;
 
 				var traceUp = TraceBBox( vecEnd, vecEnd );
-				m_bDucked = bWasDucked;
+				IsDucked = bWasDucked;
 				if ( !traceUp.StartedSolid )
 					return true;
 			}
@@ -299,8 +299,8 @@ namespace Source1
 				return;
 
 			Pawn.Tags.Add( PlayerFlags.Ducked );
-			m_bDucked = true;
-			m_bDucking = false;
+			IsDucked = true;
+			IsDucking = false;
 
 			EyePosLocal = GetPlayerViewOffset( true );
 
@@ -336,12 +336,12 @@ namespace Source1
 			flDeltaZ -= viewDelta.z;
 
 			Pawn.Tags.Remove( "ducked" );
-			m_bDucked = false;
-			m_bDucking = false;
-			m_bInDuckJump = false;
-			m_flDucktime = 0.0f;
-			m_flDuckJumpTime = 0.0f;
-			m_flJumpTime = 0.0f;
+			IsDucked = false;
+			IsDucking = false;
+			InDuckJump = false;
+			DuckTime = 0.0f;
+			DuckJumpTime = 0.0f;
+			JumpTime = 0.0f;
 
 			var vecViewOffset = GetPlayerViewOffset( false );
 			vecViewOffset.z -= flDeltaZ;
@@ -371,11 +371,11 @@ namespace Source1
 				newOrigin -= viewDelta;
 			}
 
-			bool saveducked = m_bDucked;
-			m_bDucked = false;
+			bool saveducked = IsDucked;
+			IsDucked = false;
 
 			var trace = TraceBBox( Position, newOrigin );
-			m_bDucked = saveducked;
+			IsDucked = saveducked;
 			if ( trace.StartedSolid || (trace.Fraction != 1.0f) ) 
 				return false;
 
@@ -401,11 +401,11 @@ namespace Source1
 			}
 
 			Pawn.Tags.Remove( "ducked" );
-			m_bDucked = false;
-			m_bDucking = false;
-			m_bInDuckJump = false;
+			IsDucked = false;
+			IsDucking = false;
+			InDuckJump = false;
 			EyePosLocal = GetPlayerViewOffset( false );
-			m_flDucktime = 0;
+			DuckTime = 0;
 
 			Position = newOrigin;
 

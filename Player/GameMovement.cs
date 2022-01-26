@@ -155,22 +155,22 @@ namespace Source1
 		{
 			float frame_msec = 1000.0f * Time.Delta;
 
-			if ( m_flDucktime > 0 )
+			if ( DuckTime > 0 )
 			{
-				m_flDucktime -= frame_msec;
-				if ( m_flDucktime < 0 ) m_flDucktime = 0;
+				DuckTime -= frame_msec;
+				if ( DuckTime < 0 ) DuckTime = 0;
 			}
 
-			if ( m_flDuckJumpTime > 0 )
+			if ( DuckJumpTime > 0 )
 			{
-				m_flDuckJumpTime -= frame_msec;
-				if ( m_flDuckJumpTime < 0 ) m_flDuckJumpTime = 0;
+				DuckJumpTime -= frame_msec;
+				if ( DuckJumpTime < 0 ) DuckJumpTime = 0;
 			}
 
-			if ( m_flJumpTime > 0 )
+			if ( JumpTime > 0 )
 			{
-				m_flJumpTime -= frame_msec;
-				if ( m_flJumpTime < 0 ) m_flJumpTime = 0;
+				JumpTime -= frame_msec;
+				if ( JumpTime < 0 ) JumpTime = 0;
 			}
 
 			if ( SwimSoundTime > 0 )
@@ -735,13 +735,13 @@ namespace Source1
 		//-----------------------------------------------------------------------------
 		void UpdateDuckJumpEyeOffset()
 		{
-			if ( m_flDuckJumpTime != 0.0f )
+			if ( DuckJumpTime != 0.0f )
 			{
-				float flDuckMilliseconds = MathF.Max( 0.0f, m_flDucktime - m_flDuckJumpTime );
+				float flDuckMilliseconds = MathF.Max( 0.0f, DuckTime - DuckJumpTime );
 				float flDuckSeconds = flDuckMilliseconds / GAMEMOVEMENT_DUCK_TIME;
 				if ( flDuckSeconds > TIME_TO_UNDUCK )
 				{
-					m_flDuckJumpTime = 0.0f;
+					DuckJumpTime = 0.0f;
 					SetDuckedEyeOffset( 0.0f );
 				}
 				else
