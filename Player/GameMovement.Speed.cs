@@ -5,11 +5,6 @@ namespace Source1
 {
 	public partial class S1GameMovement
 	{
-		public virtual float GetMaxSpeed()
-		{
-			return sv_maxspeed;
-		}
-
 		//
 		// Sprint
 		//

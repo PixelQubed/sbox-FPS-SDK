@@ -7,12 +7,12 @@ namespace Source1
 	{
 		[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
 
-		bool IsDucking;
-		bool IsDucked;
-		float DuckTime;
-		float DuckJumpTime;
-		float JumpTime;
-		bool InDuckJump;
+		public bool IsDucking { get; set; }
+		public bool IsDucked { get; set; }
+		public float DuckTime { get; set; }
+		public float DuckJumpTime { get; set; }
+		public float JumpTime { get; set; }
+		public bool InDuckJump { get; set; }
 
 		public virtual float GetDuckSpeed()
 		{
@@ -23,7 +23,7 @@ namespace Source1
 		{
 			// Check to see if we are in the air.
 			bool bInAir = !IsGrounded();
-			bool bInDuck = Pawn.Tags.Has( PlayerFlags.Ducked );
+			bool bInDuck = Pawn.Tags.Has( PlayerTags.Ducked );
 			bool bDuckJump = JumpTime > 0.0f;
 			bool bDuckJumpTime = DuckJumpTime > 0.0f;
 
@@ -172,7 +172,7 @@ namespace Source1
 								DuckTime = GAMEMOVEMENT_DUCK_TIME;
 								IsDucked = true;
 								IsDucking = false;
-								Pawn.Tags.Add( PlayerFlags.Ducked );
+								Pawn.Tags.Add( PlayerTags.Ducked );
 							}
 						}
 					}
@@ -198,11 +198,11 @@ namespace Source1
 				}
 			}
 
-			if ( Pawn.Tags.Has( PlayerFlags.Ducked ) ) SetTag( PlayerFlags.Ducked );
+			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) SetTag( PlayerTags.Ducked );
 
 			if ( sv_debug_duck && Host.IsServer ) 
 			{
-				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerFlags.Ducked )}" );
+				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
 				DebugOverlay.ScreenText( 1, $"m_bDucking          {IsDucking}" );
 				DebugOverlay.ScreenText( 2, $"m_bDucked           {IsDucked}" );
 				DebugOverlay.ScreenText( 3, $"m_flDucktime        {DuckTime}" );
@@ -226,7 +226,7 @@ namespace Source1
 		//-----------------------------------------------------------------------------
 		void StartUnDuckJump()
 		{
-			Pawn.Tags.Add( PlayerFlags.Ducked );
+			Pawn.Tags.Add( PlayerTags.Ducked );
 			IsDucked = true;
 			IsDucking = false;
 
@@ -295,10 +295,10 @@ namespace Source1
 
 		void FinishDuck()
 		{
-			if ( Pawn.Tags.Has( PlayerFlags.Ducked ) ) 
+			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) 
 				return;
 
-			Pawn.Tags.Add( PlayerFlags.Ducked );
+			Pawn.Tags.Add( PlayerTags.Ducked );
 			IsDucked = true;
 			IsDucking = false;
 
@@ -335,7 +335,7 @@ namespace Source1
 			viewDelta.z *= trace.Fraction;
 			flDeltaZ -= viewDelta.z;
 
-			Pawn.Tags.Remove( "ducked" );
+			Pawn.Tags.Remove( PlayerTags.Ducked );
 			IsDucked = false;
 			IsDucking = false;
 			InDuckJump = false;
@@ -382,7 +382,7 @@ namespace Source1
 			return true;
 		}
 
-		void FinishUnDuck(  )
+		void FinishUnDuck()
 		{
 			var newOrigin = Position;
 
@@ -400,7 +400,7 @@ namespace Source1
 				newOrigin -= viewDelta;
 			}
 
-			Pawn.Tags.Remove( "ducked" );
+			Pawn.Tags.Remove( PlayerTags.Ducked );
 			IsDucked = false;
 			IsDucking = false;
 			InDuckJump = false;

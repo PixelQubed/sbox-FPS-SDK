@@ -20,10 +20,10 @@ namespace Source1
 		/// Returns true if we succesfully made a jump.
 		/// </summary>
 		/// <returns></returns>
-		public virtual void Jump()
+		public virtual bool Jump()
 		{
 			if ( !CanJump() )
-				return;
+				return false;
 
 			/*
             if ( player->m_flWaterJumpTime )
@@ -53,12 +53,12 @@ namespace Source1
 					//   PlaySwimSound();
 				}
 
-				return;
+				return false;
 			}
 
 			// Can't just if we're not grounded
 			if ( GroundEntity == null )
-				return;
+				return false;
 
 			/*
             if ( player->m_Local.m_bDucking && (player->GetFlags() & FL_DUCKING) )
@@ -75,7 +75,7 @@ namespace Source1
 
 			// player->PlayStepSound( (Vector &)mv->GetAbsOrigin(), player->m_pSurfaceData, 1.0, true );
 
-			// MoveHelper()->PlayerSetAnimation( PLAYER_JUMP );
+			AddEvent( "jump" );
 
 			float flGroundFactor = 1.0f;
 			//if ( player->m_pSurfaceData )
@@ -100,8 +100,7 @@ namespace Source1
 			// don't jump again until released
 			//mv->m_nOldButtons |= IN_JUMP;
 
-			AddEvent( "jump" );
-
+			return true;
 		}
 	}
 }

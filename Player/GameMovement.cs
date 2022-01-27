@@ -33,6 +33,7 @@ namespace Source1
 			}
 
 			if ( Player == null ) return;
+			MaxSpeed = Player.MaxSpeed;
 
 			PlayerMove();
 		}
@@ -194,12 +195,11 @@ namespace Source1
 
 			var wishspeed = WishVelocity.Length;
 			var wishdir = WishVelocity.Normal;
-			var maxspeed = GetMaxSpeed();
 
-			if ( wishspeed != 0 && wishspeed > maxspeed )
+			if ( wishspeed != 0 && wishspeed > MaxSpeed )
 			{
-				WishVelocity *= maxspeed / wishspeed;
-				wishspeed = maxspeed;
+				WishVelocity *= MaxSpeed / wishspeed;
+				wishspeed = MaxSpeed;
 			}
 
 			Velocity = Velocity.WithZ( 0 );
@@ -364,12 +364,11 @@ namespace Source1
 
 			var wishspeed = WishVelocity.Length;
 			var wishdir = WishVelocity.Normal;
-			var maxspeed = GetMaxSpeed();
 
-			if ( wishspeed != 0 && wishspeed > maxspeed )
+			if ( wishspeed != 0 && wishspeed > MaxSpeed )
 			{
-				WishVelocity *= maxspeed / wishspeed;
-				wishspeed = maxspeed;
+				WishVelocity *= MaxSpeed / wishspeed;
+				wishspeed = MaxSpeed;
 			}
 
 			Accelerate( wishdir, wishspeed, sv_airaccelerate, sv_aircontrol );
@@ -575,7 +574,7 @@ namespace Source1
 			return pm.Entity;
 		}
 
-		Surface SurfaceData { get; set; }
+		public Surface SurfaceData { get; set; }
 
 		public virtual void CategorizeGroundSurface( TraceResult pm )
 		{
@@ -626,7 +625,7 @@ namespace Source1
 			return flSpeedFactor;
 		}
 
-		bool IsDead()
+		public bool IsDead()
 		{
 			return Pawn.LifeState != LifeState.Alive;
 		}

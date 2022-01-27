@@ -13,12 +13,15 @@ namespace Source1
 		/// Time since last damage taken, used by medigun.
 		/// </summary>
 		public TimeSince TimeSinceTakeDamage { get; set; }
+		[Net] public float MaxSpeed { get; set; }
 
 		public override void Spawn()
 		{
 			base.Spawn();
 			CollisionGroup = CollisionGroup.Player;
 			EnableLagCompensation = true;
+
+			MaxSpeed = S1GameMovement.sv_maxspeed;
 		}
 
 		public virtual float GetMaxSpeed()
@@ -31,7 +34,6 @@ namespace Source1
 			return 1f;
 		}
 
-
 		[Event.BuildInput]
 		protected new virtual void BuildInput( InputBuilder builder )
 		{
@@ -41,8 +43,9 @@ namespace Source1
 		public virtual bool AllowAutoMovement { get; set; } = true;
 	}
 
-	public static class PlayerFlags
+	public static class PlayerTags
 	{
 		public const string Ducked = "ducked";
+		public const string Jumped = "jumped";
 	}
 }
