@@ -496,37 +496,44 @@ namespace Source1
 		/// </summary>
 		public virtual void UpdateGroundEntity( TraceResult tr )
 		{
-			GroundNormal = tr.Normal;
+			var newGround = tr.Entity;
+			var oldGround = GroundEntity;
 
-			// VALVE HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
-			// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
-			// This scaling trivially makes them equivalent.  REVISIT if this affects low friction surfaces too much.
-			SurfaceFriction = tr.Surface.Friction * 1.25f;
-			if ( SurfaceFriction > 1 ) SurfaceFriction = 1;
+			var vecBaseVelocity = BaseVelocity;
 
-			//if ( tr.Entity == GroundEntity ) return;
-
-			Vector3 oldGroundVelocity = default;
-			if ( GroundEntity != null ) oldGroundVelocity = GroundEntity.Velocity;
-
-			bool wasOffGround = GroundEntity == null;
-
-			GroundEntity = tr.Entity;
-
-			if ( GroundEntity != null )
+			if ( oldGround == null && newGround != null )
 			{
-				BaseVelocity = GroundEntity.Velocity;
+				// Subtract ground velocity at instant we hit ground jumping
+				vecBaseVelocity -= newGround.Velocity;
+				vecBaseVelocity.z = newGround.Velocity.z;
+			}
+			else if ( oldGround != null && newGround != null ) 
+			{
+				// Add in ground velocity at instant we started jumping
+				vecBaseVelocity += oldGround.Velocity;
+				vecBaseVelocity.z = oldGround.Velocity.z;
 			}
 
-			/*
-              	m_vecGroundUp = pm.m_vHitNormal;
-	            player->m_surfaceProps = pm.m_pSurfaceProperties->GetNameHash();
-	            player->m_pSurfaceData = pm.m_pSurfaceProperties;
-	            const CPhysSurfaceProperties *pProp = pm.m_pSurfaceProperties;
+			BaseVelocity = vecBaseVelocity;
+			GroundEntity = newGround;
 
-	            const CGameSurfaceProperties *pGameProps = g_pPhysicsQuery->GetGameSurfaceproperties( pProp );
-	            player->m_chTextureType = (int8)pGameProps->m_nLegacyGameMaterial;
-            */
+			// If we are on something...
+
+			if ( newGround != null ) 
+			{
+				CategorizeGroundSurface( tr );
+
+				// Then we are not in water jump sequence
+				// player->m_flWaterJumpTime = 0;
+
+				// Standing on an entity other than the world, so signal that we are touching something.
+				/*if ( !pm->DidHitWorld() )
+				{
+					MoveHelper()->AddToTouched( *pm, mv->m_vecVelocity );
+				}*/
+
+				Velocity = Velocity.WithZ( 0 );
+			}
 		}
 
 		/// <summary>

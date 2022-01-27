@@ -293,37 +293,6 @@ namespace Source1
 			return false;
 		}
 
-		public void FinishDuck()
-		{
-			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) 
-				return;
-
-			Pawn.Tags.Add( PlayerTags.Ducked );
-			IsDucked = true;
-			IsDucking = false;
-
-			EyePosLocal = GetPlayerViewOffset( true );
-
-			// HACKHACK - Fudge for collision bug - no time to fix this properly
-			if ( IsGrounded() )
-			{
-				Position -= GetPlayerMins( true ) - GetPlayerMins( false );
-			}
-			else
-			{
-				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
-				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
-				var viewDelta = hullSizeNormal - hullSizeCrouch;
-				Position += viewDelta;
-			}
-
-			// See if we are stuck?
-			FixPlayerCrouchStuck( true );
-
-			// Recategorize position since ducking can change origin
-			CategorizePosition();
-		}
-
 		public void FinishUnDuckJump( TraceResult trace )
 		{
 			//  Up for uncrouching.
@@ -382,32 +351,59 @@ namespace Source1
 			return true;
 		}
 
-		public void FinishUnDuck()
+		public void FinishDuck()
 		{
-			var newOrigin = Position;
+			if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
+				return;
 
+			Pawn.Tags.Add( PlayerTags.Ducked );
+			IsDucked = true;
+			IsDucking = false;
+
+			EyePosLocal = GetPlayerViewOffset( true );
+
+			// HACKHACK - Fudge for collision bug - no time to fix this properly
 			if ( IsGrounded() )
 			{
-				newOrigin += (GetPlayerMins( true ) - GetPlayerMins( false ));
+				Position -= GetPlayerMins( true ) - GetPlayerMins( false );
 			}
 			else
 			{
-				// If in air an letting go of crouch, make sure we can offset origin to make
-				//  up for uncrouching
 				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 				var viewDelta = hullSizeNormal - hullSizeCrouch;
-				newOrigin -= viewDelta;
+				Position += viewDelta;
 			}
 
+			// See if we are stuck?
+			FixPlayerCrouchStuck( true );
+
+			// Recategorize position since ducking can change origin
+			CategorizePosition();
+		}
+
+		public void FinishUnDuck()
+		{
 			Pawn.Tags.Remove( PlayerTags.Ducked );
+
 			IsDucked = false;
 			IsDucking = false;
 			InDuckJump = false;
-			EyePosLocal = GetPlayerViewOffset( false );
 			DuckTime = 0;
 
-			Position = newOrigin;
+			EyePosLocal = GetPlayerViewOffset( false );
+
+			if ( IsGrounded() )
+			{
+				Position += GetPlayerMins( true ) - GetPlayerMins( false );
+			}
+			else
+			{
+				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
+				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
+				var viewDelta = hullSizeNormal - hullSizeCrouch;
+				Position -= viewDelta;
+			}
 
 			// Recategorize position since ducking can change origin
 			CategorizePosition();
