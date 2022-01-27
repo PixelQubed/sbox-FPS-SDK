@@ -224,7 +224,7 @@ namespace Source1
 		//-----------------------------------------------------------------------------
 		// Purpose:
 		//-----------------------------------------------------------------------------
-		void StartUnDuckJump()
+		public void StartUnDuckJump()
 		{
 			Pawn.Tags.Add( PlayerTags.Ducked );
 			IsDucked = true;
@@ -244,7 +244,7 @@ namespace Source1
 			CategorizePosition();
 		}
 
-		void FixPlayerCrouchStuck( bool upward )
+		public void FixPlayerCrouchStuck( bool upward )
 		{
 			int direction = upward ? 1 : 0;
 
@@ -267,7 +267,7 @@ namespace Source1
 			Position = test;
 		}
 
-		bool CanUnDuckJump( out TraceResult trace )
+		public bool CanUnDuckJump( out TraceResult trace )
 		{
 			var vecEnd = Position;
 
@@ -293,7 +293,7 @@ namespace Source1
 			return false;
 		}
 
-		void FinishDuck()
+		public void FinishDuck()
 		{
 			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) 
 				return;
@@ -324,7 +324,7 @@ namespace Source1
 			CategorizePosition();
 		}
 
-		void FinishUnDuckJump( TraceResult trace )
+		public void FinishUnDuckJump( TraceResult trace )
 		{
 			//  Up for uncrouching.
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
@@ -353,7 +353,7 @@ namespace Source1
 			CategorizePosition();
 		}
 
-		bool CanUnduck()
+		public bool CanUnduck()
 		{
 			var newOrigin = Position;
 
@@ -382,7 +382,7 @@ namespace Source1
 			return true;
 		}
 
-		void FinishUnDuck()
+		public void FinishUnDuck()
 		{
 			var newOrigin = Position;
 
