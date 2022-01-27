@@ -7,42 +7,22 @@ namespace Source1
 	{
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckHullMin
-				: GameRules.Instance.ViewVectors.HullMin
-				) * Pawn.Scale;
+			return Player.GetPlayerMins( ducked ) * Pawn.Scale;
 		}
 
 		public virtual Vector3 GetPlayerMaxs( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckHullMax
-				: GameRules.Instance.ViewVectors.HullMax
-				) * Pawn.Scale;
+			return Player.GetPlayerMaxs( ducked ) * Pawn.Scale;
 		}
 
 		public virtual Vector3 GetPlayerMins()
 		{
-			/*if ( player->IsObserver() )
-			{
-				return VEC_OBS_HULL_MIN_SCALED( player );
-			}
-			else*/
-			{
-				return GetPlayerMins( IsDucked );
-			}
+			return GetPlayerMins( IsDucked );
 		}
 
 		public virtual Vector3 GetPlayerMaxs()
 		{
-			/*if ( player->IsObserver() )
-			{
-				return VEC_OBS_HULL_MIN_SCALED( player );
-			}
-			else*/
-			{
-				return GetPlayerMaxs( IsDucked );
-			}
+			return GetPlayerMaxs( IsDucked );
 		}
 
 		public virtual Vector3 GetPlayerExtents()
@@ -50,11 +30,7 @@ namespace Source1
 			var mins = GetPlayerMins();
 			var maxs = GetPlayerMaxs();
 
-			return new(
-				MathF.Abs( mins.x ) + MathF.Abs( maxs.x ),
-				MathF.Abs( mins.y ) + MathF.Abs( maxs.y ),
-				MathF.Abs( mins.z ) + MathF.Abs( maxs.z )
-			);
+			return mins.Abs() + maxs.Abs();
 		}
 
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )

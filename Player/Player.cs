@@ -14,6 +14,7 @@ namespace Source1
 		/// </summary>
 		public TimeSince TimeSinceTakeDamage { get; set; }
 		[Net] public float MaxSpeed { get; set; }
+		public virtual bool AllowAutoMovement { get; set; } = true;
 
 		public override void Spawn()
 		{
@@ -39,8 +40,37 @@ namespace Source1
 		{
 			builder.AnalogLook *= GetSensitivityMultiplier();
 		}
+		public virtual Vector3 GetPlayerMins( bool ducked )
+		{
+			return (ducked
+				? GameRules.Instance.ViewVectors.DuckHullMin
+				: GameRules.Instance.ViewVectors.HullMin
+				);
+		}
 
-		public virtual bool AllowAutoMovement { get; set; } = true;
+		public virtual Vector3 GetPlayerMaxs( bool ducked )
+		{
+			return (ducked
+				? GameRules.Instance.ViewVectors.DuckHullMax
+				: GameRules.Instance.ViewVectors.HullMax
+				);
+		}
+
+		public virtual Vector3 GetPlayerExtents( bool ducked )
+		{
+			var mins = GetPlayerMins( ducked );
+			var maxs = GetPlayerMaxs( ducked );
+
+			return mins.Abs() + maxs.Abs();
+		}
+
+		public virtual Vector3 GetPlayerViewOffset( bool ducked )
+		{
+			return (ducked
+				? GameRules.Instance.ViewVectors.DuckViewOffset
+				: GameRules.Instance.ViewVectors.ViewOffset
+				) * Scale;
+		}
 	}
 
 	public static class PlayerTags

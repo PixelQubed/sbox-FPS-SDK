@@ -9,6 +9,7 @@ namespace Source1
 		protected float MaxSpeed { get; set; }
 		protected float SurfaceFriction { get; set; }
 		bool IsSwimming { get; set; }
+		Vector3 LadderNormal { get; set; }
 
 
 		public override void FrameSimulate()
@@ -46,13 +47,6 @@ namespace Source1
 		public virtual void PlayerMove()
 		{
 			CheckParameters();
-
-			// clear output applied velocity
-			// mv->m_outWishVel.Init();
-			// mv->m_outJumpVel.Init();
-
-			// MoveHelper()->ResetTouchList();                    // Assume we don't touch anything
-
 			ReduceTimers();
 
 			EyeRot = Input.Rotation;
@@ -63,8 +57,7 @@ namespace Source1
 				Pawn.MoveType != MoveType.MOVETYPE_OBSERVER &&
 				!IsDead() ) 
 			{
-				/*
-				if ( CheckInterval( STUCK ) )
+				if ( CheckInterval( IntervalType.Stuck ) )
 				{
 					if ( CheckStuck() )
 					{
@@ -72,7 +65,6 @@ namespace Source1
 						return;
 					}
 				}
-				*/
 			}
 
 			// Now that we are "unstuck", see where we are (player->GetWaterLevel() and type, player->GetGroundEntity()).
@@ -90,31 +82,21 @@ namespace Source1
 				FallVelocity = -Velocity.z;
 			}
 
-			// m_nOnLadder = 0;
+			// OnLadder = 0;
 
 			UpdateDuckJumpEyeOffset();
 			Duck();
 
-			/*// Don't run ladder code if dead or on a train
-			if ( !IsDead() && !(player->GetFlags() & FL_ONTRAIN) )
+			// Don't run ladder code if dead or on a train
+			if ( !IsDead() ) 
 			{
-				// If was not on a ladder now, but was on one before, 
-				//  get off of the ladder
-
-				// TODO: this causes lots of weirdness.
-				//bool bCheckLadder = CheckInterval( LADDER );
-				//if ( bCheckLadder || player->GetMoveType() == MOVETYPE_LADDER )
+				if ( !LadderMove() && Player.MoveType == MoveType.MOVETYPE_LADDER ) ;
 				{
-					if ( !LadderMove() &&
-						(player->GetMoveType() == MOVETYPE_LADDER) )
-					{
-						// Clear ladder stuff unless player is dead or riding a train
-						// It will be reset immediately again next frame if necessary
-						player->SetMoveType( MOVETYPE_WALK );
-						player->SetMoveCollide( MOVECOLLIDE_DEFAULT );
-					}
+					// Clear ladder stuff unless player is dead or riding a train
+					// It will be reset immediately again next frame if necessary
+					Player.MoveType = MoveType.MOVETYPE_WALK;
 				}
-			}*/
+			}
 
 			switch (Pawn.MoveType)
 			{
@@ -378,61 +360,138 @@ namespace Source1
 			Velocity -= BaseVelocity;
 		}
 
-		bool IsTouchingLadder = false;
-		Vector3 LadderNormal;
-
-		public virtual void CheckLadder()
+		public virtual bool LadderMove()
 		{
-			var wishvel = new Vector3( Input.Forward, Input.Left, 0 );
-			wishvel *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
-			wishvel = wishvel.Normal;
+			if ( Player.MoveType == MoveType.MOVETYPE_NOCLIP ) 
+				return false;
 
-			if ( IsTouchingLadder )
+			if ( !GameHasLadders() )
+				return false;
+
+			Vector3 wishdir;
+
+			var fmove = Input.Forward;
+			var smove = -Input.Left;
+
+			var forward = Input.Rotation.Forward;
+			var side = Input.Rotation.Right;
+
+			// If I'm already moving on a ladder, use the previous ladder direction
+			if ( Player.MoveType == MoveType.MOVETYPE_LADDER ) 
 			{
-				if ( Input.Pressed( InputButton.Jump ) )
+				wishdir = -LadderNormal;
+			}
+			else
+			{
+				// otherwise, use the direction player is attempting to move
+				if ( forward != 0 || side != 0 ) 
 				{
-					Velocity = LadderNormal * 100.0f;
-					IsTouchingLadder = false;
-
-					return;
-
+					wishdir = forward * fmove + side * smove;
+					wishdir = wishdir.Normal;
 				}
-				else if ( GroundEntity != null && LadderNormal.Dot( wishvel ) > 0 )
+				else
 				{
-					IsTouchingLadder = false;
-
-					return;
+					// Player is not attempting to move, no ladder behavior
+					return false;
 				}
 			}
 
-			const float ladderDistance = 1.0f;
-			var start = Position;
-			Vector3 end = start + (IsTouchingLadder ? (LadderNormal * -1.0f) : wishvel) * ladderDistance;
+			// wishdir points toward the ladder if any exists
+			var end = VectorMA( Position, LadderDistance, wishdir );
+			var pm = TraceBBox( Position, end );
 
-			var pm = Trace.Ray( start, end )
-						.Size( GetPlayerMins(), GetPlayerMaxs() )
-						.HitLayer( CollisionLayer.All, false )
-						.HitLayer( CollisionLayer.LADDER, true )
-						.Ignore( Pawn )
-						.Run();
+			// no ladder in that direction, return
+			if ( pm.Fraction == 1.0f || !OnLadder( pm ) )
+				return false;
 
-			IsTouchingLadder = false;
+			Player.MoveType = MoveType.MOVETYPE_LADDER;
+			LadderNormal = pm.Normal;
 
-			if ( pm.Hit && !(pm.Entity is ModelEntity me && me.CollisionGroup == CollisionGroup.Always) )
+			// On ladder, convert movement to be relative to the ladder
+
+			var floor = Position.WithZ( Position.z + GetPlayerMins().z - 1 );
+			var content = Physics.GetPointContents( floor );
+
+			bool onFloor = content.HasFlag( CollisionLayer.Solid ) || IsGrounded();
+
+			// player->SetGravity( 0 );
+
+			float forwardSpeed = 0, rightSpeed = 0;
+			if ( Input.Down( InputButton.Back ) ) 
+				forwardSpeed -= ClimpSpeed;
+
+			if ( Input.Down( InputButton.Forward ))
+				forwardSpeed += ClimpSpeed;
+
+			if ( Input.Down( InputButton.Left ) )
+				rightSpeed -= ClimpSpeed;
+
+			if ( Input.Down( InputButton.Right ) )
+				rightSpeed += ClimpSpeed;
+
+			if ( Input.Down( InputButton.Jump ) )
 			{
-				IsTouchingLadder = true;
-				LadderNormal = pm.Normal;
+				Player.MoveType = MoveType.MOVETYPE_WALK;
+
+				Velocity = pm.Normal * 270;
 			}
+			else
+			{
+				if ( forwardSpeed != 0 || rightSpeed != 0 )
+				{
+					Vector3 velocity, perp, cross, lateral, tmp;
+
+					//ALERT(at_console, "pev %.2f %.2f %.2f - ",
+					//	pev->velocity.x, pev->velocity.y, pev->velocity.z);
+					// Calculate player's intended velocity
+					//Vector velocity = (forward * gpGlobals->v_forward) + (right * gpGlobals->v_right);
+					velocity = forward * forwardSpeed;
+					velocity = VectorMA( velocity, rightSpeed, side );
+
+					// Perpendicular in the ladder plane
+					tmp = 0;
+					tmp[2] = 1;
+
+					perp = Vector3.Cross( tmp, pm.Normal );
+					perp = perp.Normal;
+
+					// decompose velocity into ladder plane
+					float normal = Vector3.Dot( velocity, pm.Normal );
+
+					// This is the velocity into the face of the ladder
+					cross = pm.Normal * normal;
+
+					// This is the player's additional velocity
+					lateral = velocity - cross;
+
+					// This turns the velocity into the face of the ladder into velocity that
+					// is roughly vertically perpendicular to the face of the ladder.
+					// NOTE: It IS possible to face up and move down or face down and move up
+					// because the velocity is a sum of the directional velocity and the converted
+					// velocity through the face of the ladder -- by design.
+					tmp = Vector3.Cross( pm.Normal, perp );
+
+					Velocity = VectorMA( lateral, -normal, tmp );
+
+					if ( onFloor && normal > 0 )    // On ground moving away from the ladder
+					{
+						Velocity = VectorMA( Velocity, ClimpSpeed, pm.Normal );
+					}
+					//pev->velocity = lateral - (CrossProduct( trace.vecPlaneNormal, perp ) * normal);
+				}
+				else
+				{
+					Velocity = 0;
+				}
+			}
+
+			return true;
 		}
 
-		public virtual void LadderMove()
+		public virtual bool OnLadder( TraceResult trace )
 		{
-			var velocity = WishVelocity;
-			float normalDot = velocity.Dot( LadderNormal );
-			var cross = LadderNormal * normalDot;
-			Velocity = (velocity - cross) + (-normalDot * LadderNormal.Cross( Vector3.Up.Cross( LadderNormal ).Normal ));
-
-			Move();
+			var content = Physics.GetPointContents( trace.EndPos );
+			return content.HasFlag( CollisionLayer.LADDER );
 		}
 
 		public virtual void CategorizePosition()
@@ -447,49 +506,129 @@ namespace Source1
 			//CheckWater();
 
 			var point = Position - Vector3.Up * 2;
-			var vBumpOrigin = Position;
+			var bumpOrigin = Position;
 
-			//
-			//  Shooting up really fast.  Definitely not on ground trimed until ladder shit
-			//
-			bool bMovingUpRapidly = Velocity.z > sv_maxnonjumpvelocity;
-			bool bMovingUp = Velocity.z > 0;
+			float zvel = Velocity.z;
+			bool bMovingUp = zvel > 0;
+			bool bMovingUpRapidly = zvel > sv_maxnonjumpvelocity;
+			float flGroundEntityVelZ = 0;
 
-			bool bMoveToEndPos = false;
-
-			if ( GroundEntity != null ) // and not underwater
+			if( bMovingUpRapidly )
 			{
-				bMoveToEndPos = true;
-				point.z -= sv_stepsize;
+				if ( IsGrounded() )
+				{
+					flGroundEntityVelZ = GroundEntity.Velocity.z;
+					bMovingUpRapidly = (zvel - flGroundEntityVelZ) > sv_maxnonjumpvelocity;
+				}
 			}
 
-			if ( bMovingUpRapidly || IsSwimming ) // or ladder and moving up
+
+			if ( bMovingUpRapidly || (bMovingUp && Player.MoveType == MoveType.MOVETYPE_LADDER) )
 			{
 				ClearGroundEntity();
-				return;
-			}
-
-			var pm = TraceBBox( vBumpOrigin, point, 4.0f );
-
-			if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) > sv_maxstandableangle )
-			{
-				ClearGroundEntity();
-				bMoveToEndPos = false;
-
-				if ( Velocity.z > 0 )
-					SurfaceFriction = 0.25f;
 			}
 			else
 			{
-				UpdateGroundEntity( pm );
-			}
+				var pm = TraceBBox( bumpOrigin, point );
+				Log.Info( Vector3.GetAngle( Vector3.Up, pm.Normal ) );
 
-			if ( bMoveToEndPos && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f )
-			{
-				Position = pm.EndPos;
-			}
+				if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle ) 
+				{
+					pm = TryTouchGroundInQuadrants( bumpOrigin, point, pm );
+					if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
+					{
+						ClearGroundEntity();
 
+						// probably want to add a check for a +z velocity too!
+						if ( Velocity.z > 0 && Player.MoveType != MoveType.MOVETYPE_NOCLIP ) 
+						{
+							SurfaceFriction = 0.25f;
+						}
+					} else
+					{
+						UpdateGroundEntity( pm );
+					}
+				} else
+				{
+					UpdateGroundEntity( pm );
+				}
+			}
 		}
+		//-----------------------------------------------------------------------------
+		// Traces the player's collision bounds in quadrants, looking for a plane that
+		// can be stood upon (normal's z >= 0.7f).  Regardless of success or failure,
+		// replace the fraction and endpos with the original ones, so we don't try to
+		// move the player down to the new floor and get stuck on a leaning wall that
+		// the original trace hit first.
+		//-----------------------------------------------------------------------------
+		public TraceResult TryTouchGroundInQuadrants( Vector3 start, Vector3 end, TraceResult pm )
+		{
+			// VPROF( "CGameMovement::TryTouchGroundInQuadrants" );
+
+			// TODO: 
+			bool isDucked = false;
+
+			Vector3 mins, maxs;
+			Vector3 minsSrc = GetPlayerMins( isDucked );
+			Vector3 maxsSrc = GetPlayerMaxs( isDucked );
+
+			float fraction = pm.Fraction;
+			Vector3 endpos = pm.EndPos;
+
+
+			// Check the -x, -y quadrant
+			mins = minsSrc;
+			maxs = new( MathF.Min( 0, maxsSrc.x ), MathF.Min( 0, maxsSrc.y ), maxsSrc.z );
+
+			pm = TraceBBox( start, end, mins, maxs );
+			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
+			{
+				pm.Fraction = fraction;
+				pm.EndPos = endpos;
+				return pm;
+			}
+
+			// Check the +x, +y quadrant
+			maxs = maxsSrc;
+			mins = new( MathF.Max( 0, minsSrc.x ), MathF.Max( 0, minsSrc.y ), minsSrc.z );
+
+			pm = TraceBBox( start, end, mins, maxs );
+			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
+			{
+				pm.Fraction = fraction;
+				pm.EndPos = endpos;
+				return pm;
+			}
+
+			// Check the -x, +y quadrant
+			mins = new( minsSrc.x, MathF.Max( 0, minsSrc.y ), minsSrc.z );
+			maxs = new( MathF.Min( 0, maxsSrc.x ), maxsSrc.y, maxsSrc.z );
+
+			pm = TraceBBox( start, end, mins, maxs );
+			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
+			{
+				pm.Fraction = fraction;
+				pm.EndPos = endpos;
+				return pm;
+			}
+
+			// Check the +x, -y quadrant
+			mins = new( MathF.Max( 0, minsSrc.x ), minsSrc.y, minsSrc.z );
+			maxs = new( maxsSrc.x, MathF.Min( 0, maxsSrc.y ), maxsSrc.z );
+
+			pm = TraceBBox( start, end, mins, maxs );
+			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
+			{
+				pm.Fraction = fraction;
+				pm.EndPos = endpos;
+				return pm;
+			}
+
+			pm.Fraction = fraction;
+			pm.EndPos = endpos;
+			return pm;
+		}
+
 
 		/// <summary>
 		/// We have a new ground entity
@@ -757,5 +896,157 @@ namespace Source1
 				}
 			}
 		}
+
+		public enum IntervalType
+		{
+			Ground,
+			Stuck,
+			Ladder
+		}
+
+		const float TICK_INTERVAL = 0.015f;
+
+		// Roughly how often we want to update the info about the ground surface we're on.
+		// We don't need to do this very often.
+		const float CATEGORIZE_GROUND_SURFACE_INTERVAL = 0.3f;
+		const int CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL = (int)(CATEGORIZE_GROUND_SURFACE_INTERVAL / TICK_INTERVAL);
+
+		const float CHECK_STUCK_INTERVAL = 1.0f;
+		const int CHECK_STUCK_TICK_INTERVAL = (int)(CHECK_STUCK_INTERVAL / TICK_INTERVAL);
+
+		const float CHECK_LADDER_INTERVAL = 0.2f;
+		const int CHECK_LADDER_TICK_INTERVAL = (int)(CHECK_LADDER_INTERVAL / TICK_INTERVAL);
+
+		public int GetCheckInterval( IntervalType type )
+		{
+			int tickInterval = 1;
+			switch ( type )
+			{
+				default:
+					tickInterval = 1;
+					break;
+
+				case IntervalType.Ground:
+					tickInterval = CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL;
+					break;
+
+				case IntervalType.Stuck:
+					// If we are in the process of being "stuck", then try a new position every command tick until m_StuckLast gets reset back down to zero
+					/*if ( player->m_StuckLast != 0 )
+					{
+						tickInterval = 1;
+					}
+					else*/
+					{
+						tickInterval = CHECK_STUCK_TICK_INTERVAL;
+					}
+					break;
+
+				case IntervalType.Ladder:
+					tickInterval = CHECK_LADDER_TICK_INTERVAL;
+					break;
+			}
+
+			return tickInterval;
+		}
+
+		public bool CheckInterval( IntervalType type )
+		{
+			int tickInterval = GetCheckInterval( type );
+			return (Time.Tick + Player.NetworkIdent) % tickInterval == 0;
+		}
+
+		public bool CheckStuck()
+		{
+			/*
+			Vector base;
+			Vector offset;
+			Vector test;
+			EntityHandle_t hitent;
+			int idx;
+			float fTime;
+			trace_t traceresult;
+
+			CreateStuckTable();
+
+			hitent = TestPlayerPosition( mv->GetAbsOrigin(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
+			if ( hitent == INVALID_ENTITY_HANDLE )
+			{
+				ResetStuckOffsets( player );
+				return 0;
+			}
+
+			// Deal with stuckness...
+# ifndef DEDICATED
+			if ( developer.GetBool() )
+			{
+				bool isServer = player->IsServer();
+				engine->Con_NPrintf( isServer, "%s stuck on object %i/%s",
+					isServer ? "server" : "client",
+					hitent.GetEntryIndex(), MoveHelper()->GetName( hitent ) );
+			}
+#endif
+
+			VectorCopy( mv->GetAbsOrigin(), base );
+
+			// 
+			// Deal with precision error in network.
+			// 
+			// World or BSP model
+			if ( !player->IsServer() )
+			{
+				if ( MoveHelper()->IsWorldEntity( hitent ) )
+				{
+					int nReps = 0;
+					ResetStuckOffsets( player );
+					do
+					{
+						GetRandomStuckOffsets( player, offset );
+						VectorAdd( base, offset, test );
+
+						if ( TestPlayerPosition( test, COLLISION_GROUP_PLAYER_MOVEMENT, traceresult ) == INVALID_ENTITY_HANDLE )
+						{
+							ResetStuckOffsets( player );
+							mv->SetAbsOrigin( test );
+							return 0;
+						}
+						nReps++;
+					} while ( nReps < 54 );
+				}
+			}
+
+			// Only an issue on the client.
+			idx = player->IsServer() ? 0 : 1;
+
+			fTime = engine->Time();
+			// Too soon?
+			if ( m_flStuckCheckTime[player->entindex()][idx] >= fTime - CHECKSTUCK_MINTIME )
+			{
+				return 1;
+			}
+			m_flStuckCheckTime[player->entindex()][idx] = fTime;
+
+			MoveHelper()->AddToTouched( traceresult, mv->m_vecVelocity );
+			GetRandomStuckOffsets( player, offset );
+			VectorAdd( base, offset, test );
+
+			if ( TestPlayerPosition( test, COLLISION_GROUP_PLAYER_MOVEMENT, traceresult ) == INVALID_ENTITY_HANDLE )
+			{
+				ResetStuckOffsets( player );
+				mv->SetAbsOrigin( test );
+				return 0;
+			}
+
+			return 1;*/
+			return false;
+		}
+
+		public virtual bool GameHasLadders() 
+		{
+			return true;
+		}
+
+		public virtual float LadderDistance => 2;
+		public virtual float ClimpSpeed => 200;
 	}
 }
