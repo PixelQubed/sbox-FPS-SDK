@@ -5,6 +5,8 @@ namespace Source1
 {
 	public partial class S1GameMovement
 	{
+		public float JumpTime { get; set; }
+
 		public virtual bool WishJump()
 		{
 			return Input.Pressed( InputButton.Jump );
@@ -94,6 +96,11 @@ namespace Source1
 			Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
 
 			return true;
+		}
+
+		public virtual void OnJump( float velocity )
+		{
+
 		}
 	}
 }

@@ -205,10 +205,68 @@ namespace Source1
 		{
 
 		}
-
-		public virtual void OnJump( float velocity )
+		public virtual void WalkMove()
 		{
+			var oldGround = GroundEntity;
 
+			WishVelocity = new Vector3( Input.Forward, Input.Left, 0 );
+			var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
+			WishVelocity *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
+
+			WishVelocity = WishVelocity.WithZ( 0 );
+			WishVelocity = WishVelocity.Normal * inSpeed;
+			WishVelocity *= GetWishSpeed();
+
+			var wishspeed = WishVelocity.Length;
+			var wishdir = WishVelocity.Normal;
+
+			if ( wishspeed != 0 && wishspeed > MaxSpeed )
+			{
+				WishVelocity *= MaxSpeed / wishspeed;
+				wishspeed = MaxSpeed;
+			}
+
+			Velocity = Velocity.WithZ( 0 );
+			Accelerate( wishdir, wishspeed, sv_accelerate );
+			Velocity = Velocity.WithZ( 0 );
+
+			Velocity += BaseVelocity;
+
+			if ( Velocity.Length < 1 )
+			{
+				Velocity = 0;
+				Velocity -= BaseVelocity;
+				return;
+			}
+
+			var dest = (Position + Velocity * Time.Delta).WithZ( Position.z );
+			var pm = TraceBBox( Position, dest );
+
+			if ( pm.Fraction == 1 )
+			{
+				Position = pm.EndPos;
+				Velocity -= BaseVelocity;
+				StayOnGround();
+				return;
+			}
+
+			if ( oldGround == null && Pawn.WaterLevel.Fraction == 0 )
+			{
+				Velocity -= BaseVelocity;
+				return;
+			}
+
+			/*// If we are jumping out of water, don't do anything more.
+			if ( player->m_flWaterJumpTime )
+			{
+				Velocity -= BaseVelocity;
+				return;
+			}*/
+
+			StepMove( dest );
+			Velocity -= BaseVelocity;
+
+			StayOnGround();
 		}
 	}
 }

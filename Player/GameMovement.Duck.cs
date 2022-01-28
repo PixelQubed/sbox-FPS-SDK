@@ -7,11 +7,16 @@ namespace Source1
 	{
 		[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
 
+		/// <summary>
+		/// Is the player currently in the process of duck transition (ducking or unducking)
+		/// </summary>
 		public bool IsDucking { get; set; }
+		/// <summary>
+		/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
+		/// </summary>
 		public bool IsDucked { get; set; }
 		public float DuckTime { get; set; }
 		public float DuckJumpTime { get; set; }
-		public float JumpTime { get; set; }
 		public bool InDuckJump { get; set; }
 
 		public virtual float GetDuckSpeed()
@@ -40,25 +45,25 @@ namespace Source1
 					// Have the duck button pressed, but the player currently isn't in the duck position.
 					if ( Input.Pressed( InputButton.Duck ) && !bInDuck && !bDuckJump && !bDuckJumpTime )
 					{
-						DuckTime = GAMEMOVEMENT_DUCK_TIME;
+						DuckTime = GameMovementDuckTime;
 						IsDucking = true;
 					}
 
 					// The player is in duck transition and not duck-jumping.
 					if ( IsDucking && !bDuckJump && !bDuckJumpTime )
 					{
-						float flDuckMilliseconds = MathF.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - DuckTime );
+						float flDuckMilliseconds = MathF.Max( 0.0f, GameMovementDuckTime - DuckTime );
 						float flDuckSeconds = flDuckMilliseconds * 0.001f;
 
 						// Finish in duck transition when transition time is over, in "duck", in air.
-						if ( (flDuckSeconds > TIME_TO_DUCK) || bInDuck || bInAir )
+						if ( (flDuckSeconds > TimeToDuck) || bInDuck || bInAir )
 						{
 							FinishDuck();
 						}
 						else
 						{
 							// Calc parametric time
-							float flDuckFraction = Easing.QuadraticInOut( flDuckSeconds / TIME_TO_DUCK );
+							float flDuckFraction = Easing.QuadraticInOut( flDuckSeconds / TimeToDuck );
 							SetDuckedEyeOffset( flDuckFraction );
 						}
 					}
@@ -79,7 +84,7 @@ namespace Source1
 								if ( CanUnDuckJump( out trace ) )
 								{
 									FinishUnDuckJump( trace );
-									DuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
+									DuckJumpTime = (GameMovementTimeToUnduck * (1.0f - trace.Fraction)) + GameMovementTickToUnduckInverse;
 								}
 							}
 						}
@@ -101,7 +106,7 @@ namespace Source1
 
 								if ( trace.Fraction < 1.0f )
 								{
-									DuckJumpTime = (GAMEMOVEMENT_TIME_TO_UNDUCK * (1.0f - trace.Fraction)) + GAMEMOVEMENT_TIME_TO_UNDUCK_INV;
+									DuckJumpTime = (GameMovementTimeToUnduck * (1.0f - trace.Fraction)) + GameMovementTickToUnduckInverse;
 								}
 							}
 						}
@@ -123,19 +128,19 @@ namespace Source1
 						{
 							if ( bInDuck && !bDuckJump )
 							{
-								DuckTime = GAMEMOVEMENT_DUCK_TIME;
+								DuckTime = GameMovementDuckTime;
 							}
 							else if ( IsDucking && !IsDucked )
 							{
 								// Invert time if release before fully ducked!!!
-								float unduckMilliseconds = 1000.0f * TIME_TO_UNDUCK;
-								float duckMilliseconds = 1000.0f * TIME_TO_DUCK;
-								float elapsedMilliseconds = GAMEMOVEMENT_DUCK_TIME - DuckTime;
+								float unduckMilliseconds = 1000.0f * TimeToUnduck;
+								float duckMilliseconds = 1000.0f * TimeToDuck;
+								float elapsedMilliseconds = GameMovementDuckTime - DuckTime;
 
 								float fracDucked = elapsedMilliseconds / duckMilliseconds;
 								float remainingUnduckMilliseconds = fracDucked * unduckMilliseconds;
 
-								DuckTime = GAMEMOVEMENT_DUCK_TIME - unduckMilliseconds + remainingUnduckMilliseconds;
+								DuckTime = GameMovementDuckTime - unduckMilliseconds + remainingUnduckMilliseconds;
 							}
 						}
 
@@ -145,18 +150,18 @@ namespace Source1
 							// or unducking
 							if ( (IsDucking || IsDucked) )
 							{
-								float flDuckMilliseconds = Math.Max( 0.0f, GAMEMOVEMENT_DUCK_TIME - DuckTime );
+								float flDuckMilliseconds = Math.Max( 0.0f, GameMovementDuckTime - DuckTime );
 								float flDuckSeconds = flDuckMilliseconds * 0.001f;
 
 								// Finish ducking immediately if duck time is over or not on ground
-								if ( flDuckSeconds > TIME_TO_UNDUCK || (bInAir && !bDuckJump) )
+								if ( flDuckSeconds > TimeToUnduck || (bInAir && !bDuckJump) )
 								{
 									FinishUnDuck();
 								}
 								else
 								{
 									// Calc parametric time
-									float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
+									float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TimeToUnduck) );
 									SetDuckedEyeOffset( flDuckFraction );
 									IsDucking = true;
 								}
@@ -166,10 +171,10 @@ namespace Source1
 						{
 							// Still under something where we can't unduck, so make sure we reset this timer so
 							// that we'll unduck once we exit the tunnel, etc.
-							if ( DuckTime != GAMEMOVEMENT_DUCK_TIME )
+							if ( DuckTime != GameMovementDuckTime )
 							{
 								SetDuckedEyeOffset( 1.0f );
-								DuckTime = GAMEMOVEMENT_DUCK_TIME;
+								DuckTime = GameMovementDuckTime;
 								IsDucked = true;
 								IsDucking = false;
 								Pawn.Tags.Add( PlayerTags.Ducked );
@@ -192,25 +197,30 @@ namespace Source1
 
 			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) SetTag( PlayerTags.Ducked );
 
-			if ( sv_debug_duck && Host.IsServer ) 
+			ShowDuckDebug();
+		}
+
+		protected void ShowDuckDebug()
+		{
+			if ( sv_debug_duck && Host.IsServer )
 			{
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
-				DebugOverlay.ScreenText( 1, $"m_bDucking          {IsDucking}" );
-				DebugOverlay.ScreenText( 2, $"m_bDucked           {IsDucked}" );
-				DebugOverlay.ScreenText( 3, $"m_flDucktime        {DuckTime}" );
-				DebugOverlay.ScreenText( 4, $"m_flDuckJumpTime    {DuckJumpTime}" );
-				DebugOverlay.ScreenText( 5, $"m_flJumpTime        {JumpTime}" );
-				DebugOverlay.ScreenText( 6, $"m_bInDuckJump       {InDuckJump}" );
-				DebugOverlay.ScreenText( 7, $"m_bAllowAutoMovement {Player.AllowAutoMovement}" );
+				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );
+				DebugOverlay.ScreenText( 2, $"IsDucked            {IsDucked}" );
+				DebugOverlay.ScreenText( 3, $"DuckTime            {DuckTime}" );
+				DebugOverlay.ScreenText( 4, $"DuckJumpTime        {DuckJumpTime}" );
+				DebugOverlay.ScreenText( 5, $"JumpTime            {JumpTime}" );
+				DebugOverlay.ScreenText( 6, $"InDuckJump          {InDuckJump}" );
+				DebugOverlay.ScreenText( 7, $"AllowAutoMovement:  {Player.AllowAutoMovement}" );
 				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );
 			}
 		}
 
-		public virtual float TIME_TO_DUCK => 0.2f;
-		public virtual float TIME_TO_UNDUCK => 0.2f;
-		public virtual float GAMEMOVEMENT_DUCK_TIME => 1000;
-		public virtual float GAMEMOVEMENT_TIME_TO_UNDUCK => TIME_TO_UNDUCK * 1000;
-		public virtual float GAMEMOVEMENT_TIME_TO_UNDUCK_INV => GAMEMOVEMENT_DUCK_TIME - GAMEMOVEMENT_TIME_TO_UNDUCK;
+		public virtual float TimeToDuck => 0.2f;
+		public virtual float TimeToUnduck => 0.2f;
+		public virtual float GameMovementDuckTime => 1000;
+		public virtual float GameMovementTimeToUnduck => TimeToUnduck * 1000;
+		public virtual float GameMovementTickToUnduckInverse => GameMovementDuckTime - GameMovementTimeToUnduck;
 
 
 		//-----------------------------------------------------------------------------
@@ -399,6 +409,25 @@ namespace Source1
 
 			// Recategorize position since ducking can change origin
 			CategorizePosition();
+		}
+
+		void UpdateDuckJumpEyeOffset()
+		{
+			if ( DuckJumpTime != 0.0f )
+			{
+				float flDuckMilliseconds = MathF.Max( 0.0f, DuckTime - DuckJumpTime );
+				float flDuckSeconds = flDuckMilliseconds / GameMovementDuckTime;
+				if ( flDuckSeconds > TimeToUnduck )
+				{
+					DuckJumpTime = 0.0f;
+					SetDuckedEyeOffset( 0.0f );
+				}
+				else
+				{
+					float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TimeToUnduck) );
+					SetDuckedEyeOffset( flDuckFraction );
+				}
+			}
 		}
 	}
 }

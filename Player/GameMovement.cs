@@ -44,7 +44,6 @@ namespace Source1
 
 		public virtual void PlayerMove()
 		{
-			CheckParameters();
 			ReduceTimers();
 
 			EyeRot = Input.Rotation;
@@ -130,8 +129,6 @@ namespace Source1
 			}
 		}
 
-		float SwimSoundTime;
-
 		public virtual void ReduceTimers()
 		{
 			float frame_msec = 1000.0f * Time.Delta;
@@ -155,69 +152,6 @@ namespace Source1
 			}
 		}
 
-		public virtual void WalkMove()
-		{
-			var oldGround = GroundEntity;
-
-			WishVelocity = new Vector3( Input.Forward, Input.Left, 0 );
-			var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
-			WishVelocity *= Input.Rotation.Angles().WithPitch( 0 ).ToRotation();
-
-			WishVelocity = WishVelocity.WithZ( 0 );
-			WishVelocity = WishVelocity.Normal * inSpeed;
-			WishVelocity *= GetWishSpeed();
-
-			var wishspeed = WishVelocity.Length;
-			var wishdir = WishVelocity.Normal;
-
-			if ( wishspeed != 0 && wishspeed > MaxSpeed )
-			{
-				WishVelocity *= MaxSpeed / wishspeed;
-				wishspeed = MaxSpeed;
-			}
-
-			Velocity = Velocity.WithZ( 0 );
-			Accelerate( wishdir, wishspeed, sv_accelerate );
-			Velocity = Velocity.WithZ( 0 );
-
-			Velocity += BaseVelocity;
-
-			if ( Velocity.Length < 1 )
-			{
-				Velocity = 0;
-				Velocity -= BaseVelocity;
-				return;
-			}
-
-			var dest = (Position + Velocity * Time.Delta).WithZ( Position.z );
-			var pm = TraceBBox( Position, dest );
-
-			if ( pm.Fraction == 1 )
-			{
-				Position = pm.EndPos;
-				Velocity -= BaseVelocity;
-				StayOnGround();
-				return;
-			}
-
-			if ( oldGround == null && Pawn.WaterLevel.Fraction == 0 )
-			{
-				Velocity -= BaseVelocity;
-				return;
-			}
-
-			/*// If we are jumping out of water, don't do anything more.
-			if ( player->m_flWaterJumpTime )
-			{
-				Velocity -= BaseVelocity;
-				return;
-			}*/
-
-			StepMove( dest );
-			Velocity -= BaseVelocity;
-
-			StayOnGround();
-		}
 
 		public virtual void StepMove( Vector3 dest )
 		{
@@ -391,7 +325,6 @@ namespace Source1
 					{
 						ClearGroundEntity();
 
-						// probably want to add a check for a +z velocity too!
 						if ( Velocity.z > 0 && Player.MoveType != MoveType.MOVETYPE_NOCLIP ) 
 						{
 							SurfaceFriction = 0.25f;
@@ -417,7 +350,6 @@ namespace Source1
 
 			float fraction = pm.Fraction;
 			Vector3 endpos = pm.EndPos;
-
 
 			// Check the -x, -y quadrant
 			mins = minsSrc;
@@ -500,7 +432,6 @@ namespace Source1
 			GroundEntity = newGround;
 
 			// If we are on something...
-
 			if ( newGround != null ) 
 			{
 				CategorizeGroundSurface( tr );
@@ -618,116 +549,9 @@ namespace Source1
 			);
 		}
 
-		//-----------------------------------------------------------------------------
-		// Purpose: 
-		//-----------------------------------------------------------------------------
-		void CheckParameters()
-		{
-			/*
-			Rotation v_angle;
-
-			if ( Pawn.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
-				 Pawn.MoveType != MoveType.MOVETYPE_NOCLIP &&
-				 Pawn.MoveType != MoveType.MOVETYPE_OBSERVER )
-			{
-				float spd;
-				float maxspeed;
-
-				spd = (Input.Forward * Input.Forward) +
-					  (Input.Left * Input.Left) +
-					  (Input.Up * Input.Up);
-
-				// Slow down by the speed factor
-				float flSpeedFactor = 1.0f;
-				// if ( player->m_pSurfaceData )
-				// {
-					// flSpeedFactor = player->m_pSurfaceData->game.maxSpeedFactor;
-				// }
-
-				// If we have a constraint, slow down because of that too.
-				float flConstraintSpeedFactor = ComputeConstraintSpeedFactor();
-
-				MaxSpeed *= flSpeedFactor;
-
-				// Same thing but only do the sqrt if we have to.
-				if ( (spd != 0.0) && (spd > MaxSpeed * MaxSpeed) )
-				{
-					float fRatio = MaxSpeed / MathF.Sqrt( spd );
-					Input.Forward *= fRatio;
-					Input.Left *= fRatio;
-					Input.Up *= fRatio;
-				}
-			}
-
-			/* if ( player->GetFlags() & FL_FROZEN ||
-				 player->GetFlags() & FL_ONTRAIN ||
-				 IsDead() )
-			{
-				mv->m_flForwardMove = 0;
-				mv->m_flSideMove = 0;
-				mv->m_flUpMove = 0;
-			}*/
-
-			// DecayPunchAngle();
-
-			/*
-			// Take angles from command.
-			if ( !IsDead() )
-			{
-				v_angle = Input.Rotation;
-				v_angle = v_angle + player->m_Local.m_vecPunchAngle;
-
-				// Now adjust roll angle
-				if ( player->GetMoveType() != MOVETYPE_ISOMETRIC &&
-					 player->GetMoveType() != MOVETYPE_NOCLIP )
-				{
-					mv->m_vecAngles[ROLL] = CalcRoll( v_angle, mv->m_vecVelocity, sv_rollangle.GetFloat(), sv_rollspeed.GetFloat() );
-				}
-				else
-				{
-					mv->m_vecAngles[ROLL] = 0.0; // v_angle[ ROLL ];
-				}
-				mv->m_vecAngles[PITCH] = v_angle[PITCH];
-				mv->m_vecAngles[YAW] = v_angle[YAW];
-			}
-			else
-			{
-				mv->m_vecAngles = mv->m_vecOldAngles;
-			}*/
-
-			// Set dead player view_offset
-			if ( IsDead() )
-			{
-				// SetViewOffset()
-				// player->SetViewOffset( VEC_DEAD_VIEWHEIGHT_SCALED( player ) );
-			}
-		}
-
 		public bool IsGrounded()
 		{
 			return GroundEntity != null;
-		}
-
-		//-----------------------------------------------------------------------------
-		// 
-		//-----------------------------------------------------------------------------
-		void UpdateDuckJumpEyeOffset()
-		{
-			if ( DuckJumpTime != 0.0f )
-			{
-				float flDuckMilliseconds = MathF.Max( 0.0f, DuckTime - DuckJumpTime );
-				float flDuckSeconds = flDuckMilliseconds / GAMEMOVEMENT_DUCK_TIME;
-				if ( flDuckSeconds > TIME_TO_UNDUCK )
-				{
-					DuckJumpTime = 0.0f;
-					SetDuckedEyeOffset( 0.0f );
-				}
-				else
-				{
-					float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TIME_TO_UNDUCK) );
-					SetDuckedEyeOffset( flDuckFraction );
-				}
-			}
 		}
 
 		public enum IntervalType
@@ -737,18 +561,18 @@ namespace Source1
 			Ladder
 		}
 
-		const float TICK_INTERVAL = 0.015f;
+		float TickInterval => 0.015f;
 
 		// Roughly how often we want to update the info about the ground surface we're on.
 		// We don't need to do this very often.
-		const float CATEGORIZE_GROUND_SURFACE_INTERVAL = 0.3f;
-		const int CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL = (int)(CATEGORIZE_GROUND_SURFACE_INTERVAL / TICK_INTERVAL);
+		float CategorizeGroundSurfaceInterval => 0.3f;
+		int CategrizeGroundSurfaceTickInterval => (int)(CategorizeGroundSurfaceInterval / TickInterval);
 
-		const float CHECK_STUCK_INTERVAL = 1.0f;
-		const int CHECK_STUCK_TICK_INTERVAL = (int)(CHECK_STUCK_INTERVAL / TICK_INTERVAL);
+		float CheckStuckInterval => 1;
+		int CheckStuckTickInterval => (int)(CheckStuckInterval / TickInterval);
 
-		const float CHECK_LADDER_INTERVAL = 0.2f;
-		const int CHECK_LADDER_TICK_INTERVAL = (int)(CHECK_LADDER_INTERVAL / TICK_INTERVAL);
+		float CheckLadderInterval => 0.2f;
+		int CheckLadderTickInterval => (int)(CheckLadderInterval / TickInterval);
 
 		public int GetCheckInterval( IntervalType type )
 		{
@@ -760,7 +584,7 @@ namespace Source1
 					break;
 
 				case IntervalType.Ground:
-					tickInterval = CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL;
+					tickInterval = CategrizeGroundSurfaceTickInterval;
 					break;
 
 				case IntervalType.Stuck:
@@ -771,12 +595,12 @@ namespace Source1
 					}
 					else*/
 					{
-						tickInterval = CHECK_STUCK_TICK_INTERVAL;
+						tickInterval = CheckStuckTickInterval;
 					}
 					break;
 
 				case IntervalType.Ladder:
-					tickInterval = CHECK_LADDER_TICK_INTERVAL;
+					tickInterval = CheckLadderTickInterval;
 					break;
 			}
 
@@ -787,11 +611,6 @@ namespace Source1
 		{
 			int tickInterval = GetCheckInterval( type );
 			return (Time.Tick + Player.NetworkIdent) % tickInterval == 0;
-		}
-
-		public bool CheckStuck()
-		{
-			return false;
 		}
 	}
 }
