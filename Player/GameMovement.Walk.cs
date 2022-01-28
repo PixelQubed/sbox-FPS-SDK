@@ -111,10 +111,6 @@ namespace Source1
 		public virtual float PLAYER_FALL_PUNCH_THRESHOLD => 350;
 		public virtual float DAMAGE_FOR_FALL_SPEED => 100.0f / (PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED);
 
-		//-----------------------------------------------------------------------------
-		// Purpose: Determine if the player has hit the ground while falling, apply
-		//			damage, and play the appropriate impact sound.
-		//-----------------------------------------------------------------------------
 		void CheckFalling()
 		{
 			// this function really deals with landing, not falling, so early out otherwise

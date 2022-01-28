@@ -37,7 +37,7 @@ namespace Source1
 
 
 			// If we are in the water most of the way...
-			if ( IsSwimming )
+			/*if ( IsSwimming )
 			{
 				// swimming, not jumping
 				ClearGroundEntity();
@@ -54,7 +54,7 @@ namespace Source1
 				}
 
 				return false;
-			}
+			}*/
 
 			// Can't just if we're not grounded
 			if ( GroundEntity == null )
@@ -87,18 +87,11 @@ namespace Source1
 
 			float startz = Velocity.z;
 
-			// if ( Duck.IsActive )
-			// flMul *= 0.8f;
+			if ( IsDucked ) ;
+				flMul *= 0.8f;
 
 			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
-
 			Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
-
-			// mv->m_outJumpVel.z += mv->m_vecVelocity[2] - startz;
-			// mv->m_outStepHeight += 0.15f;
-
-			// don't jump again until released
-			//mv->m_nOldButtons |= IN_JUMP;
 
 			return true;
 		}

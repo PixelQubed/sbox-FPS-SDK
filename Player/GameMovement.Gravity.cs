@@ -7,9 +7,6 @@ namespace Source1
 	{
 		public virtual void StartGravity()
 		{
-			// Add gravity so they'll be in the correct position during movement
-			// yes, this 0.5 looks wrong, but it's not.  
-
 			Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
 			Velocity += new Vector3( 0, 0, BaseVelocity.z ) * Time.Delta;
 
@@ -33,9 +30,6 @@ namespace Source1
 			return GroundEntity == null;
 		}
 
-		//-----------------------------------------------------------------------------
-		// Purpose: 
-		//-----------------------------------------------------------------------------
 		void CheckVelocity()
 		{
 			if ( Velocity.x > sv_maxvelocity ) Velocity = Velocity.WithX( sv_maxvelocity );

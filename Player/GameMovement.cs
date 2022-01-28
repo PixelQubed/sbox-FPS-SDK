@@ -8,8 +8,6 @@ namespace Source1
 		S1Player Player { get; set; }
 		protected float MaxSpeed { get; set; }
 		protected float SurfaceFriction { get; set; }
-		bool IsSwimming { get; set; }
-		Vector3 LadderNormal { get; set; }
 
 
 		public override void FrameSimulate()
@@ -87,7 +85,7 @@ namespace Source1
 			UpdateDuckJumpEyeOffset();
 			Duck();
 
-			// Don't run ladder code if dead or on a train
+			/*// Don't run ladder code if dead or on a train
 			if ( !IsDead() ) 
 			{
 				if ( !LadderMove() && Player.MoveType == MoveType.MOVETYPE_LADDER ) ;
@@ -96,7 +94,7 @@ namespace Source1
 					// It will be reset immediately again next frame if necessary
 					Player.MoveType = MoveType.MOVETYPE_WALK;
 				}
-			}
+			}*/
 
 			switch (Pawn.MoveType)
 			{
@@ -154,12 +152,6 @@ namespace Source1
 			{
 				JumpTime -= frame_msec;
 				if ( JumpTime < 0 ) JumpTime = 0;
-			}
-
-			if ( SwimSoundTime > 0 )
-			{
-				SwimSoundTime -= frame_msec;
-				if ( SwimSoundTime < 0 ) SwimSoundTime = 0;
 			}
 		}
 
@@ -290,7 +282,6 @@ namespace Source1
 				accelspeed = addspeed;
 
 			Velocity += wishdir * accelspeed;
-			// DebugOverlay.Line( Position, Position + Velocity * 100, Color.Yellow, 0 );
 		}
 
 		/// <summary>
@@ -302,8 +293,6 @@ namespace Source1
 			//if ( player->m_flWaterJumpTime )
 			//   return;
 
-			// Not on ground - no friction
-
 			// Calculate speed
 			var speed = Velocity.Length;
 			if ( speed < 0.1f ) return;
@@ -314,7 +303,7 @@ namespace Source1
 				friction = sv_friction * SurfaceFriction;
 
 				// Bleed off some speed, but if we have less than the bleed
-				//  threshold, bleed the threshold amount.
+				// threshold, bleed the threshold amount.
 				control = (speed < sv_stopspeed) ? sv_stopspeed : speed;
 
 				// Add the amount to the drop amount.
@@ -330,8 +319,6 @@ namespace Source1
 				newspeed /= speed;
 				Velocity *= newspeed;
 			}
-
-			// mv->m_outWishVel -= (1.f-newspeed) * mv->m_vecVelocity;
 		}
 
 		public virtual void AirMove()
@@ -360,134 +347,6 @@ namespace Source1
 			Velocity -= BaseVelocity;
 		}
 
-		public virtual bool LadderMove()
-		{
-			if ( Player.MoveType == MoveType.MOVETYPE_NOCLIP ) 
-				return false;
-
-			if ( !GameHasLadders() )
-				return false;
-
-			Vector3 wishdir;
-
-			var fmove = Input.Forward;
-			var smove = -Input.Left;
-
-			var forward = Input.Rotation.Forward;
-			var side = Input.Rotation.Right;
-
-			// If I'm already moving on a ladder, use the previous ladder direction
-			if ( Player.MoveType == MoveType.MOVETYPE_LADDER ) 
-			{
-				wishdir = -LadderNormal;
-			}
-			else
-			{
-				// otherwise, use the direction player is attempting to move
-				if ( forward != 0 || side != 0 ) 
-				{
-					wishdir = forward * fmove + side * smove;
-					wishdir = wishdir.Normal;
-				}
-				else
-				{
-					// Player is not attempting to move, no ladder behavior
-					return false;
-				}
-			}
-
-			// wishdir points toward the ladder if any exists
-			var end = VectorMA( Position, LadderDistance, wishdir );
-			var pm = TraceBBox( Position, end );
-
-			// no ladder in that direction, return
-			if ( pm.Fraction == 1.0f || !OnLadder( pm ) )
-				return false;
-
-			Player.MoveType = MoveType.MOVETYPE_LADDER;
-			LadderNormal = pm.Normal;
-
-			// On ladder, convert movement to be relative to the ladder
-
-			var floor = Position.WithZ( Position.z + GetPlayerMins().z - 1 );
-			var content = Physics.GetPointContents( floor );
-
-			bool onFloor = content.HasFlag( CollisionLayer.Solid ) || IsGrounded();
-
-			// player->SetGravity( 0 );
-
-			float forwardSpeed = 0, rightSpeed = 0;
-			if ( Input.Down( InputButton.Back ) ) 
-				forwardSpeed -= ClimpSpeed;
-
-			if ( Input.Down( InputButton.Forward ))
-				forwardSpeed += ClimpSpeed;
-
-			if ( Input.Down( InputButton.Left ) )
-				rightSpeed -= ClimpSpeed;
-
-			if ( Input.Down( InputButton.Right ) )
-				rightSpeed += ClimpSpeed;
-
-			if ( Input.Down( InputButton.Jump ) )
-			{
-				Player.MoveType = MoveType.MOVETYPE_WALK;
-
-				Velocity = pm.Normal * 270;
-			}
-			else
-			{
-				if ( forwardSpeed != 0 || rightSpeed != 0 )
-				{
-					Vector3 velocity, perp, cross, lateral, tmp;
-
-					//ALERT(at_console, "pev %.2f %.2f %.2f - ",
-					//	pev->velocity.x, pev->velocity.y, pev->velocity.z);
-					// Calculate player's intended velocity
-					//Vector velocity = (forward * gpGlobals->v_forward) + (right * gpGlobals->v_right);
-					velocity = forward * forwardSpeed;
-					velocity = VectorMA( velocity, rightSpeed, side );
-
-					// Perpendicular in the ladder plane
-					tmp = 0;
-					tmp[2] = 1;
-
-					perp = Vector3.Cross( tmp, pm.Normal );
-					perp = perp.Normal;
-
-					// decompose velocity into ladder plane
-					float normal = Vector3.Dot( velocity, pm.Normal );
-
-					// This is the velocity into the face of the ladder
-					cross = pm.Normal * normal;
-
-					// This is the player's additional velocity
-					lateral = velocity - cross;
-
-					// This turns the velocity into the face of the ladder into velocity that
-					// is roughly vertically perpendicular to the face of the ladder.
-					// NOTE: It IS possible to face up and move down or face down and move up
-					// because the velocity is a sum of the directional velocity and the converted
-					// velocity through the face of the ladder -- by design.
-					tmp = Vector3.Cross( pm.Normal, perp );
-
-					Velocity = VectorMA( lateral, -normal, tmp );
-
-					if ( onFloor && normal > 0 )    // On ground moving away from the ladder
-					{
-						Velocity = VectorMA( Velocity, ClimpSpeed, pm.Normal );
-					}
-					//pev->velocity = lateral - (CrossProduct( trace.vecPlaneNormal, perp ) * normal);
-				}
-				else
-				{
-					Velocity = 0;
-				}
-			}
-
-			return true;
-		}
-
 		public virtual bool OnLadder( TraceResult trace )
 		{
 			var content = Physics.GetPointContents( trace.EndPos );
@@ -498,12 +357,7 @@ namespace Source1
 		{
 			SurfaceFriction = 1.0f;
 
-			// Doing this before we move may introduce a potential latency in water detection, but
-			// doing it after can get us stuck on the bottom in water if the amount we move up
-			// is less than the 1 pixel 'threshold' we're about to snap to.	Also, we'll call
-			// this several times per frame, so we really need to avoid sticking to the bottom of
-			// water on each call, and the converse case will correct itself if called twice.
-			//CheckWater();
+			// CheckWater();
 
 			var point = Position - Vector3.Up * 2;
 			var bumpOrigin = Position;
@@ -530,8 +384,6 @@ namespace Source1
 			else
 			{
 				var pm = TraceBBox( bumpOrigin, point );
-				Log.Info( Vector3.GetAngle( Vector3.Up, pm.Normal ) );
-
 				if ( pm.Entity == null || Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle ) 
 				{
 					pm = TryTouchGroundInQuadrants( bumpOrigin, point, pm );
@@ -554,18 +406,9 @@ namespace Source1
 				}
 			}
 		}
-		//-----------------------------------------------------------------------------
-		// Traces the player's collision bounds in quadrants, looking for a plane that
-		// can be stood upon (normal's z >= 0.7f).  Regardless of success or failure,
-		// replace the fraction and endpos with the original ones, so we don't try to
-		// move the player down to the new floor and get stuck on a leaning wall that
-		// the original trace hit first.
-		//-----------------------------------------------------------------------------
+
 		public TraceResult TryTouchGroundInQuadrants( Vector3 start, Vector3 end, TraceResult pm )
 		{
-			// VPROF( "CGameMovement::TryTouchGroundInQuadrants" );
-
-			// TODO: 
 			bool isDucked = false;
 
 			Vector3 mins, maxs;
@@ -665,12 +508,6 @@ namespace Source1
 				// Then we are not in water jump sequence
 				// player->m_flWaterJumpTime = 0;
 
-				// Standing on an entity other than the world, so signal that we are touching something.
-				/*if ( !pm->DidHitWorld() )
-				{
-					MoveHelper()->AddToTouched( *pm, mv->m_vecVelocity );
-				}*/
-
 				Velocity = Velocity.WithZ( 0 );
 			}
 		}
@@ -706,10 +543,6 @@ namespace Source1
 			if ( trace.Fraction >= 1 ) return;
 			if ( trace.StartedSolid ) return;
 			if ( Vector3.GetAngle( Vector3.Up, trace.Normal ) > sv_maxstandableangle ) return;
-
-			// This is incredibly hacky. The real problem is that trace returning that strange value we can't network over.
-			// float flDelta = fabs( mv->GetAbsOrigin().z - trace.m_vEndPos.z );
-			// if ( flDelta > 0.5f * DIST_EPSILON )
 
 			Position = trace.EndPos;
 		}
@@ -958,95 +791,7 @@ namespace Source1
 
 		public bool CheckStuck()
 		{
-			/*
-			Vector base;
-			Vector offset;
-			Vector test;
-			EntityHandle_t hitent;
-			int idx;
-			float fTime;
-			trace_t traceresult;
-
-			CreateStuckTable();
-
-			hitent = TestPlayerPosition( mv->GetAbsOrigin(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
-			if ( hitent == INVALID_ENTITY_HANDLE )
-			{
-				ResetStuckOffsets( player );
-				return 0;
-			}
-
-			// Deal with stuckness...
-# ifndef DEDICATED
-			if ( developer.GetBool() )
-			{
-				bool isServer = player->IsServer();
-				engine->Con_NPrintf( isServer, "%s stuck on object %i/%s",
-					isServer ? "server" : "client",
-					hitent.GetEntryIndex(), MoveHelper()->GetName( hitent ) );
-			}
-#endif
-
-			VectorCopy( mv->GetAbsOrigin(), base );
-
-			// 
-			// Deal with precision error in network.
-			// 
-			// World or BSP model
-			if ( !player->IsServer() )
-			{
-				if ( MoveHelper()->IsWorldEntity( hitent ) )
-				{
-					int nReps = 0;
-					ResetStuckOffsets( player );
-					do
-					{
-						GetRandomStuckOffsets( player, offset );
-						VectorAdd( base, offset, test );
-
-						if ( TestPlayerPosition( test, COLLISION_GROUP_PLAYER_MOVEMENT, traceresult ) == INVALID_ENTITY_HANDLE )
-						{
-							ResetStuckOffsets( player );
-							mv->SetAbsOrigin( test );
-							return 0;
-						}
-						nReps++;
-					} while ( nReps < 54 );
-				}
-			}
-
-			// Only an issue on the client.
-			idx = player->IsServer() ? 0 : 1;
-
-			fTime = engine->Time();
-			// Too soon?
-			if ( m_flStuckCheckTime[player->entindex()][idx] >= fTime - CHECKSTUCK_MINTIME )
-			{
-				return 1;
-			}
-			m_flStuckCheckTime[player->entindex()][idx] = fTime;
-
-			MoveHelper()->AddToTouched( traceresult, mv->m_vecVelocity );
-			GetRandomStuckOffsets( player, offset );
-			VectorAdd( base, offset, test );
-
-			if ( TestPlayerPosition( test, COLLISION_GROUP_PLAYER_MOVEMENT, traceresult ) == INVALID_ENTITY_HANDLE )
-			{
-				ResetStuckOffsets( player );
-				mv->SetAbsOrigin( test );
-				return 0;
-			}
-
-			return 1;*/
 			return false;
 		}
-
-		public virtual bool GameHasLadders() 
-		{
-			return true;
-		}
-
-		public virtual float LadderDistance => 2;
-		public virtual float ClimpSpeed => 200;
 	}
 }

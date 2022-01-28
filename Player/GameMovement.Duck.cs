@@ -85,6 +85,7 @@ namespace Source1
 						}
 					}
 				}
+
 				// UNDUCK (or attempt to...)
 				else
 				{
@@ -138,7 +139,6 @@ namespace Source1
 							}
 						}
 
-
 						// Check to see if we are capable of unducking.
 						if ( CanUnduck() )
 						{
@@ -165,7 +165,7 @@ namespace Source1
 						else
 						{
 							// Still under something where we can't unduck, so make sure we reset this timer so
-							//  that we'll unduck once we exit the tunnel, etc.
+							// that we'll unduck once we exit the tunnel, etc.
 							if ( DuckTime != GAMEMOVEMENT_DUCK_TIME )
 							{
 								SetDuckedEyeOffset( 1.0f );
@@ -179,14 +179,6 @@ namespace Source1
 				}
 			}
 
-
-			// HACK: (jimd 5/25/2006) we have a reoccuring bug (#50063 in Tracker) where the player's
-			// view height gets left at the ducked height while the player is standing, but we haven't
-			// been  able to repro it to find the cause.  It may be fixed now due to a change I'm
-			// also making in UpdateDuckJumpEyeOffset but just in case, this code will sense the 
-			// problem and restore the eye to the proper position.  It doesn't smooth the transition,
-			// but it is preferable to leaving the player's view too low.
-			//
 			// If the player is still alive and not an observer, check to make sure that
 			// his view height is at the standing height.
 			else if ( !IsDead() /*&& !player->IsObserver() */ )
