@@ -31,6 +31,11 @@ namespace Source1
 				Player = newPlayer;
 			}
 
+			ProcessMovement();
+		}
+
+		public virtual void ProcessMovement()
+		{
 			if ( Player == null ) return;
 			MaxSpeed = Player.MaxSpeed;
 
