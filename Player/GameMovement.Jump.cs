@@ -89,7 +89,7 @@ namespace Source1
 
 			float startz = Velocity.z;
 
-			if ( IsDucked ) ;
+			if ( IsDucked )
 				flMul *= 0.8f;
 
 			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
