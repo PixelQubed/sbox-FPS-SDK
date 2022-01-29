@@ -3,7 +3,7 @@ using System;
 
 namespace Source1
 {
-	partial class S1GameMovement
+	partial class Source1GameMovement
 	{
 		[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
 

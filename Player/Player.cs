@@ -22,13 +22,13 @@ namespace Source1
 			CollisionGroup = CollisionGroup.Player;
 			EnableLagCompensation = true;
 
-			MaxSpeed = S1GameMovement.sv_maxspeed;
+			MaxSpeed = Source1GameMovement.sv_maxspeed;
 			AllowAutoMovement = true;
 		}
 
 		public virtual float GetMaxSpeed()
 		{
-			return S1GameMovement.sv_maxspeed;
+			return Source1GameMovement.sv_maxspeed;
 		}
 
 		public virtual float GetSensitivityMultiplier()

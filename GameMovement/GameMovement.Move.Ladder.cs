@@ -3,7 +3,8 @@ using System;
 
 namespace Source1
 {
-	partial class S1GameMovement
+	partial class Source1GameMovement
 	{
+		bool IsOnLadder { get; set; }
 	}
 }

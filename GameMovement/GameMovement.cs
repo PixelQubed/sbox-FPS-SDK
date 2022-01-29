@@ -3,7 +3,7 @@ using System;
 
 namespace Source1
 {
-	public partial class S1GameMovement : PawnController
+	public partial class Source1GameMovement : PawnController
 	{
 		Source1Player Player { get; set; }
 		protected float MaxSpeed { get; set; }
