@@ -30,9 +30,9 @@ namespace Source1
 			
             if ( IsJumpingFromWater )
             {
-                m_flWaterJumpTime -= Time.Delta;
-                if ( m_flWaterJumpTime < 0 )
-					m_flWaterJumpTime = 0;
+                WaterJumpTime -= Time.Delta;
+                if ( WaterJumpTime < 0 )
+					WaterJumpTime = 0;
 
                 return false;
             }
@@ -47,11 +47,10 @@ namespace Source1
 				Velocity = Velocity.WithZ( 100 );
 
 				// play swimming sound
-				// if ( player->m_flSwimSoundTime <= 0 )
+				if ( TimeSinceSwimSound > 1 )
 				{
-					// Don't play sound again for 1 second
-					//   player->m_flSwimSoundTime = 1000;
-					//   PlaySwimSound();
+					TimeSinceSwimSound = 0;
+					PlaySwimSound();
 				}
 
 				return false;

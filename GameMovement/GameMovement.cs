@@ -440,7 +440,7 @@ namespace Source1
 				CategorizeGroundSurface( tr );
 
 				// Then we are not in water jump sequence
-				m_flWaterJumpTime = 0;
+				WaterJumpTime = 0;
 
 				Velocity = Velocity.WithZ( 0 );
 			}
@@ -623,7 +623,7 @@ namespace Source1
 				DebugOverlay.ScreenText( 0, $"MoveType          {Player.MoveType}" );
 				DebugOverlay.ScreenText( 1, $"Water Level       {Player.WaterLevelType}" );
 				DebugOverlay.ScreenText( 2, $"Water Fraction    {Player.WaterLevel.Fraction}" );
-				DebugOverlay.ScreenText( 3, $"m_flWaterJumpTime {m_flWaterJumpTime}" );
+				DebugOverlay.ScreenText( 3, $"m_flWaterJumpTime {WaterJumpTime}" );
 				/*
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
 				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );

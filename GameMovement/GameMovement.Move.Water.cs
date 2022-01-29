@@ -13,9 +13,10 @@ namespace Source1
 
 	public partial class Source1GameMovement
 	{
-		float m_flWaterJumpTime { get; set; }
-		Vector3 m_vecWaterJumpVel { get; set; }
-		bool IsJumpingFromWater => m_flWaterJumpTime > 0;
+		float WaterJumpTime { get; set; }
+		Vector3 WaterJumpVelocity { get; set; }
+		bool IsJumpingFromWater => WaterJumpTime > 0;
+		TimeSince TimeSinceSwimSound { get; set; }
 
 		public virtual float WaterJumpHeight => 8;
 
@@ -55,7 +56,7 @@ namespace Source1
 			{
 				vecStart.z = Position.z + GetPlayerViewOffset().z + WaterJumpHeight;
 				vecEnd = VectorMA( vecStart, 24.0f, flatforward );
-				m_vecWaterJumpVel = VectorMA( 0, -50.0f, tr.Normal );
+				WaterJumpVelocity = VectorMA( 0, -50.0f, tr.Normal );
 
 				tr = TraceBBox( vecStart, vecEnd );
 				if ( tr.Fraction == 1.0 )       // open at eye level
@@ -69,7 +70,7 @@ namespace Source1
 					{
 						Velocity = Velocity.WithZ( 256 );
 						Player.Tags.Add( PlayerTags.WaterJump );
-						m_flWaterJumpTime = 2000.0f;
+						WaterJumpTime = 2000.0f;
 					}
 				}
 			}
@@ -77,21 +78,21 @@ namespace Source1
 
 		public virtual void WaterJump()
 		{
-			if ( m_flWaterJumpTime > 10000 )
-				m_flWaterJumpTime = 10000;
+			if ( WaterJumpTime > 10000 )
+				WaterJumpTime = 10000;
 
-			if ( m_flWaterJumpTime == 0 ) 
+			if ( WaterJumpTime == 0 ) 
 				return;
 
-			m_flWaterJumpTime -= 1000.0f * Time.Delta;
+			WaterJumpTime -= 1000.0f * Time.Delta;
 
-			if ( m_flWaterJumpTime <= 0 || Player.WaterLevelType == WaterLevelType.NotInWater ) 
+			if ( WaterJumpTime <= 0 || Player.WaterLevelType == WaterLevelType.NotInWater ) 
 			{
-				m_flWaterJumpTime = 0;
+				WaterJumpTime = 0;
 				Player.Tags.Remove( PlayerTags.WaterJump );
 			}
 
-			var velocity = m_vecWaterJumpVel.WithZ( Velocity.z );
+			var velocity = WaterJumpVelocity.WithZ( Velocity.z );
 			Velocity = velocity;
 		}
 
@@ -111,7 +112,6 @@ namespace Source1
 			{
 				Player.WaterLevelType = WaterLevelType.Feet;
 
-				Log.Info( $"{waterHeight} {eyeHeight}" );
 				if ( waterHeight > eyeHeight )
 				{
 					Player.WaterLevelType = WaterLevelType.Eyes;
@@ -246,6 +246,11 @@ namespace Source1
 			}
 
 			Velocity -= BaseVelocity;
+		}
+
+		public virtual void PlaySwimSound()
+		{
+			Sound.FromEntity( "player.footstep.wade", Player );
 		}
 	}
 }

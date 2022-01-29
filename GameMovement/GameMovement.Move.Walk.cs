@@ -35,7 +35,7 @@ namespace Source1
 				// If we are falling again, then we must not trying to jump out of water any more.
 				if ( Velocity.z < 0 && IsJumpingFromWater )
 				{
-					m_flWaterJumpTime = 0;
+					WaterJumpTime = 0;
 				}
 
 				// Was jump button pressed?
@@ -85,7 +85,7 @@ namespace Source1
 				CheckVelocity();
 
 				// Add any remaining gravitational component.
-				// if ( !CheckWater() )
+				if ( !CheckWater() )
 				{
 					FinishGravity();
 				}
@@ -98,7 +98,6 @@ namespace Source1
 
 				CheckFalling();
 			}
-
 		}
 
 		public virtual float PlayerFatalFallSpeed => 1024;
