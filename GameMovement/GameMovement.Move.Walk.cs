@@ -7,46 +7,41 @@ namespace Source1
 	{
 		public virtual void FullWalkMove()
 		{
-			// if ( !CheckWater() ) 
+			if ( !CheckWater() ) 
 			{
 				StartGravity();
 			}
 
 			// If we are leaping out of the water, just update the counters.
-			// if ( player->m_flWaterJumpTime )
-			// {
-			//		WaterJump();
-			//		TryPlayerMove();
-			//		See if we are still in water?
-			//		CheckWater();
-			//		return;
-			// }
+			if ( IsJumpingFromWater )
+			{
+				WaterJump();
+				TryPlayerMove();
+
+				CheckWater();
+				return;
+			}
 
 
 			// If we are swimming in the water, see if we are nudging against a place we can jump up out
 			//  of, and, if so, start out jump.  Otherwise, if we are not moving up, then reset jump timer to 0
-			/*if ( Pawn.WaterLevel.Fraction >= WL_Waist )
+			if ( Player.WaterLevelType >= WaterLevelType.Waist ) 
 			{
-				if ( player->GetWaterLevel() == WL_Waist )
+				if ( Player.WaterLevelType == WaterLevelType.Waist )
 				{
 					CheckWaterJump();
 				}
 
 				// If we are falling again, then we must not trying to jump out of water any more.
-				if ( mv->m_vecVelocity[2] < 0 &&
-					 player->m_flWaterJumpTime )
+				if ( Velocity.z < 0 && IsJumpingFromWater )
 				{
-					player->m_flWaterJumpTime = 0;
+					m_flWaterJumpTime = 0;
 				}
 
 				// Was jump button pressed?
-				if ( mv->m_nButtons & IN_JUMP )
-				{
-					CheckJumpButton();
-				}
-				else
-				{
-					mv->m_nOldButtons &= ~IN_JUMP;
+				if ( Input.Down( InputButton.Jump ) ) 
+				{ 
+					Jump();
 				}
 
 				// Perform regular water movement
@@ -56,10 +51,12 @@ namespace Source1
 				CategorizePosition();
 
 				// If we are on ground, no downward velocity.
-				if ( player->GetGroundEntity() != NULL )
+				if ( IsGrounded() )
 				{
-					mv->m_vecVelocity[2] = 0;
+					Velocity = Velocity.WithZ( 0 );
 				}
+
+				SetTag( "swimming" );
 			}
 			else
 			// Not fully underwater*/

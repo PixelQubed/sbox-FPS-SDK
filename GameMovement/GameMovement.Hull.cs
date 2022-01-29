@@ -35,10 +35,12 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckViewOffset
-				: GameRules.Instance.ViewVectors.ViewOffset
-				) * Pawn.Scale;
+			return Player.GetPlayerViewOffset( ducked ) * Pawn.Scale;
+		}
+
+		public virtual Vector3 GetPlayerViewOffset()
+		{
+			return GetPlayerMaxs( IsDucked );
 		}
 
 		public virtual void SetDuckedEyeOffset( float duckFraction )

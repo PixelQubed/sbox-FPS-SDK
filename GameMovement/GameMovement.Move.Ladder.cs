@@ -5,19 +5,18 @@ namespace Source1
 {
 	partial class Source1GameMovement
 	{
-		bool IsOnLadder { get; set; }
 		Vector3 LadderNormal { get; set; }
 		public virtual float LadderDistance => 2;
 		public virtual float ClimbSpeed => 200;
 
 		public virtual void FullLadderMove()
 		{
-			// CheckWater();
+			CheckWater();
 
 			if ( WishJump() ) Jump();
 
 			Velocity -= BaseVelocity;
-			Move();
+			TryPlayerMove();
 			Velocity += BaseVelocity;
 		}
 

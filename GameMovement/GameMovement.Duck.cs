@@ -198,24 +198,6 @@ namespace Source1
 			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) SetTag( PlayerTags.Ducked );
 		}
 
-		protected void ShowDebugOverlay()
-		{
-			if ( cl_debug_movement && Host.IsClient )
-			{
-				DebugOverlay.ScreenText( 0, $"MoveType  {Player.MoveType}" );
-				/*
-				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
-				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );
-				DebugOverlay.ScreenText( 2, $"IsDucked            {IsDucked}" );
-				DebugOverlay.ScreenText( 3, $"DuckTime            {DuckTime}" );
-				DebugOverlay.ScreenText( 4, $"DuckJumpTime        {DuckJumpTime}" );
-				DebugOverlay.ScreenText( 5, $"JumpTime            {JumpTime}" );
-				DebugOverlay.ScreenText( 6, $"InDuckJump          {InDuckJump}" );
-				DebugOverlay.ScreenText( 7, $"AllowAutoMovement:  {Player.AllowAutoMovement}" );
-				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );*/
-			}
-		}
-
 		public virtual float TimeToDuck => 0.2f;
 		public virtual float TimeToUnduck => 0.2f;
 		public virtual float GameMovementDuckTime => 1000;

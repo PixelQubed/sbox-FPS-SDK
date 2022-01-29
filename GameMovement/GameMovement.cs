@@ -12,6 +12,7 @@ namespace Source1
 
 		protected float ForwardMove { get; set; }
 		protected float SideMove { get; set; }
+		protected float UpMove { get; set; }
 
 
 		public override void FrameSimulate()
@@ -47,14 +48,14 @@ namespace Source1
 			var speed = GetWishSpeed();
 			ForwardMove = speed * Input.Forward;
 			SideMove = speed * -Input.Left;
+			UpMove = speed * Input.Up;
 
 			PlayerMove();
 		}
 
 
-		public bool GameCodeMovedPlayer;
-
-		protected float FallVelocity;
+		public bool GameCodeMovedPlayer { get; set; }
+		protected float FallVelocity { get; set; }
 
 		public virtual void PlayerMove()
 		{
@@ -92,8 +93,6 @@ namespace Source1
 			{
 				FallVelocity = -Velocity.z;
 			}
-
-			// OnLadder = 0;
 
 			UpdateDuckJumpEyeOffset();
 			Duck();
@@ -178,7 +177,7 @@ namespace Source1
 			Velocity = mover.Velocity;
 		}
 
-		public virtual void Move()
+		public virtual void TryPlayerMove()
 		{
 			MoveHelper mover = new MoveHelper( Position, Velocity );
 			mover.Trace = mover.Trace.Size( GetPlayerMins(), GetPlayerMaxs() ).Ignore( Pawn );
@@ -290,7 +289,7 @@ namespace Source1
 			Accelerate( wishdir, wishspeed, sv_airaccelerate, sv_aircontrol );
 
 			Velocity += BaseVelocity;
-			Move();
+			TryPlayerMove();
 			Velocity -= BaseVelocity;
 		}
 
@@ -618,6 +617,26 @@ namespace Source1
 		{
 			int tickInterval = GetCheckInterval( type );
 			return (Time.Tick + Player.NetworkIdent) % tickInterval == 0;
+		}
+
+		protected void ShowDebugOverlay()
+		{
+			if ( cl_debug_movement && Host.IsClient )
+			{
+				DebugOverlay.ScreenText( 0, $"MoveType       {Player.MoveType}" );
+				DebugOverlay.ScreenText( 1, $"Water Level    {Player.WaterLevelType}" );
+				DebugOverlay.ScreenText( 2, $"Water Fraction {Player.WaterLevel.Fraction}" );
+				/*
+				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
+				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );
+				DebugOverlay.ScreenText( 2, $"IsDucked            {IsDucked}" );
+				DebugOverlay.ScreenText( 3, $"DuckTime            {DuckTime}" );
+				DebugOverlay.ScreenText( 4, $"DuckJumpTime        {DuckJumpTime}" );
+				DebugOverlay.ScreenText( 5, $"JumpTime            {JumpTime}" );
+				DebugOverlay.ScreenText( 6, $"InDuckJump          {InDuckJump}" );
+				DebugOverlay.ScreenText( 7, $"AllowAutoMovement:  {Player.AllowAutoMovement}" );
+				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );*/
+			}
 		}
 	}
 }

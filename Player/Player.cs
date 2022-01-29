@@ -14,6 +14,7 @@ namespace Source1
 		/// </summary>
 		public TimeSince TimeSinceTakeDamage { get; set; }
 		public virtual bool AllowAutoMovement { get; set; } = true;
+		public virtual WaterLevelType WaterLevelType { get; set; }
 		[Net] public float MaxSpeed { get; set; }
 
 		public override void Spawn()
@@ -41,6 +42,7 @@ namespace Source1
 		{
 			builder.AnalogLook *= GetSensitivityMultiplier();
 		}
+
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
 			var viewvectors = GameRules.Instance.ViewVectors;
@@ -72,5 +74,6 @@ namespace Source1
 	{
 		public const string Ducked = "ducked";
 		public const string Jumped = "jumped";
+		public const string WaterJump = "waterjump";
 	}
 }

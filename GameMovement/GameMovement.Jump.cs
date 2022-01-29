@@ -27,19 +27,18 @@ namespace Source1
 			if ( !CanJump() )
 				return false;
 
-			/*
-            if ( player->m_flWaterJumpTime )
+			
+            if ( IsJumpingFromWater )
             {
-                player->m_flWaterJumpTime -= gpGlobals->frametime();
-                if ( player->m_flWaterJumpTime < 0 )
-                    player->m_flWaterJumpTime = 0;
+                m_flWaterJumpTime -= Time.Delta;
+                if ( m_flWaterJumpTime < 0 )
+					m_flWaterJumpTime = 0;
 
                 return false;
-            }*/
+            }
 
 
-			// If we are in the water most of the way...
-			/*if ( IsSwimming )
+			if ( Player.WaterLevelType >= WaterLevelType.Waist ) 
 			{
 				// swimming, not jumping
 				ClearGroundEntity();
@@ -48,7 +47,7 @@ namespace Source1
 				Velocity = Velocity.WithZ( 100 );
 
 				// play swimming sound
-				//  if ( player->m_flSwimSoundTime <= 0 )
+				// if ( player->m_flSwimSoundTime <= 0 )
 				{
 					// Don't play sound again for 1 second
 					//   player->m_flSwimSoundTime = 1000;
@@ -56,7 +55,7 @@ namespace Source1
 				}
 
 				return false;
-			}*/
+			}
 
 			// Can't just if we're not grounded
 			if ( GroundEntity == null )
