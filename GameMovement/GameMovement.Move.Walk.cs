@@ -104,12 +104,12 @@ namespace Source1
 
 		}
 
-		public virtual float PLAYER_FATAL_FALL_SPEED => 1024;
-		public virtual float PLAYER_MAX_SAFE_FALL_SPEED => 580;
+		public virtual float PlayerFatalFallSpeed => 1024;
+		public virtual float PlayerMaxSafeFallSpeed => 580;
 		public virtual float PLAYER_LAND_ON_FLOATING_OBJECT => 200;
 		public virtual float PLAYER_MIN_BOUNCE_SPEED => 200;
 		public virtual float PLAYER_FALL_PUNCH_THRESHOLD => 350;
-		public virtual float DAMAGE_FOR_FALL_SPEED => 100.0f / (PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED);
+		public virtual float DAMAGE_FOR_FALL_SPEED => 100.0f / (PlayerFatalFallSpeed - PlayerMaxSafeFallSpeed);
 
 		public void CheckFalling()
 		{
@@ -143,7 +143,7 @@ namespace Source1
 						FallVelocity = MathF.Max( 0.1f, FallVelocity );
 					}
 
-					if ( FallVelocity > PLAYER_MAX_SAFE_FALL_SPEED )
+					if ( FallVelocity > PlayerMaxSafeFallSpeed )
 					{
 						//
 						// If they hit the ground going this fast they may take damage (and die).
@@ -151,7 +151,7 @@ namespace Source1
 						// bAlive = MoveHelper()->PlayerFallingDamage();
 						fvol = 1f;
 					}
-					else if ( FallVelocity > PLAYER_MAX_SAFE_FALL_SPEED / 2 )
+					else if ( FallVelocity > PlayerMaxSafeFallSpeed / 2 )
 					{
 						fvol = 0.85f;
 					}

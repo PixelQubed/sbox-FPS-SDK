@@ -3,7 +3,7 @@ using System;
 
 namespace Source1
 {
-	public partial class S1Player : Player
+	public partial class Source1Player : Player
 	{
 		/// <summary>
 		/// Whether the player is alive.
@@ -13,8 +13,8 @@ namespace Source1
 		/// Time since last damage taken, used by medigun.
 		/// </summary>
 		public TimeSince TimeSinceTakeDamage { get; set; }
-		[Net] public float MaxSpeed { get; set; }
 		public virtual bool AllowAutoMovement { get; set; } = true;
+		[Net] public float MaxSpeed { get; set; }
 
 		public override void Spawn()
 		{
@@ -23,6 +23,7 @@ namespace Source1
 			EnableLagCompensation = true;
 
 			MaxSpeed = S1GameMovement.sv_maxspeed;
+			AllowAutoMovement = true;
 		}
 
 		public virtual float GetMaxSpeed()
@@ -42,18 +43,14 @@ namespace Source1
 		}
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckHullMin
-				: GameRules.Instance.ViewVectors.HullMin
-				);
+			var viewvectors = GameRules.Instance.ViewVectors;
+			return (ducked ? viewvectors.DuckHullMin : viewvectors.HullMin);
 		}
 
 		public virtual Vector3 GetPlayerMaxs( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckHullMax
-				: GameRules.Instance.ViewVectors.HullMax
-				);
+			var viewvectors = GameRules.Instance.ViewVectors;
+			return (ducked ? viewvectors.DuckHullMax : viewvectors.HullMax);
 		}
 
 		public virtual Vector3 GetPlayerExtents( bool ducked )
@@ -66,10 +63,8 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
-			return (ducked
-				? GameRules.Instance.ViewVectors.DuckViewOffset
-				: GameRules.Instance.ViewVectors.ViewOffset
-				) * Scale;
+			var viewvectors = GameRules.Instance.ViewVectors;
+			return (ducked ? viewvectors.DuckViewOffset : viewvectors.ViewOffset) * Scale;
 		}
 	}
 

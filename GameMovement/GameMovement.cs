@@ -5,7 +5,7 @@ namespace Source1
 {
 	public partial class S1GameMovement : PawnController
 	{
-		S1Player Player { get; set; }
+		Source1Player Player { get; set; }
 		protected float MaxSpeed { get; set; }
 		protected float SurfaceFriction { get; set; }
 
@@ -17,7 +17,7 @@ namespace Source1
 			EyeRot = Input.Rotation;
 		}
 
-		public virtual void PawnChanged( S1Player player, S1Player prev )
+		public virtual void PawnChanged( Source1Player player, Source1Player prev )
 		{
 
 		}
@@ -26,7 +26,7 @@ namespace Source1
 		{
 			if ( Player != Pawn )
 			{
-				var newPlayer = Pawn as S1Player;
+				var newPlayer = Pawn as Source1Player;
 				PawnChanged( newPlayer, Player );
 				Player = newPlayer;
 			}
