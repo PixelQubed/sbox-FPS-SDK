@@ -59,7 +59,7 @@ namespace Source1
 				SetTag( "swimming" );
 			}
 			else
-			// Not fully underwater*/
+			// Not fully underwater
 			{
 				// Was jump button pressed?
 				if ( WishJump() ) Jump();
@@ -254,12 +254,12 @@ namespace Source1
 				return;
 			}
 
-			/*// If we are jumping out of water, don't do anything more.
-			if ( player->m_flWaterJumpTime )
+			// If we are jumping out of water, don't do anything more.
+			if ( IsJumpingFromWater )
 			{
 				Velocity -= BaseVelocity;
 				return;
-			}*/
+			}
 
 			StepMove( dest );
 			Velocity -= BaseVelocity;

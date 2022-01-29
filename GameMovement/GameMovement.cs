@@ -85,9 +85,6 @@ namespace Source1
 				ClearGroundEntity();
 			}
 
-			// Store off the starting water level
-			// m_nOldWaterLevel = player->GetWaterLevel();
-
 			// If we are not on ground, store off how fast we are moving down
 			if ( !IsGrounded() )
 			{
@@ -236,8 +233,8 @@ namespace Source1
 		public virtual void Friction()
 		{
 			// If we are in water jump cycle, don't apply friction
-			//if ( player->m_flWaterJumpTime )
-			//   return;
+			if ( IsJumpingFromWater ) 
+				return;
 
 			// Calculate speed
 			var speed = Velocity.Length;
@@ -443,7 +440,7 @@ namespace Source1
 				CategorizeGroundSurface( tr );
 
 				// Then we are not in water jump sequence
-				// player->m_flWaterJumpTime = 0;
+				m_flWaterJumpTime = 0;
 
 				Velocity = Velocity.WithZ( 0 );
 			}
@@ -623,9 +620,10 @@ namespace Source1
 		{
 			if ( cl_debug_movement && Host.IsClient )
 			{
-				DebugOverlay.ScreenText( 0, $"MoveType       {Player.MoveType}" );
-				DebugOverlay.ScreenText( 1, $"Water Level    {Player.WaterLevelType}" );
-				DebugOverlay.ScreenText( 2, $"Water Fraction {Player.WaterLevel.Fraction}" );
+				DebugOverlay.ScreenText( 0, $"MoveType          {Player.MoveType}" );
+				DebugOverlay.ScreenText( 1, $"Water Level       {Player.WaterLevelType}" );
+				DebugOverlay.ScreenText( 2, $"Water Fraction    {Player.WaterLevel.Fraction}" );
+				DebugOverlay.ScreenText( 3, $"m_flWaterJumpTime {m_flWaterJumpTime}" );
 				/*
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
 				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );

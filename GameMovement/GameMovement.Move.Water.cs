@@ -27,8 +27,6 @@ namespace Source1
 			if ( IsJumpingFromWater ) 
 				return;
 
-			Log.Info( "sus" );
-
 			// Don't hop out if we just jumped in
 			if ( Velocity.z < -180 ) 
 				return; // only hop out if we are moving up
@@ -38,16 +36,18 @@ namespace Source1
 
 			// Must be moving
 			var curspeed = flatvelocity.Length;
+			flatvelocity = flatvelocity.Normal;
 
 			// see if near an edge
 			var flatforward = forward.WithZ( 0 );
 			flatforward = flatforward.Normal;
 
 			// Are we backing into water from steps or something?  If so, don't pop forward
-			if ( curspeed != 0.0 && Vector3.Dot( flatvelocity, flatforward ) < 0 ) 
+			if ( curspeed != 0 && Vector3.Dot( flatvelocity, flatforward ) < 0 )
 				return;
 
 			var vecStart = Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
+			DebugOverlay.Sphere( vecStart, 10, Color.Red, false, 0 );
 			var vecEnd = VectorMA( vecStart, 24.0f, flatforward );
 
 			var tr = TraceBBox( vecStart, vecEnd );
@@ -65,7 +65,7 @@ namespace Source1
 					vecEnd.z -= 1024.0f;
 
 					tr = TraceBBox( vecStart, vecEnd );
-					if ( (tr.Fraction < 1.0f) && (Vector3.GetAngle( Vector3.Up, tr.Normal ) >= sv_maxstandableangle) ) 
+					if ( (tr.Fraction < 1.0f) && (tr.Normal.z >= 0.7) ) 
 					{
 						Velocity = Velocity.WithZ( 256 );
 						Player.Tags.Add( PlayerTags.WaterJump );
@@ -124,10 +124,8 @@ namespace Source1
 
 			return waterFraction >= 0.5f;
 		}
-		//-----------------------------------------------------------------------------
-		// Purpose: 
-		//-----------------------------------------------------------------------------
-		void WaterMove(  )
+
+		void WaterMove()
 		{
 			var forward = Input.Rotation.Forward;
 			var right = Input.Rotation.Right;

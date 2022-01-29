@@ -61,16 +61,8 @@ namespace Source1
 			if ( GroundEntity == null )
 				return false;
 
-			/*
-            if ( player->m_Local.m_bDucking && (player->GetFlags() & FL_DUCKING) )
+			if ( IsDucking && IsDucked ) 
                 return false;
-            */
-
-			/*
-            // Still updating the eye position.
-            if ( player->m_Local.m_nDuckJumpTimeMsecs > 0u )
-                return false;
-            */
 
 			ClearGroundEntity();
 
