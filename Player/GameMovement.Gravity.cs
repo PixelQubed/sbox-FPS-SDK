@@ -30,7 +30,7 @@ namespace Source1
 			return GroundEntity == null;
 		}
 
-		void CheckVelocity()
+		public void CheckVelocity()
 		{
 			if ( Velocity.x > sv_maxvelocity ) Velocity = Velocity.WithX( sv_maxvelocity );
 			if ( Velocity.x < -sv_maxvelocity ) Velocity = Velocity.WithX( -sv_maxvelocity );
