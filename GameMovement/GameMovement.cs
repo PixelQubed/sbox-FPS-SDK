@@ -10,6 +10,10 @@ namespace Source1
 		protected float SurfaceFriction { get; set; }
 
 
+		protected float ForwardMove { get; set; }
+		protected float SideMove { get; set; }
+
+
 		public override void FrameSimulate()
 		{
 			base.FrameSimulate();
@@ -32,12 +36,17 @@ namespace Source1
 			}
 
 			ProcessMovement();
+			ShowDebugOverlay();
 		}
 
 		public virtual void ProcessMovement()
 		{
 			if ( Player == null ) return;
 			MaxSpeed = Player.MaxSpeed;
+
+			var speed = GetWishSpeed();
+			ForwardMove = speed * Input.Forward;
+			SideMove = speed * -Input.Left;
 
 			PlayerMove();
 		}
@@ -88,17 +97,16 @@ namespace Source1
 
 			UpdateDuckJumpEyeOffset();
 			Duck();
-
-			/*// Don't run ladder code if dead or on a train
+			
 			if ( !IsDead() ) 
 			{
-				if ( !LadderMove() && Player.MoveType == MoveType.MOVETYPE_LADDER ) ;
+				if ( !LadderMove() && Player.MoveType == MoveType.MOVETYPE_LADDER )
 				{
 					// Clear ladder stuff unless player is dead or riding a train
 					// It will be reset immediately again next frame if necessary
 					Player.MoveType = MoveType.MOVETYPE_WALK;
 				}
-			}*/
+			}
 
 			switch (Pawn.MoveType)
 			{
@@ -115,7 +123,7 @@ namespace Source1
 					break;
 
 				case MoveType.MOVETYPE_LADDER:
-					// FullLadderMove();
+					FullLadderMove();
 					break;
 
 				case MoveType.MOVETYPE_WALK:
@@ -284,12 +292,6 @@ namespace Source1
 			Velocity += BaseVelocity;
 			Move();
 			Velocity -= BaseVelocity;
-		}
-
-		public virtual bool OnLadder( TraceResult trace )
-		{
-			var content = Physics.GetPointContents( trace.EndPos );
-			return content.HasFlag( CollisionLayer.LADDER );
 		}
 
 		public virtual void CategorizePosition()

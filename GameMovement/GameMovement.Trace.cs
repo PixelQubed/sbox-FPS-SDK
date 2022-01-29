@@ -16,9 +16,9 @@ namespace Source1
 		/// liftFeet will move the start position up by this amount, while keeping the top of the bbox at the same
 		/// position. This is good when tracing down because you won't be tracing through the ceiling above.
 		/// </summary>
-		public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, float liftFeet = 0.0f )
+		public virtual TraceResult TraceBBox( Vector3 start, Vector3 end )
 		{
-			return TraceBBox( start, end, GetPlayerMins(), GetPlayerMaxs(), liftFeet );
+			return TraceBBox( start, end, GetPlayerMins(), GetPlayerMaxs() );
 		}
 
 		/// <summary>
@@ -26,18 +26,16 @@ namespace Source1
 		/// LiftFeet will move the start position up by this amount, while keeping the top of the bbox at the same 
 		/// position. This is good when tracing down because you won't be tracing through the ceiling above.
 		/// </summary>
-		public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs, float liftFeet = 0.0f )
+		public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 		{
-			if ( liftFeet > 0 )
-			{
-				start += Vector3.Up * liftFeet;
-				maxs = maxs.WithZ( maxs.z - liftFeet );
-			}
-
 			var tr = SetupBBoxTrace( start + TraceOffset, end + TraceOffset, mins, maxs ).Run();
-
 			tr.EndPos -= TraceOffset;
 			return tr;
+		}
+
+		public virtual Trace SetupBBoxTrace( Vector3 start, Vector3 end )
+		{
+			return SetupBBoxTrace( start, end, GetPlayerMins(), GetPlayerMaxs() );
 		}
 
 		public virtual Trace SetupBBoxTrace( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
