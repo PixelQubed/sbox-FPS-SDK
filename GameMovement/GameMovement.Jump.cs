@@ -22,7 +22,7 @@ namespace Source1
 		/// Returns true if we succesfully made a jump.
 		/// </summary>
 		/// <returns></returns>
-		public virtual bool Jump()
+		public virtual bool CheckJumpButton()
 		{
 			if ( !CanJump() )
 				return false;

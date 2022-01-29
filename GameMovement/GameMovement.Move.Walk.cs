@@ -41,7 +41,7 @@ namespace Source1
 				// Was jump button pressed?
 				if ( Input.Down( InputButton.Jump ) ) 
 				{ 
-					Jump();
+					CheckJumpButton();
 				}
 
 				// Perform regular water movement
@@ -62,7 +62,7 @@ namespace Source1
 			// Not fully underwater
 			{
 				// Was jump button pressed?
-				if ( WishJump() ) Jump();
+				if ( WishJump() ) CheckJumpButton();
 
 				// Fricion is handled before we add in any base velocity. That way, if we are on a conveyor, 
 				// we don't slow when standing still, relative to the conveyor.

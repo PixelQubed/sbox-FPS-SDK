@@ -13,15 +13,15 @@ namespace Source1
 
 	public partial class Source1GameMovement
 	{
-		float WaterJumpTime { get; set; }
-		Vector3 WaterJumpVelocity { get; set; }
-		bool IsJumpingFromWater => WaterJumpTime > 0;
-		TimeSince TimeSinceSwimSound { get; set; }
-		WaterLevelType LastWaterLevelType { get; set; }
+		protected float WaterJumpTime { get; set; }
+		protected Vector3 WaterJumpVelocity { get; set; }
+		protected bool IsJumpingFromWater => WaterJumpTime > 0;
+		protected TimeSince TimeSinceSwimSound { get; set; }
+		protected WaterLevelType LastWaterLevelType { get; set; }
 
 		public virtual float WaterJumpHeight => 8;
 
-		void CheckWaterJump()
+		protected void CheckWaterJump()
 		{
 			var forward = Input.Rotation.Forward;
 
@@ -49,7 +49,6 @@ namespace Source1
 				return;
 
 			var vecStart = Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
-			DebugOverlay.Sphere( vecStart, 10, Color.Red, false, 0 );
 			var vecEnd = VectorMA( vecStart, 24.0f, flatforward );
 
 			var tr = TraceBBox( vecStart, vecEnd );
@@ -126,7 +125,7 @@ namespace Source1
 			return waterFraction >= 0.5f;
 		}
 
-		void WaterMove()
+		protected void WaterMove()
 		{
 			var forward = Input.Rotation.Forward;
 			var right = Input.Rotation.Right;
@@ -252,6 +251,11 @@ namespace Source1
 		public virtual void PlaySwimSound()
 		{
 			Sound.FromEntity( "player.footstep.wade", Player );
+		}
+
+		public bool InWater()
+		{
+			return Player.WaterLevelType > WaterLevelType.Feet;
 		}
 	}
 }

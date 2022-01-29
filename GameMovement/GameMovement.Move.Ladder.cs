@@ -13,7 +13,7 @@ namespace Source1
 		{
 			CheckWater();
 
-			if ( WishJump() ) Jump();
+			if ( WishJump() ) CheckJumpButton();
 
 			Velocity -= BaseVelocity;
 			TryPlayerMove();

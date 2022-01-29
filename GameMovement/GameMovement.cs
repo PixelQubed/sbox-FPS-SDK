@@ -295,8 +295,7 @@ namespace Source1
 		public virtual void CategorizePosition()
 		{
 			SurfaceFriction = 1.0f;
-
-			// CheckWater();
+			CheckWater();
 
 			var point = Position - Vector3.Up * 2;
 			var bumpOrigin = Position;
