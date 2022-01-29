@@ -98,6 +98,12 @@ namespace Source1
 
 				CheckFalling();
 			}
+
+			if ( (LastWaterLevelType == WaterLevelType.NotInWater && Player.WaterLevelType != WaterLevelType.NotInWater) ||
+				  (LastWaterLevelType != WaterLevelType.NotInWater && Player.WaterLevelType == WaterLevelType.NotInWater) )
+			{
+				PlaySwimSound();
+			}
 		}
 
 		public virtual float PlayerFatalFallSpeed => 1024;

@@ -85,6 +85,8 @@ namespace Source1
 				ClearGroundEntity();
 			}
 
+			LastWaterLevelType = Player.WaterLevelType;
+
 			// If we are not on ground, store off how fast we are moving down
 			if ( !IsGrounded() )
 			{

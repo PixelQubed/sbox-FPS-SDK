@@ -17,6 +17,7 @@ namespace Source1
 		Vector3 WaterJumpVelocity { get; set; }
 		bool IsJumpingFromWater => WaterJumpTime > 0;
 		TimeSince TimeSinceSwimSound { get; set; }
+		WaterLevelType LastWaterLevelType { get; set; }
 
 		public virtual float WaterJumpHeight => 8;
 
