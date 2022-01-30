@@ -124,13 +124,8 @@ namespace Source1
 					FullLadderMove();
 					break;
 
-				case MoveType.MOVETYPE_WALK:
-					FullWalkMove();
-					break;
-
 				case MoveType.MOVETYPE_ISOMETRIC:
-					//IsometricMove();
-					// Could also try:  FullTossMove();
+				case MoveType.MOVETYPE_WALK:
 					FullWalkMove();
 					break;
 

@@ -7,7 +7,7 @@ namespace Source1
 	{
 		public virtual void FullWalkMove()
 		{
-			if ( !CheckWater() ) 
+			if ( !InWater() )
 			{
 				StartGravity();
 			}
@@ -15,6 +15,7 @@ namespace Source1
 			// If we are leaping out of the water, just update the counters.
 			if ( IsJumpingFromWater )
 			{
+				// Try to jump out of the water (and check to see if we still are).
 				WaterJump();
 				TryPlayerMove();
 
@@ -22,88 +23,51 @@ namespace Source1
 				return;
 			}
 
-
 			// If we are swimming in the water, see if we are nudging against a place we can jump up out
-			//  of, and, if so, start out jump.  Otherwise, if we are not moving up, then reset jump timer to 0
-			if ( Player.WaterLevelType >= WaterLevelType.Waist ) 
+			//  of, and, if so, start out jump.  Otherwise, if we are not moving up, then reset jump timer to 0.
+			//  Also run the swim code if we're a ghost or have the TF_COND_SWIMMING_NO_EFFECTS condition
+			if ( InWater() )
 			{
-				if ( Player.WaterLevelType == WaterLevelType.Waist )
-				{
-					CheckWaterJump();
-				}
+				FullWalkMoveUnderwater();
+				return;
+			}
 
-				// If we are falling again, then we must not trying to jump out of water any more.
-				if ( Velocity.z < 0 && IsJumpingFromWater )
-				{
-					WaterJumpTime = 0;
-				}
+			if ( WishJump() ) CheckJumpButton();
 
-				// Was jump button pressed?
-				if ( Input.Down( InputButton.Jump ) ) 
-				{ 
-					CheckJumpButton();
-				}
+			// Make sure velocity is valid.
+			CheckVelocity();
 
-				// Perform regular water movement
-				WaterMove();
-
-				// Redetermine position vars
-				CategorizePosition();
-
-				// If we are on ground, no downward velocity.
-				if ( IsGrounded() )
-				{
-					Velocity = Velocity.WithZ( 0 );
-				}
-
-				SetTag( "swimming" );
+			if ( IsGrounded() )
+			{
+				Velocity = Velocity.WithZ( 0 );
+				Friction();
+				WalkMove();
 			}
 			else
-			// Not fully underwater
 			{
-				// Was jump button pressed?
-				if ( WishJump() ) CheckJumpButton();
-
-				// Fricion is handled before we add in any base velocity. That way, if we are on a conveyor, 
-				// we don't slow when standing still, relative to the conveyor.
-				if ( IsGrounded() )
-				{
-					Velocity = Velocity.WithZ( 0 );
-					Friction();
-				}
-
-				// Make sure velocity is valid.
-				CheckVelocity();
-
-				if ( IsGrounded() ) WalkMove();
-				else AirMove();
-
-				// Set final flags.
-				CategorizePosition();
-
-				// Make sure velocity is valid.
-				CheckVelocity();
-
-				// Add any remaining gravitational component.
-				if ( !CheckWater() )
-				{
-					FinishGravity();
-				}
-
-				// If we are on ground, no downward velocity.
-				if ( IsGrounded() )
-				{
-					Velocity = Velocity.WithZ( 0 );
-				}
-
-				CheckFalling();
+				AirMove();
 			}
 
-			if ( (LastWaterLevelType == WaterLevelType.NotInWater && Player.WaterLevelType != WaterLevelType.NotInWater) ||
-				  (LastWaterLevelType != WaterLevelType.NotInWater && Player.WaterLevelType == WaterLevelType.NotInWater) )
+			// Set final flags.
+			CategorizePosition();
+
+			// Add any remaining gravitational component if we are not in water.
+			if ( !InWater() )
 			{
-				PlaySwimSound();
+				FinishGravity();
 			}
+
+			// If we are on ground, no downward velocity.
+			if ( IsGrounded() )
+			{
+				Velocity = Velocity.WithZ( 0 );
+			}
+
+			// Handling falling.
+			CheckFalling();
+
+			// Make sure velocity is valid.
+			CheckVelocity();
 		}
 
 		public virtual float PlayerFatalFallSpeed => 1024;

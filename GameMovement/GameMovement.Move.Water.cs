@@ -106,7 +106,11 @@ namespace Source1
 			var waterFraction = Player.WaterLevel.Fraction;
 			var waterHeight = waterFraction * playerHeight;
 
+			// last water type
+			var lastWaterType = Player.WaterLevelType;
+
 			Player.WaterLevelType = WaterLevelType.NotInWater;
+
 
 			if ( waterFraction > 0 )
 			{
@@ -120,6 +124,17 @@ namespace Source1
 				{
 					Player.WaterLevelType = WaterLevelType.Waist;
 				}
+			}
+
+			// check water events
+			var newWaterType = Player.WaterLevelType;
+			if ( newWaterType != lastWaterType )
+			{
+				if ( lastWaterType == WaterLevelType.NotInWater ) Player.OnLeaveWater();
+				if ( newWaterType == WaterLevelType.NotInWater ) Player.OnEnterWater();
+
+				if ( lastWaterType == WaterLevelType.Eyes ) Player.OnLeaveUnderwater();
+				if ( newWaterType == WaterLevelType.Eyes ) Player.OnEnterUnderwater();
 			}
 
 			return waterFraction >= 0.5f;
@@ -248,14 +263,80 @@ namespace Source1
 			Velocity -= BaseVelocity;
 		}
 
-		public virtual void PlaySwimSound()
-		{
-			Sound.FromEntity( "player.footstep.wade", Player );
-		}
-
 		public bool InWater()
 		{
 			return Player.WaterLevelType > WaterLevelType.Feet;
+		}
+
+		public virtual void FullWalkMoveUnderwater()
+		{
+			if ( Player.WaterLevelType == WaterLevelType.Waist )
+			{
+				CheckWaterJump();
+			}
+
+			// If we are falling again, then we must not trying to jump out of water any more.
+			if ( (Velocity.z < 0.0f) && IsJumpingFromWater )
+			{
+				WaterJumpTime = 0.0f;
+			}
+
+			// Was jump button pressed?
+			if ( Input.Down( InputButton.Jump ) )
+			{
+				CheckJumpButton();
+			}
+
+			// Perform regular water movement
+			WaterMove();
+
+			// Redetermine position vars
+			CategorizePosition();
+
+			// If we are on ground, no downward velocity.
+			if ( IsGrounded() )
+			{
+				Velocity = Velocity.WithZ( 0 );
+			}
+
+			SetTag( "swimming" );
+		}
+
+		public virtual bool CheckWaterJumpButton()
+		{
+			// See if we are water jumping.  If so, decrement count and return.
+			if ( IsJumpingFromWater )
+			{
+				WaterJumpTime -= Time.Delta;
+				if ( WaterJumpTime < 0 )
+				{
+					WaterJumpTime = 0;
+				}
+
+				return false;
+			}
+
+			// In water above our waist.
+			if ( Player.WaterLevelType >= WaterLevelType.Waist )
+			{
+				// Swimming, not jumping.
+				ClearGroundEntity();
+
+				// We move up a certain amount.
+				Velocity = Velocity.WithZ( 100 );
+
+				// Play swimming sound.
+				if ( TimeSinceSwimSound > 1 )
+				{
+					// Don't play sound again for 1 second.
+					TimeSinceSwimSound = 0;
+					Player.OnWaterWade();
+				}
+
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

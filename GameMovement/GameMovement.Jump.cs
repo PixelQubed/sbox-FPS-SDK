@@ -27,34 +27,8 @@ namespace Source1
 			if ( !CanJump() )
 				return false;
 
-			
-            if ( IsJumpingFromWater )
-            {
-                WaterJumpTime -= Time.Delta;
-                if ( WaterJumpTime < 0 )
-					WaterJumpTime = 0;
-
-                return false;
-            }
-
-
-			if ( Player.WaterLevelType >= WaterLevelType.Waist ) 
-			{
-				// swimming, not jumping
-				ClearGroundEntity();
-
-				// Move upwards
-				Velocity = Velocity.WithZ( 100 );
-
-				// play swimming sound
-				if ( TimeSinceSwimSound > 1 )
-				{
-					TimeSinceSwimSound = 0;
-					PlaySwimSound();
-				}
-
+			if ( !CheckWaterJumpButton() )
 				return false;
-			}
 
 			// Can't just if we're not grounded
 			if ( GroundEntity == null )
@@ -70,17 +44,10 @@ namespace Source1
 			AddEvent( "jump" );
 
 			float flGroundFactor = 1.0f;
-			//if ( player->m_pSurfaceData )
-			{
-				//   flGroundFactor = g_pPhysicsQuery->GetGameSurfaceproperties( player->m_pSurfaceData )->m_flJumpFactor;
-			}
-
 			float flMul = 268.3281572999747f * 1.2f;
-
 			float startz = Velocity.z;
 
-			if ( IsDucked )
-				flMul *= 0.8f;
+			if ( IsDucked ) flMul *= 0.8f;
 
 			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
 			Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
