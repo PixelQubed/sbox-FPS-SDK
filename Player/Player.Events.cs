@@ -13,6 +13,32 @@ namespace Source1
 		public virtual void OnEnterWater()
 		{
 			PlayWaterWadeSound();
+
+			// The player has just entered the water.  Determine if we should play a splash sound.
+			bool bPlaySplash = false;
+
+			var vecVelocity = Velocity;
+			if ( vecVelocity.z <= -200.0f )
+			{
+				// If the player has significant downward velocity, play a splash regardless of water depth.  (e.g. Jumping hard into a puddle)
+				bPlaySplash = true;
+			}
+			else
+			{
+				// Look at the water depth below the player.  If it's significantly deep, play a splash to accompany the sinking that's about to happen.
+				var vecStart = Position;
+				var vecEnd = vecStart;
+				vecEnd.z -= 20; // roughly thigh deep
+
+				var tr = Trace.Ray( vecStart, vecEnd )
+					.HitLayer( CollisionLayer.Solid, true )
+					.Ignore( this )
+					.Run();
+
+				if ( tr.Fraction >= 1 ) bPlaySplash = true;
+			}
+
+			if ( bPlaySplash ) PlayWaterSplashSound();
 		}
 
 		public virtual void OnLeaveWater()

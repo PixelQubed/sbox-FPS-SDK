@@ -130,8 +130,8 @@ namespace Source1
 			var newWaterType = Player.WaterLevelType;
 			if ( newWaterType != lastWaterType )
 			{
-				if ( lastWaterType == WaterLevelType.NotInWater ) Player.OnLeaveWater();
-				if ( newWaterType == WaterLevelType.NotInWater ) Player.OnEnterWater();
+				if ( lastWaterType == WaterLevelType.NotInWater ) Player.OnEnterWater();
+				if ( newWaterType == WaterLevelType.NotInWater ) Player.OnLeaveWater();
 
 				if ( lastWaterType == WaterLevelType.Eyes ) Player.OnLeaveUnderwater();
 				if ( newWaterType == WaterLevelType.Eyes ) Player.OnEnterUnderwater();
@@ -189,7 +189,6 @@ namespace Source1
 			// Water friction
 			var temp = Velocity;
 			var speed = temp.Length;
-			temp = temp.Normal;
 
 			var newspeed = 0f;
 			if ( speed != 0 ) 
@@ -203,18 +202,15 @@ namespace Source1
 				newspeed = 0;
 			}
 
-			var addspeed = 0f;
-			var accelspeed = 0f;
-
 			// water acceleration
-			if ( wishspeed >= 0.1f )  // old !
+			if ( wishspeed >= .1f ) 
 			{
-				addspeed = wishspeed - newspeed;
+				var addspeed = wishspeed - newspeed;
 				if ( addspeed > 0 )
 				{
 					wishvel = wishvel.Normal;
 
-					accelspeed = sv_accelerate * wishspeed * Time.Delta * SurfaceFriction;
+					var accelspeed = sv_accelerate * wishspeed * Time.Delta * SurfaceFriction;
 					if ( accelspeed > addspeed ) accelspeed = addspeed;
 
 					Velocity += accelspeed * wishvel;
