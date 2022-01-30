@@ -12,10 +12,10 @@ namespace Source1
 		/// <summary>
 		/// Time since last damage taken, used by medigun.
 		/// </summary>
-		public TimeSince TimeSinceTakeDamage { get; set; }
-		public virtual bool AllowAutoMovement { get; set; } = true;
 		public virtual WaterLevelType WaterLevelType { get; set; }
+		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 		[Net] public float MaxSpeed { get; set; }
+		[Net] public bool AllowAutoMovement { get; set; } = true;
 
 		public override void Spawn()
 		{
@@ -23,8 +23,18 @@ namespace Source1
 			CollisionGroup = CollisionGroup.Player;
 			EnableLagCompensation = true;
 
-			MaxSpeed = Source1GameMovement.sv_maxspeed;
+			MaxSpeed = GetMaxSpeed();
 			AllowAutoMovement = true;
+		}
+
+		public bool InWater()
+		{
+			return WaterLevelType >= WaterLevelType.Feet;
+		}
+
+		public bool InUnderwater()
+		{
+			return WaterLevelType >= WaterLevelType.Eyes;
 		}
 
 		public virtual float GetMaxSpeed()
@@ -41,32 +51,6 @@ namespace Source1
 		protected new virtual void BuildInput( InputBuilder builder )
 		{
 			builder.AnalogLook *= GetSensitivityMultiplier();
-		}
-
-		public virtual Vector3 GetPlayerMins( bool ducked )
-		{
-			var viewvectors = GameRules.Instance.ViewVectors;
-			return (ducked ? viewvectors.DuckHullMin : viewvectors.HullMin);
-		}
-
-		public virtual Vector3 GetPlayerMaxs( bool ducked )
-		{
-			var viewvectors = GameRules.Instance.ViewVectors;
-			return (ducked ? viewvectors.DuckHullMax : viewvectors.HullMax);
-		}
-
-		public virtual Vector3 GetPlayerExtents( bool ducked )
-		{
-			var mins = GetPlayerMins( ducked );
-			var maxs = GetPlayerMaxs( ducked );
-
-			return mins.Abs() + maxs.Abs();
-		}
-
-		public virtual Vector3 GetPlayerViewOffset( bool ducked )
-		{
-			var viewvectors = GameRules.Instance.ViewVectors;
-			return (ducked ? viewvectors.DuckViewOffset : viewvectors.ViewOffset) * Scale;
 		}
 	}
 
