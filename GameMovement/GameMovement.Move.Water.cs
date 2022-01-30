@@ -101,7 +101,7 @@ namespace Source1
 			var vPlayerExtents = GetPlayerExtents();
 			var playerHeight = vPlayerExtents.z;
 
-			var eyeHeight = EyePosLocal.z;
+			var eyeHeight = GetPlayerViewOffset().z;
 
 			var waterFraction = Player.WaterLevel.Fraction;
 			var waterHeight = waterFraction * playerHeight;

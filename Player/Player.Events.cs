@@ -7,11 +7,13 @@ namespace Source1
 	{
 		public virtual void OnWaterWade()
 		{
+			// Log.Info( "OnWaterWade()" );
 			PlayWaterWadeSound();
 		}
 
 		public virtual void OnEnterWater()
 		{
+			// Log.Info( "OnEnterWater()" );
 			PlayWaterWadeSound();
 
 			// The player has just entered the water.  Determine if we should play a splash sound.
@@ -43,16 +45,19 @@ namespace Source1
 
 		public virtual void OnLeaveWater()
 		{
+			// Log.Info( "OnLeaveWater()" );
 			PlayWaterWadeSound();
 		}
 
 		public virtual void OnEnterUnderwater()
 		{
+			// Log.Info( "OnEnterUnderwater()" );
 			StartUnderwaterSound();
 		}
 
 		public virtual void OnLeaveUnderwater()
 		{
+			// Log.Info( "OnLeaveUnderwater()" );
 			PlayWaterWadeSound();
 			StopUnderwaterSound();
 		}

@@ -40,7 +40,7 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerViewOffset()
 		{
-			return GetPlayerMaxs( IsDucked );
+			return GetPlayerViewOffset( IsDucked );
 		}
 
 		public virtual void SetDuckedEyeOffset( float duckFraction )
