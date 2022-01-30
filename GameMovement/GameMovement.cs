@@ -93,6 +93,8 @@ namespace Source1
 				FallVelocity = -Velocity.z;
 			}
 
+			Player.SimulateFootsteps();
+
 			UpdateDuckJumpEyeOffset();
 			Duck();
 			
@@ -483,55 +485,14 @@ namespace Source1
 			return pm.Entity;
 		}
 
-		public Surface SurfaceData { get; set; }
-
 		public virtual void CategorizeGroundSurface( TraceResult pm )
 		{
-			SurfaceData = pm.Surface;
+			Player.SurfaceData = pm.Surface;
 			SurfaceFriction = pm.Surface.Friction;
 
 			SurfaceFriction *= 1.25f;
 			if ( SurfaceFriction > 1.0f )
 				SurfaceFriction = 1.0f;
-		}
-
-		float ConstraintRadius { get; set; }
-		float ConstraintSpeedFactor { get; set; }
-		float ConstraintWidth { get; set; }
-		Vector3 ConstraintCenter { get; set; }
-
-		public virtual float ComputeConstraintSpeedFactor()
-		{
-			// If we have a constraint, slow down because of that too.
-			if ( ConstraintRadius == 0.0f ) return 1.0f;
-
-			float flDist = Position.Distance( ConstraintCenter );
-			float flDistSq = flDist * flDist;
-
-			float flOuterRadiusSq = ConstraintRadius * ConstraintRadius;
-			float flInnerRadiusSq = ConstraintRadius - ConstraintWidth;
-			flInnerRadiusSq *= flInnerRadiusSq;
-
-			// Only slow us down if we're inside the constraint ring
-			if ( (flDistSq <= flInnerRadiusSq) || (flDistSq >= flOuterRadiusSq) )
-				return 1.0f;
-
-			// Only slow us down if we're running away from the center
-			Vector3 vecDesired = Input.Forward * Input.Rotation.Forward;
-			vecDesired = VectorMA( vecDesired, Input.Left, Input.Rotation.Left);
-			vecDesired = VectorMA( vecDesired, Input.Up, Input.Rotation.Up);
-
-			Vector3 vecDelta = Position - ConstraintCenter;
-			vecDelta = vecDelta.Normal;
-			vecDesired = vecDesired.Normal;
-
-			if ( Vector3.Dot( vecDelta, vecDesired ) < 0.0f )
-				return 1.0f;
-
-			float flFrac = (MathF.Sqrt( flDistSq ) - (ConstraintRadius - ConstraintWidth)) / ConstraintWidth;
-
-			float flSpeedFactor = flFrac.LerpTo( 1.0f, ConstraintSpeedFactor );
-			return flSpeedFactor;
 		}
 
 		public bool IsDead()

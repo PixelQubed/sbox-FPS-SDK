@@ -32,6 +32,11 @@ namespace Source1
 			return WaterLevelType >= WaterLevelType.Feet;
 		}
 
+		public bool IsGrounded()
+		{
+			return GroundEntity != null;
+		}
+
 		public bool InUnderwater()
 		{
 			return WaterLevelType >= WaterLevelType.Eyes;

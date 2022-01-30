@@ -39,7 +39,7 @@ namespace Source1
 
 			ClearGroundEntity();
 
-			// player->PlayStepSound( (Vector &)mv->GetAbsOrigin(), player->m_pSurfaceData, 1.0, true );
+			Player.DoJumpSound( Position, Player.SurfaceData, 1 );
 
 			AddEvent( "jump" );
 

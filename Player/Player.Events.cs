@@ -5,6 +5,24 @@ namespace Source1
 {
 	partial class Source1Player
 	{
+		#region Footsteps
+		public virtual void OnFootstep( bool right, Vector3 origin, string sound, float volume )
+		{
+
+		}
+
+		public virtual void OnLandStep( Vector3 origin, string sound, float volume )
+		{
+
+		}
+
+		public virtual void OnJumpStep( Vector3 origin, string sound, float volume )
+		{
+
+		}
+		#endregion
+
+		#region Water
 		public virtual void OnWaterWade()
 		{
 			// Log.Info( "OnWaterWade()" );
@@ -85,5 +103,6 @@ namespace Source1
 			if ( !IsLocalPawn ) return;
 			UnderwaterSound.Stop();
 		}
+		#endregion
 	}
 }
