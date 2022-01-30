@@ -7,13 +7,13 @@ namespace Source1
 	{
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
-			var viewvectors = GameRules.Instance.ViewVectors;
+			var viewvectors = TeamplayRules.Instance.ViewVectors;
 			return (ducked ? viewvectors.DuckHullMin : viewvectors.HullMin);
 		}
 
 		public virtual Vector3 GetPlayerMaxs( bool ducked )
 		{
-			var viewvectors = GameRules.Instance.ViewVectors;
+			var viewvectors = TeamplayRules.Instance.ViewVectors;
 			return (ducked ? viewvectors.DuckHullMax : viewvectors.HullMax);
 		}
 
@@ -27,7 +27,7 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
-			var viewvectors = GameRules.Instance.ViewVectors;
+			var viewvectors = TeamplayRules.Instance.ViewVectors;
 			return (ducked ? viewvectors.DuckViewOffset : viewvectors.ViewOffset) * Scale;
 		}
 	}

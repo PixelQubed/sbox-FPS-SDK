@@ -22,7 +22,7 @@ namespace Source1
 
 		public virtual float GetCurrentGravity()
 		{
-			return sv_gravity * GameRules.Instance.GetGravityMultiplier();
+			return sv_gravity * TeamplayRules.Instance.GetGravityMultiplier();
 		}
 
 		public virtual bool InAir()
