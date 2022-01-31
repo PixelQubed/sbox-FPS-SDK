@@ -1,17 +1,12 @@
 using Sandbox;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Source1
 {
 	public partial class Source1Player : Player
 	{
-		/// <summary>
-		/// Whether the player is alive.
-		/// </summary>
-		public bool IsAlive => LifeState == LifeState.Alive;
-		/// <summary>
-		/// Time since last damage taken, used by medigun.
-		/// </summary>
 		public virtual WaterLevelType WaterLevelType { get; set; }
 		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 		[Net] public float MaxSpeed { get; set; }
@@ -20,6 +15,9 @@ namespace Source1
 		public override void Spawn()
 		{
 			base.Spawn();
+			TeamNumber = 0;
+
+			LifeState = LifeState.Respawnable;
 			CollisionGroup = CollisionGroup.Player;
 			EnableLagCompensation = true;
 
@@ -27,19 +25,50 @@ namespace Source1
 			AllowAutoMovement = true;
 		}
 
-		public bool InWater()
+		/// <summary>
+		/// Respawn this player.
+		/// </summary>
+		public override void Respawn()
 		{
-			return WaterLevelType >= WaterLevelType.Feet;
+			LifeState = LifeState.Alive;
+			Velocity = Vector3.Zero;
+			WaterLevel.Clear();
+
+			EnableAllCollisions = true;
+			EnableDrawing = true;
+			EnableHideInFirstPerson = true;
+			EnableShadowInFirstPerson = false;
+
+			UseAnimGraph = true;
+			Controller = new Source1GameMovement();
+			Animator = new StandardPlayerAnimator();
+			Camera = new FirstPersonCamera();
+
+			// Tags
+			RemoveAllTags();
+			Tags.Add( "player" );
+			Tags.Add( TeamProperties.Tag );
+
+			CreateHull();
+			PreviousWeapon = null;
+			ResetInterpolation();
+
+			RespawnEffects();
 		}
 
-		public bool IsGrounded()
+		private void RemoveAllTags()
 		{
-			return GroundEntity != null;
+			var list = Tags.List.ToList();
+			foreach ( var tag in list )
+			{
+				Tags.Remove( tag );
+			}
 		}
 
-		public bool InUnderwater()
+		[ClientRpc]
+		public virtual void RespawnEffects()
 		{
-			return WaterLevelType >= WaterLevelType.Eyes;
+			CreateHull();
 		}
 
 		public virtual float GetMaxSpeed()
@@ -52,17 +81,29 @@ namespace Source1
 			return 1f;
 		}
 
-		[Event.BuildInput]
-		protected new virtual void BuildInput( InputBuilder builder )
+		public void Kill()
 		{
-			builder.AnalogLook *= GetSensitivityMultiplier();
+			if ( !IsAlive ) return;
+			OnKilled();
+		}
+
+
+		[Event.BuildInput]
+		public virtual void ProcessInput( InputBuilder input )
+		{
+			input.AnalogLook *= GetSensitivityMultiplier();
+
+			if ( ForcedWeapon != null )
+			{
+				input.ActiveChild = ForcedWeapon;
+				ForcedWeapon = null;
+			}
 		}
 	}
 
 	public static class PlayerTags
 	{
 		public const string Ducked = "ducked";
-		public const string Jumped = "jumped";
 		public const string WaterJump = "waterjump";
 	}
 }
