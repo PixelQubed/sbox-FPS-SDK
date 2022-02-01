@@ -54,6 +54,7 @@ namespace Source1
 			ResetInterpolation();
 
 			RespawnEffects();
+			GameRules.Instance.MoveToSpawnpoint( this );
 		}
 
 		public void RemoveAllTags()
