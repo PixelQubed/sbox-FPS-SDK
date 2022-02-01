@@ -20,8 +20,9 @@ namespace Source1
 		public virtual void DeclareGameTeams()
 		{
 			// By default all games have these two teams.
-			DeclareTeam( 0, "Unassigned", Color.White, false, false );
-			DeclareTeam( 1, "Spectator", Color.White, false, false );
+
+			TeamManager.DeclareTeam( 0, "unassigned", "UNASSIGNED", Color.White, false, false );
+			TeamManager.DeclareTeam( 1, "spectator", "Spectator", Color.White, false, true );
 		}
 
 		[Event.Tick]
@@ -46,7 +47,7 @@ namespace Source1
 		public virtual float GetGravityMultiplier() { return 1; }
 		public virtual float GetDamageMultiplier() { return 1; }
 		public virtual bool AllowThirdPersonCamera() { return false; }
-		public virtual void RadiusDamage( DamageInfo info, Vector3 src, float radius, Entity ignore ) {  }
+		public virtual void RadiusDamage( DamageInfo info, Vector3 src, float radius, Entity ignore ) { }
 
 		/// <summary>
 		/// On player respawned
@@ -65,7 +66,7 @@ namespace Source1
 		/// </summary>
 		/// <param name="player"></param>
 		public virtual float GetPlayerRespawnTime( Source1Player player ) { return 0; }
-		
+
 		/// <summary>
 		/// This player was just killed.
 		/// </summary>
@@ -108,22 +109,28 @@ namespace Source1
 		// Waiting for players
 		[Net] public bool IsWaitingForPlayers { get; set; }
 
-		public virtual ViewVectors ViewVectors => new()
+
+		/// <summary>
+		/// Respawn all players.
+		/// </summary>
+		/// <param name="forceRespawn"></param>
+		/// <param name="team"></param>
+		public void RespawnPlayers( bool forceRespawn, int team = 0 )
 		{
-			ViewOffset = new( 0, 0, 64 ),
+			var players = All.OfType<Source1Player>().ToList();
+			for ( int i = players.Count - 1; i >= 0; i-- )
+			{
+				var player = players[i];
+				if ( !player.IsValid() ) continue;
 
-			HullMin = new( -16, -16, 0 ),
-			HullMax = new( 16, 16, 72 ),
+				// Check for a certain team, if we are not unassigned.
+				if ( team != 0 && player.TeamNumber != team ) continue;
 
-			DuckHullMin = new( -16, -16, 0 ),
-			DuckHullMax = new( 16, 16, 36 ),
-			DuckViewOffset = new( 0, 0, 28 ),
+				// TODO: Check for ready to play
+				if ( !forceRespawn && player.IsAlive ) continue;
 
-			ObserverHullMin = new( -10, -10, -10 ),
-			ObserverHullMax = new( 10, 10, 10 ),
-
-			ObserverDeadViewPosition = new( 0, 0, 14 )
-		};
+				player.Respawn();
+			}
+		}
 	}
-
 }

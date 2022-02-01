@@ -7,7 +7,7 @@ namespace Source1
 	{
 		public bool InWater => WaterLevelType >= WaterLevelType.Feet;
 		public bool IsGrounded => GroundEntity != null;
-		public bool InUnderwater => WaterLevelType >= WaterLevelType.Eyes;
+		public bool IsUnderwater => WaterLevelType >= WaterLevelType.Eyes;
 		public bool IsDucked => Tags.Has( PlayerTags.Ducked );
 		public bool IsAlive => LifeState == LifeState.Alive;
 	}

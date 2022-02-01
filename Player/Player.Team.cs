@@ -6,7 +6,6 @@ namespace Source1
 	partial class Source1Player : ITeam
 	{
 		[Net] public int TeamNumber { get; set; }
-		public Team TeamProperties => Source1.Team.FindByNumber( TeamNumber );
 
 		public void SetTeam( int team )
 		{

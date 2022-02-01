@@ -17,9 +17,8 @@ namespace Source1
 			RespawnPlayers( true );
 
 			// Reset the winner.
-			Winner = TFTeam.Unassigned;
-			WinReason = WinReason.None;
-			CalculateObjectives();
+			Winner = 0;
+			WinReason = 0;
 
 			StartGameplay();
 		}
@@ -33,22 +32,6 @@ namespace Source1
 
 		public virtual void ClearMap()
 		{
-			var list = new List<Entity>();
-
-			// Cleanup dropped weapons.
-			list.AddRange( All.OfType<TFWeaponBase>().Where( x => x.Owner == null ) );
-
-			for ( int i = list.Count - 1; i >= 0; i-- )
-			{
-				var ent = list[i];
-				if ( ent != null && ent.IsValid ) ent.Delete();
-			}
-
-			// Place flags on their home positions.
-			foreach ( var flag in All.OfType<Flag>() ) 
-			{
-				flag.Return();
-			}
 		}
 	}
 }

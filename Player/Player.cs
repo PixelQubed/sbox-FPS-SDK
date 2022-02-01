@@ -47,7 +47,7 @@ namespace Source1
 			// Tags
 			RemoveAllTags();
 			Tags.Add( "player" );
-			Tags.Add( TeamProperties.Tag );
+			Tags.Add( TeamManager.GetTag( TeamNumber ) );
 
 			CreateHull();
 			PreviousWeapon = null;
@@ -56,7 +56,7 @@ namespace Source1
 			RespawnEffects();
 		}
 
-		private void RemoveAllTags()
+		public void RemoveAllTags()
 		{
 			var list = Tags.List.ToList();
 			foreach ( var tag in list )
