@@ -1,5 +1,7 @@
 using Sandbox;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Source1
 {
@@ -23,7 +25,17 @@ namespace Source1
 
 		public void SetAutoTeam()
 		{
-			SetTeam( 0 );
+			// see which team has less players.
+			var index = TeamManager.Teams.Keys.Where( x =>
+			 {
+				 var team = TeamManager.Teams[x];
+				 if ( !team.IsJoinable ) return false;
+				 if ( !team.IsPlayable ) return false;
+
+				 return true;
+			 } ).OrderBy( x => TeamManager.GetPlayers( x ).Count() ).FirstOrDefault();
+
+			SetTeam( index );
 		}
 	}
 }

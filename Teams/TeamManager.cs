@@ -53,6 +53,7 @@ namespace Source1
 
 		public static TeamProperties GetProperties( int number ) => Teams[number];
 		public static string GetTag( int team ) => $"Team_{team}";
+		public static IEnumerable<Source1Player> GetPlayers( int team ) => Entity.All.OfType<Source1Player>().Where( x => x.TeamNumber == team );
 		public static string GetName( int team ) => GetProperties( team ).Name;
 		public static string GetTitle( int team ) => GetProperties( team ).Name;
 		public static bool IsJoinable( int team ) => GetProperties( team ).IsJoinable;
