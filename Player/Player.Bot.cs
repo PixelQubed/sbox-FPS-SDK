@@ -1,9 +1,9 @@
 ﻿using Sandbox;
 using System;
 
-namespace TFS2
+namespace Source1
 {
-	partial class Source1
+	partial class Source1Player
 	{
 		public virtual void SimulateBot( Client cl )
 		{
