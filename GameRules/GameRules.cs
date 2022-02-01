@@ -50,12 +50,6 @@ namespace Source1
 		public virtual void RadiusDamage( DamageInfo info, Vector3 src, float radius, Entity ignore ) { }
 
 		/// <summary>
-		/// On player respawned
-		/// </summary>
-		/// <param name="player"></param>
-		public virtual void PlayerRespawn( Source1Player player ) { }
-
-		/// <summary>
 		/// Can this player respawn right now?
 		/// </summary>
 		/// <param name="player"></param>
@@ -72,9 +66,31 @@ namespace Source1
 		/// </summary>
 		/// <param name="player"></param>
 		/// <param name="info"></param>
-		public virtual void PlayerKilled( Source1Player player, DamageInfo info )
+		public virtual void PlayerDeath( Source1Player player, DamageInfo info )
 		{
+			if ( !IsServer ) return;
+			Event_OnPlayerDeath( player, info.Attacker, null, null, info.Weapon, info.Flags );
+		}
 
+		/// <summary>
+		/// This player was just hurt.
+		/// </summary>
+		/// <param name="player"></param>
+		/// <param name="info"></param>
+		public virtual void PlayerHurt( Source1Player player, DamageInfo info )
+		{
+			if ( !IsServer ) return;
+			Event_OnPlayerHurt( player, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
+		}
+
+		/// <summary>
+		/// On player respawned
+		/// </summary>
+		/// <param name="player"></param>
+		public virtual void PlayerRespawn( Source1Player player )
+		{
+			if ( !IsServer ) return;
+			Event_OnPlayerSpawn( player );
 		}
 
 		/// <summary>

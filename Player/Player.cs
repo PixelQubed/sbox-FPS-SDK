@@ -8,9 +8,24 @@ namespace Source1
 	public partial class Source1Player : Player
 	{
 		public virtual WaterLevelType WaterLevelType { get; set; }
-		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 		[Net] public float MaxSpeed { get; set; }
 		[Net] public bool AllowAutoMovement { get; set; } = true;
+
+		[Net] public TimeSince TimeSinceRespawned { get; set; }
+		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
+		[Net] public TimeSince TimeSinceDeath { get; set; }
+
+		public DamageInfo LastDamageInfo { get; set; }
+
+		public override void Simulate( Client cl )
+		{
+			SimulateVisuals();
+
+			if ( cl.IsBot ) SimulateBot( cl );
+
+			SimulateActiveChild( cl, ActiveChild );
+			SimulatePassiveChildren( cl );
+		}
 
 		public override void Spawn()
 		{
@@ -55,6 +70,9 @@ namespace Source1
 
 			RespawnEffects();
 			GameRules.Instance.MoveToSpawnpoint( this );
+			TimeSinceRespawned = 0;
+
+			GameRules.Instance.PlayerRespawn( this );
 		}
 
 		public void RemoveAllTags()
@@ -63,6 +81,14 @@ namespace Source1
 			foreach ( var tag in list )
 			{
 				Tags.Remove( tag );
+			}
+		}
+
+		public virtual void SimulatePassiveChildren( Client client )
+		{
+			foreach ( var child in Children.OfType<IPassiveChild>() )
+			{
+				child.PassiveSimulate( client );
 			}
 		}
 
@@ -99,6 +125,39 @@ namespace Source1
 				input.ActiveChild = ForcedWeapon;
 				ForcedWeapon = null;
 			}
+		}
+
+		public override void OnKilled()
+		{
+			DeleteChildren();
+			UseAnimGraph = false;
+
+			// BecomeRagdollOnClient( Velocity, LastDamageInfo.Flags, LastDamageInfo.Position, LastDamageInfo.Force * 30, GetHitboxBone( LastDamageInfo.HitboxIndex ) );
+
+			Controller = null;
+			Animator = null;
+			Camera = new SpectateRagdollCamera();
+
+			EnableAllCollisions = false;
+			EnableDrawing = false;
+
+			GameRules.Instance.PlayerDeath( this, LastDamageInfo );
+			TimeSinceDeath = 0;
+
+			LifeState = LifeState.Respawning;
+			StopUsing();
+		}
+
+		public override void TakeDamage( DamageInfo info )
+		{
+			TimeSinceTakeDamage = 0;
+
+			LastDamageInfo = info;
+			GameRules.Event_OnPlayerHurt( this, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
+
+			// flinch the model.
+			Animator.SetParam( "b_flinch", true );
+			base.TakeDamage( info );
 		}
 	}
 

@@ -44,8 +44,6 @@ namespace Source1
 				}
 			}
 
-			Log.Info( $"Previous spawn point for team {team} was {startIndex} now it's {points.IndexOf( result )}" );
-
 			// If we can't find a spawnpoint, fallback to default s&box spawn points.
 			if ( result == null )
 			{
@@ -54,7 +52,6 @@ namespace Source1
 			}
 
 			player.Transform = result.Transform;
-			Input.Rotation = result.Rotation;
 		}
 	}
 }
