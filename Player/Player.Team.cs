@@ -20,7 +20,7 @@ namespace Source1
 			Kill();
 
 			// Run the event.
-			// TFGame.Event_OnPlayerChangeTeam( this, team );
+			GameRules.Instance.PlayerChangeTeam( this, team );
 		}
 
 		public void SetAutoTeam()

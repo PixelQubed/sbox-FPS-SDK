@@ -94,6 +94,15 @@ namespace Source1
 		}
 
 		/// <summary>
+		/// On player respawned
+		/// </summary>
+		public virtual void PlayerChangeTeam( Source1Player player, int team )
+		{
+			if ( !IsServer ) return;
+			Event_OnPlayerChangeTeam( player, team );
+		}
+
+		/// <summary>
 		/// Is this a valid spawn point for this player?
 		/// </summary>
 		/// <param name="point"></param>
