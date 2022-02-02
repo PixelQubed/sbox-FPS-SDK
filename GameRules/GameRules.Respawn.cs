@@ -32,6 +32,7 @@ namespace Source1
 				while ( result == null && limit <= count )
 				{
 					i++;
+					limit++;
 					if ( i >= points.Count ) i = 0;
 
 					var point = points[i];

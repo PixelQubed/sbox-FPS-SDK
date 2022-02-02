@@ -29,6 +29,11 @@ namespace Source1
 		public virtual void Tick()
 		{
 			TickStates();
+
+			if ( IsServer )
+			{
+				DebugOverlay.ScreenText( $"{State}" );
+			}
 		}
 
 		/// <summary>
