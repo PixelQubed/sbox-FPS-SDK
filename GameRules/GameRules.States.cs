@@ -57,13 +57,14 @@ namespace Source1
 
 		public virtual void SimulatePreRound() 
 		{
-			if ( TimeSinceStateChange > 5 )
+			if ( TimeSinceStateChange > GetPreRoundFreezeTime() )
 			{
 				State = GameState.Gameplay;
 			}
 		}
 		public virtual void StartedPreRound() { }
 		public virtual void EndedPreRound() { }
+		public virtual float GetPreRoundFreezeTime() { return 6; }
 
 		//
 		// Gameplay

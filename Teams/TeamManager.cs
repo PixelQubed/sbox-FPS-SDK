@@ -51,7 +51,7 @@ namespace Source1
 			if ( Teams.ContainsKey( number ) ) Teams.Remove( number );
 		}
 
-		public static TeamProperties GetProperties( int number ) => Teams[number];
+		public static TeamProperties GetProperties( int number ) => Teams.ContainsKey( number ) ? Teams[number] : default;
 		public static string GetTag( int team ) => $"Team_{team}";
 		public static IEnumerable<Source1Player> GetPlayers( int team ) => Entity.All.OfType<Source1Player>().Where( x => x.TeamNumber == team );
 		public static string GetName( int team ) => GetProperties( team ).Name;
