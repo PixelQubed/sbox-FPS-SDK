@@ -20,14 +20,14 @@ namespace Source1
 			Winner = 0;
 			WinReason = 0;
 
-			StartGameplay();
+			State = GameState.PreRound;
 		}
 
 
 		[ServerCmd( "mp_restartround" )]
 		public static void Command_RestartRound()
 		{
-			Instance?.RestartRound();
+			Current?.RestartRound();
 		}
 
 		public virtual void ClearMap()

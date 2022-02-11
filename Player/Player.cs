@@ -69,10 +69,10 @@ namespace Source1
 			ResetInterpolation();
 
 			RespawnEffects();
-			GameRules.Instance.MoveToSpawnpoint( this );
+			GameRules.Current.MoveToSpawnpoint( this );
 			TimeSinceRespawned = 0;
 
-			GameRules.Instance.PlayerRespawn( this );
+			GameRules.Current.PlayerRespawn( this );
 		}
 
 		public void RemoveAllTags()
@@ -141,7 +141,7 @@ namespace Source1
 			EnableAllCollisions = false;
 			EnableDrawing = false;
 
-			GameRules.Instance.PlayerDeath( this, LastDamageInfo );
+			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 			TimeSinceDeath = 0;
 
 			LifeState = LifeState.Respawning;
@@ -158,6 +158,24 @@ namespace Source1
 			// flinch the model.
 			Animator.SetParam( "b_flinch", true );
 			base.TakeDamage( info );
+		}
+
+		public virtual bool IsReadyToPlay()
+		{
+			return TeamManager.IsPlayable( TeamNumber );
+		}
+
+		[ConVar.Replicated] public static bool mp_player_freeze_on_round_start { get; set; } = true;
+		public virtual bool CanPlayerMove()
+		{
+			var inPreRound = GameRules.Current.State == GameState.PreRound;
+			var preRoundFreeze = mp_player_freeze_on_round_start;
+
+			// Competitve checks?
+			// Special conditions when pre round doesnt need to freeze us?
+
+			var noMovement = inPreRound && preRoundFreeze;
+			return !noMovement;
 		}
 	}
 

@@ -50,6 +50,13 @@ namespace Source1
 			SideMove = speed * -Input.Left;
 			UpMove = speed * Input.Up;
 
+			if ( !Player.CanPlayerMove() )
+			{
+				ForwardMove = 0;
+				SideMove = 0;
+				UpMove = 0;
+			}
+
 			PlayerMove();
 		}
 

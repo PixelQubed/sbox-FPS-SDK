@@ -16,8 +16,8 @@ namespace Source1
 		public void DeclareWinner( int winner, int reason )
 		{
 			// If we're already in humiliation, don't do anything.
-			if ( State == GameState.TeamWin ) return;
-			State = GameState.TeamWin;
+			if ( State == GameState.RoundEnd ) return;
+			State = GameState.RoundEnd;
 
 			Winner = winner;
 			WinReason = reason;

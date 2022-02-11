@@ -12,6 +12,7 @@ namespace Source1
 
 		public void RestartGame()
 		{
+			StopWaitingForPlayers();
 			Score.Clear();
 			TotalRoundsPlayed = 0;
 
@@ -21,7 +22,7 @@ namespace Source1
 		[ServerCmd( "mp_restartgame" )]
 		public static void Command_RestartGame()
 		{
-			Instance?.RestartGame();
+			Current?.RestartGame();
 		}
 
 		[ConVar.Replicated] public static int mp_maxrounds { get; set; } = 0;

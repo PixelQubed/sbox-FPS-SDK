@@ -9,11 +9,11 @@ namespace Source1
 {
 	public partial class GameRules : Game
 	{
-		public static GameRules Instance { get; set; }
+		public new static GameRules Current { get; set; }
 
 		public GameRules()
 		{
-			Instance = this;
+			Current = this;
 			DeclareGameTeams();
 		}
 
@@ -34,6 +34,8 @@ namespace Source1
 			{
 				DebugOverlay.ScreenText( $"{State}" );
 			}
+
+			CheckWaitingForPlayers();
 		}
 
 		/// <summary>
@@ -136,9 +138,6 @@ namespace Source1
 		[Net] public bool ShouldSwitchTeams { get; set; }
 		public virtual void SwitchTeams() { return; }
 
-		// Waiting for players
-		[Net] public bool IsWaitingForPlayers { get; set; }
-
 
 		/// <summary>
 		/// Respawn all players.
@@ -161,6 +160,20 @@ namespace Source1
 
 				player.Respawn();
 			}
+		}
+
+		public bool HasPlayers()
+		{
+			var all = All.OfType<Source1Player>();
+			foreach ( var player in all )
+			{
+				if ( player.IsValid && player.IsReadyToPlay() )
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

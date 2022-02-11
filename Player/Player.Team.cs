@@ -20,7 +20,7 @@ namespace Source1
 			Kill();
 
 			// Run the event.
-			GameRules.Instance.PlayerChangeTeam( this, team );
+			GameRules.Current.PlayerChangeTeam( this, team );
 		}
 
 		public void SetAutoTeam()

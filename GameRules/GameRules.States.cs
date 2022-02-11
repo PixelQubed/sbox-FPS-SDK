@@ -17,32 +17,52 @@ namespace Source1
 		// Initialized
 		//
 
+		public virtual void SimulateInitialized()
+		{
+			// We have started the game, we are in pre game now.
+			State = GameState.PreGame;
+		}
+
 		public virtual void StartedInitialized() { }
-		public virtual void SimulateInitialized() { }
 		public virtual void EndedInitialized() { }
 
 		//
 		// PreGame
 		//
 
+		public virtual void SimulatePreGame()
+		{
+			// If we have players that are ready to play, 
+			// start waiting for players timer.
+			if ( HasPlayers() )
+			{
+				StartWaitingForPlayers();
+			}
+		}
+
 		public virtual void StartedPreGame() { }
-		public virtual void SimulatePreGame() { }
 		public virtual void EndedPreGame() { }
 
 		//
-		// StartGame
+		// ReadyUp
 		//
 
-		public virtual void StartedStartGame() { }
-		public virtual void SimulateStartGame() { }
-		public virtual void EndedStartGame() { }
+		public virtual void SimulateReadyUp() { }
+		public virtual void StartedReadyUp() { }
+		public virtual void EndedReadyUp() { }
 
 		//
 		// PreRound
 		//
 
+		public virtual void SimulatePreRound() 
+		{
+			if ( TimeSinceStateChange > 5 )
+			{
+				State = GameState.Gameplay;
+			}
+		}
 		public virtual void StartedPreRound() { }
-		public virtual void SimulatePreRound() { }
 		public virtual void EndedPreRound() { }
 
 		//
@@ -114,15 +134,11 @@ namespace Source1
 			{
 				case GameState.Initialized: SimulateInitialized(); break;
 				case GameState.PreGame: SimulatePreGame(); break;
-				case GameState.StartGame: SimulateStartGame(); break;
+				case GameState.ReadyUp: SimulateReadyUp(); break;
 				case GameState.PreRound: SimulatePreRound(); break;
 				case GameState.Gameplay: SimulateGameplay(); break;
-				case GameState.TeamWin: SimulateTeamWin(); break;
-				case GameState.Restart: SimulateRestart(); break;
-				case GameState.Stalemate: SimulateStalemate(); break;
+				case GameState.RoundEnd: SimulateTeamWin(); break;
 				case GameState.GameOver: SimulateGameOver(); break;
-				case GameState.Bonus: SimulateBonus(); break;
-				case GameState.BetweenRounds: SimulateBetweenRounds(); break;
 			}
 		}
 
@@ -135,6 +151,7 @@ namespace Source1
 		{
 			OnStateEnded( previous );
 			OnStateStarted( previous );
+			Log.Info( $"Game State Changed: {previous} → {current}" );
 
 			TimeSinceStateChange = 0;
 		}
@@ -149,15 +166,11 @@ namespace Source1
 			{
 				case GameState.Initialized: StartedInitialized(); break;
 				case GameState.PreGame: StartedPreGame(); break;
-				case GameState.StartGame: StartedStartGame(); break;
+				case GameState.ReadyUp: StartedReadyUp(); break;
 				case GameState.PreRound: StartedPreRound(); break;
 				case GameState.Gameplay: StartedGameplay(); break;
-				case GameState.TeamWin: StartedTeamWin(); break;
-				case GameState.Restart: StartedRestart(); break;
-				case GameState.Stalemate: StartedStalemate(); break;
+				case GameState.RoundEnd: StartedTeamWin(); break;
 				case GameState.GameOver: StartedGameOver(); break;
-				case GameState.Bonus: StartedBonus(); break;
-				case GameState.BetweenRounds: StartedBetweenRounds(); break;
 			}
 		}
 
@@ -171,15 +184,11 @@ namespace Source1
 			{
 				case GameState.Initialized: EndedInitialized(); break;
 				case GameState.PreGame: EndedPreGame(); break;
-				case GameState.StartGame: EndedStartGame(); break;
+				case GameState.ReadyUp: EndedReadyUp(); break;
 				case GameState.PreRound: EndedPreRound(); break;
 				case GameState.Gameplay: EndedGameplay(); break;
-				case GameState.TeamWin: EndedTeamWin(); break;
-				case GameState.Restart: EndedRestart(); break;
-				case GameState.Stalemate: EndedStalemate(); break;
+				case GameState.RoundEnd: EndedTeamWin(); break;
 				case GameState.GameOver: EndedGameOver(); break;
-				case GameState.Bonus: EndedBonus(); break;
-				case GameState.BetweenRounds: EndedBetweenRounds(); break;
 			}
 		}
 	}
@@ -190,16 +199,15 @@ namespace Source1
 		/// </summary>
 		Initialized,
 		/// <summary>
-		/// Before players have joined the game. Periodically checks to see if enough players are ready
-		/// to start a game. Also reverts to this when there are no active players.
+		/// No players have yet joined the game. We are waiting for someone to join.
 		/// </summary>
 		PreGame,
 		/// <summary>
-		/// The game is about to start, wait a bit and spawn everyone.
+		/// The game is about to start, we are waiting for players to get ready
 		/// </summary>
-		StartGame,
+		ReadyUp,
 		/// <summary>
-		/// All players are respawned, frozen in place.
+		/// The round is about to start, we make a short freezetime before the game is on.
 		/// </summary>
 		PreRound,
 		/// <summary>
@@ -207,19 +215,12 @@ namespace Source1
 		/// </summary>
 		Gameplay,
 		/// <summary>
-		/// Someone has won the round.
+		/// The round has ended
 		/// </summary>
-		TeamWin,
-		/// <summary>
-		/// Noone has won, manually restart the game, reset scores.
-		/// </summary>
-		Restart,
+		RoundEnd,
 		/// <summary>
 		/// Game is over, showing the scoreboard etc
 		/// </summary>
-		Stalemate,
-		GameOver,
-		Bonus,
-		BetweenRounds
+		GameOver
 	}
 }
