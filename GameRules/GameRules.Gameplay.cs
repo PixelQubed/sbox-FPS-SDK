@@ -1,4 +1,4 @@
-using Sandbox;
+﻿using Sandbox;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -6,10 +6,9 @@ namespace Source1
 {
 	partial class GameRules
 	{
-		public void StartGameplay()
+		public virtual bool ShouldShowTeamGoal()
 		{
-			if ( State == GameState.Gameplay ) return;
-			State = GameState.Gameplay;
+			return State == GameState.PreRound;
 		}
 	}
 }
