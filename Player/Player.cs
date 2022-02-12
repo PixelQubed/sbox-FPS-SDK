@@ -111,7 +111,9 @@ namespace Source1
 		public void Kill()
 		{
 			if ( !IsAlive ) return;
-			OnKilled();
+
+			var dmg = DamageInfo.Generic( Health * 2 ).WithAttacker( this ).WithPosition( Position );
+			TakeDamage( dmg );
 		}
 
 

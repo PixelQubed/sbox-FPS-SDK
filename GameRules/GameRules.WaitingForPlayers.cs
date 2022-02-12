@@ -13,7 +13,7 @@ namespace Source1
 		[Net] public TimeSince TimeSinceWaitingForPlayersStart { get; set; }
 		public float TimeUntilWaitingForPlayersEnds => MathF.Max( 0, mp_waiting_for_players_time - TimeSinceWaitingForPlayersStart );
 
-		public void CheckWaitingForPlayers()
+		public virtual void CheckWaitingForPlayers()
 		{
 			if ( mp_waiting_for_players_cancel )
 			{

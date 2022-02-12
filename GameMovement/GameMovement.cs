@@ -18,7 +18,6 @@ namespace Source1
 		public override void FrameSimulate()
 		{
 			base.FrameSimulate();
-
 			EyeRot = Input.Rotation;
 		}
 
@@ -52,16 +51,14 @@ namespace Source1
 
 			if ( !Player.CanPlayerMove() )
 			{
-				ForwardMove = 0;
-				SideMove = 0;
-				UpMove = 0;
+				Input.Forward = 0;
+				Input.Left = 0;
+				Input.Up = 0;
 			}
 
 			PlayerMove();
 		}
 
-
-		public bool GameCodeMovedPlayer { get; set; }
 		protected float FallVelocity { get; set; }
 
 		public virtual void PlayerMove()
@@ -86,19 +83,12 @@ namespace Source1
 				}
 			}
 
-			// Now that we are "unstuck", see where we are (player->GetWaterLevel() and type, player->GetGroundEntity()).
-			if ( Velocity.z > 250.0f )
-			{
-				ClearGroundEntity();
-			}
+			if ( Velocity.z > 250.0f ) ClearGroundEntity();
 
 			LastWaterLevelType = Player.WaterLevelType;
 
 			// If we are not on ground, store off how fast we are moving down
-			if ( !IsGrounded() )
-			{
-				FallVelocity = -Velocity.z;
-			}
+			if ( !IsGrounded() ) FallVelocity = -Velocity.z;
 
 			Player.SimulateFootsteps();
 

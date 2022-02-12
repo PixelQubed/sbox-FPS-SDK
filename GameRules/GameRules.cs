@@ -60,7 +60,7 @@ namespace Source1
 		/// Can this player respawn right now?
 		/// </summary>
 		/// <param name="player"></param>
-		public virtual void CanPlayerRespawn( Source1Player player ) { }
+		public virtual bool CanPlayerRespawn( Source1Player player ) { return true; }
 
 		/// <summary>
 		/// Amount of seconds until this player is able to respawn.

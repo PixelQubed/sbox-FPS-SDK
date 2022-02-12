@@ -15,6 +15,8 @@ namespace Source1
 		{
 			if ( !IsServer ) return;
 
+			IsWaitingForPlayers = false;
+
 			ResetObjectives();
 			ClearMap();
 			CalculateObjectives();
@@ -25,6 +27,12 @@ namespace Source1
 			WinReason = 0;
 
 			State = GameState.PreRound;
+			OnRoundRestart();
+		}
+
+		public virtual void OnRoundRestart()
+		{
+			
 		}
 
 		public virtual void CalculateObjectives() { }

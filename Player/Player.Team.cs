@@ -13,11 +13,19 @@ namespace Source1
 		{
 			Host.AssertServer();
 
-			var lastTeam = TeamNumber;
-			if ( lastTeam == team ) return;
-
+			if ( TeamNumber == team ) return;
 			TeamNumber = team;
-			Kill();
+
+			// If we can respawn 
+			if ( GameRules.Current.CanPlayerRespawn( this ) )
+			{
+				// Then auto respawn.
+				Respawn();
+			} else
+			{
+				// Otherwise die, we can't be alive on the new team.
+				Kill();
+			}
 
 			// Run the event.
 			GameRules.Current.PlayerChangeTeam( this, team );
@@ -34,6 +42,8 @@ namespace Source1
 
 				 return true;
 			 } ).OrderBy( x => TeamManager.GetPlayers( x ).Count() ).FirstOrDefault();
+
+			Log.Info( $"Setting team to {index}" );
 
 			SetTeam( index );
 		}
