@@ -52,7 +52,21 @@ namespace Source1
 				return;
 			}
 
-			player.Transform = result.Transform;
+
+			// land the player on the ground
+			var origin = result.Position;
+			var up = origin + Vector3.Up * 32;
+			var down = origin - Vector3.Up * 32;
+
+			var tr = Trace.Ray( up, down )
+				.WorldOnly()
+				.Run();
+
+			if ( tr.Hit )
+			{
+				player.Transform = new( tr.EndPos + Vector3.Up, result.Rotation );
+				return;
+			}
 		}
 	}
 }
