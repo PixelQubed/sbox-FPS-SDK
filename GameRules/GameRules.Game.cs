@@ -19,7 +19,7 @@ namespace Source1
 			RestartRound();
 		}
 
-		[ServerCmd( "mp_restartgame" )]
+		[ServerCmd( "mp_restart_game" )]
 		public static void Command_RestartGame()
 		{
 			Current?.RestartGame();

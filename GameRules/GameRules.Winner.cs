@@ -25,10 +25,27 @@ namespace Source1
 			if ( !Score.ContainsKey( winner ) ) Score[winner] = 0;
 			Score[winner]++;
 
-			// TFGame.PlaySoundToTeam( winner, "announcer.your_team.won" );
-			// TFGame.PlaySoundToTeam( winner.GetOpponent(), "announcer.your_team.lost" );
+			PlayTeamWinSong( winner );
+			// play lose song for all opponents
+			foreach ( var index in TeamManager.Teams.Keys )
+			{
+				if ( index == winner ) continue;
+				if ( TeamManager.IsPlayable( index ) )
+				{
+					PlayTeamLoseSong( index );
+				}
+			}
 
 			// TODO: For spectators the sound depends on who the user last spectated.
+		}
+
+		public virtual void PlayTeamWinSong( int team ) { }
+		public virtual void PlayTeamLoseSong( int team ) { }
+
+		[ServerCmd("mp_forceteamwin")]
+		public static void Command_ForceTeamWin( int team )
+		{
+			Current.DeclareWinner( team, 0 );
 		}
 
 		[ConVar.Replicated] public static float mp_chattime { get; set; } = 15f;

@@ -78,25 +78,15 @@ namespace Source1
 		// TeamWin
 		//
 
-		public virtual void StartedTeamWin() { }
-		public virtual void SimulateTeamWin() { }
-		public virtual void EndedTeamWin() { }
-
-		//
-		// Restart
-		//
-
-		public virtual void StartedRestart() { }
-		public virtual void SimulateRestart() { }
-		public virtual void EndedRestart() { }
-
-		//
-		// Stalemate
-		//
-
-		public virtual void StartedStalemate() { }
-		public virtual void SimulateStalemate() { }
-		public virtual void EndedStalemate() { }
+		public virtual void SimulateRoundEnd()
+		{
+			if ( TimeSinceStateChange > mp_chattime )
+			{
+				RestartRound();
+			}
+		}
+		public virtual void StartedRoundEnd() { }
+		public virtual void EndedRoundEnd() { }
 
 		//
 		// GameOver
@@ -105,22 +95,6 @@ namespace Source1
 		public virtual void StartedGameOver() { }
 		public virtual void SimulateGameOver() { }
 		public virtual void EndedGameOver() { }
-
-		//
-		// Bonus
-		//
-
-		public virtual void StartedBonus() { }
-		public virtual void SimulateBonus() { }
-		public virtual void EndedBonus() { }
-
-		//
-		// BetweenRounds
-		//
-
-		public virtual void StartedBetweenRounds() { }
-		public virtual void SimulateBetweenRounds() { }
-		public virtual void EndedBetweenRounds() { }
 
 
 		public virtual void TickStates()
@@ -138,7 +112,7 @@ namespace Source1
 				case GameState.ReadyUp: SimulateReadyUp(); break;
 				case GameState.PreRound: SimulatePreRound(); break;
 				case GameState.Gameplay: SimulateGameplay(); break;
-				case GameState.RoundEnd: SimulateTeamWin(); break;
+				case GameState.RoundEnd: SimulateRoundEnd(); break;
 				case GameState.GameOver: SimulateGameOver(); break;
 			}
 		}
@@ -170,7 +144,7 @@ namespace Source1
 				case GameState.ReadyUp: StartedReadyUp(); break;
 				case GameState.PreRound: StartedPreRound(); break;
 				case GameState.Gameplay: StartedGameplay(); break;
-				case GameState.RoundEnd: StartedTeamWin(); break;
+				case GameState.RoundEnd: StartedRoundEnd(); break;
 				case GameState.GameOver: StartedGameOver(); break;
 			}
 		}
@@ -188,7 +162,7 @@ namespace Source1
 				case GameState.ReadyUp: EndedReadyUp(); break;
 				case GameState.PreRound: EndedPreRound(); break;
 				case GameState.Gameplay: EndedGameplay(); break;
-				case GameState.RoundEnd: EndedTeamWin(); break;
+				case GameState.RoundEnd: EndedRoundEnd(); break;
 				case GameState.GameOver: EndedGameOver(); break;
 			}
 		}

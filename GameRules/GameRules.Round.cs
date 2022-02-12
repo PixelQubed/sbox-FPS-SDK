@@ -29,7 +29,7 @@ namespace Source1
 		public virtual void ResetObjectives() { }
 
 
-		[ServerCmd( "mp_restartround" )]
+		[ServerCmd( "mp_restart_round" )]
 		public static void Command_RestartRound()
 		{
 			Current?.RestartRound();
