@@ -125,8 +125,8 @@ namespace Source1
 		public virtual void OnStateChanged( GameState previous, GameState current )
 		{
 			OnStateEnded( previous );
-			OnStateStarted( previous );
-			Log.Info( $"Game State Changed: {previous} → {current}" );
+			OnStateStarted( current );
+			// Log.Info( $"Game State Changed: {previous} → {current}" );
 
 			TimeSinceStateChange = 0;
 		}
