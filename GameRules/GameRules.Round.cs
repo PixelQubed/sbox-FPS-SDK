@@ -13,7 +13,9 @@ namespace Source1
 		{
 			if ( !IsServer ) return;
 
+			ResetObjectives();
 			ClearMap();
+			CalculateObjectives();
 			RespawnPlayers( true );
 
 			// Reset the winner.
@@ -22,6 +24,9 @@ namespace Source1
 
 			State = GameState.PreRound;
 		}
+
+		public virtual void CalculateObjectives() { }
+		public virtual void ResetObjectives() { }
 
 
 		[ServerCmd( "mp_restartround" )]
