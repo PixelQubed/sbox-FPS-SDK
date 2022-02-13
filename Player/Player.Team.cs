@@ -9,7 +9,7 @@ namespace Source1
 	{
 		[Net] public int TeamNumber { get; set; }
 
-		public void SetTeam( int team )
+		public virtual void SetTeam( int team )
 		{
 			Host.AssertServer();
 

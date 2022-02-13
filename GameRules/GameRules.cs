@@ -32,7 +32,7 @@ namespace Source1
 
 			if ( IsServer )
 			{
-				DebugOverlay.ScreenText( $"{State}" );
+				DebugOverlay.ScreenText( $"Game State: {State}" );
 			}
 
 			CheckWaitingForPlayers();

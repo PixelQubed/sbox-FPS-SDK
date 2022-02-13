@@ -52,7 +52,7 @@ namespace Source1
 		}
 
 		public static TeamProperties GetProperties( int number ) => Teams.ContainsKey( number ) ? Teams[number] : default;
-		public static string GetTag( int team ) => $"Team_{team}";
+		public static string GetTag( int team ) => $"Team_{GetProperties( team ).Name}";
 		public static IEnumerable<Source1Player> GetPlayers( int team ) => Entity.All.OfType<Source1Player>().Where( x => x.TeamNumber == team );
 		public static string GetName( int team ) => GetProperties( team ).Name;
 		public static string GetTitle( int team ) => GetProperties( team ).Title;

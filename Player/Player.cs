@@ -158,7 +158,7 @@ namespace Source1
 			GameRules.Event_OnPlayerHurt( this, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
 
 			// flinch the model.
-			Animator.SetParam( "b_flinch", true );
+			Animator?.SetParam( "b_flinch", true );
 			base.TakeDamage( info );
 		}
 
