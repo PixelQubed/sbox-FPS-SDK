@@ -19,7 +19,6 @@ namespace Source1
 
 			ResetObjectives();
 			ClearMap();
-			CalculateObjectives();
 			RespawnPlayers( true );
 
 			// Reset the winner.

@@ -47,6 +47,7 @@ namespace Source1
 
 		public override void PostLevelLoaded()
 		{
+			CalculateObjectives();
 			CreateStandardEntities();
 		}
 
