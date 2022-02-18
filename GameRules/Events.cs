@@ -6,11 +6,6 @@ namespace Source1
 	{
 		public abstract class Round
 		{
-			public class StartAttribute : EventAttribute
-			{
-				public StartAttribute() : base( "Round_Start" ) { }
-			}
-
 			/// <summary>
 			/// Round restart
 			/// </summary>
@@ -33,20 +28,6 @@ namespace Source1
 			public class WinAttribute : EventAttribute
 			{
 				public WinAttribute() : base( "Round_Win" ) { }
-			}
-
-			public struct WinArgs
-			{
-				public int Winner { get; set; }
-				public int WinReason { get; set; }
-				public float RoundTime { get; set; }
-
-				public WinArgs( int winner, int winReason, float roundTime )
-				{
-					Winner = winner;
-					WinReason = winReason;
-					RoundTime = roundTime;
-				}
 			}
 		}
 

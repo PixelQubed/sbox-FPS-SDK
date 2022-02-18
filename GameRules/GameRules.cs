@@ -176,5 +176,22 @@ namespace Source1
 
 			return false;
 		}
+
+		//
+		// Game Events
+		//
+
+		public static void BroadcastEvent( string name )
+		{
+			Log.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {name}" );
+			Event.Run( name );
+			if ( Host.IsServer ) BroadcastEventClient( name );
+		}
+
+		[ClientRpc]
+		public static void BroadcastEventClient( string name )
+		{
+			BroadcastEvent( name );
+		}
 	}
 }

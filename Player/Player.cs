@@ -173,8 +173,8 @@ namespace Source1
 			var inPreRound = GameRules.Current.State == GameState.PreRound;
 			var preRoundFreeze = mp_player_freeze_on_round_start;
 
-			// Competitve checks?
-			// Special conditions when pre round doesnt need to freeze us?
+			// no need to freeze if we're waiting for players.
+			if ( GameRules.Current.IsWaitingForPlayers ) return true;
 
 			var noMovement = inPreRound && preRoundFreeze;
 			return !noMovement;

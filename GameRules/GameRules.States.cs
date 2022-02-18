@@ -62,7 +62,12 @@ namespace Source1
 				State = GameState.Gameplay;
 			}
 		}
-		public virtual void StartedPreRound() { }
+
+		public virtual void StartedPreRound()
+		{
+			Event.Run( "Round_Restart" );
+		}
+
 		public virtual void EndedPreRound() { }
 		public virtual float GetPreRoundFreezeTime() { return 6; }
 
@@ -70,7 +75,11 @@ namespace Source1
 		// Gameplay
 		//
 
-		public virtual void StartedGameplay() { }
+		public virtual void StartedGameplay()
+		{
+			Event.Run( "Round_Active" );
+		}
+
 		public virtual void SimulateGameplay() { }
 		public virtual void EndedGameplay() { }
 

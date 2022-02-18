@@ -25,6 +25,11 @@ namespace Source1
 			Winner = 0;
 			WinReason = 0;
 
+			if ( !IsEnoughPlayersToStartRound() )
+			{
+				StartWaitingForPlayers();
+			}
+
 			State = GameState.PreRound;
 			OnRoundRestart();
 		}
@@ -37,6 +42,18 @@ namespace Source1
 		public virtual void CalculateObjectives() { }
 		public virtual void ResetObjectives() { }
 
+		public virtual bool IsEnoughPlayersToStartRound()
+		{
+			foreach ( var pair in TeamManager.Teams )
+			{
+				// not enough members in one team
+				if ( !IsEnoughPlayersInTeamToStartRound( pair.Key ) )
+					return false;
+			}
+			return true;
+		}
+
+		public virtual bool IsEnoughPlayersInTeamToStartRound( int team ) { return true; }
 
 		[ServerCmd( "mp_restart_round" )]
 		public static void Command_RestartRound()
