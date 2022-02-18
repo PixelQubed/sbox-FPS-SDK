@@ -9,7 +9,14 @@ namespace Source1
 {
 	partial class GameRules
 	{
-		[Net] public GameState State { get; set; }
+		[Net] public GameState State { get; private set; }
+		GameState NextState { get; set; }
+
+		public void TransitionToState( GameState state )
+		{
+			NextState = state;
+		}
+
 		[Net] public TimeSince TimeSinceStateChange { get; set; }
 		GameState LastState { get; set; }
 
@@ -20,7 +27,7 @@ namespace Source1
 		public virtual void SimulateInitialized()
 		{
 			// We have started the game, we are in pre game now.
-			State = GameState.PreGame;
+			TransitionToState( GameState.PreGame );
 		}
 
 		public virtual void StartedInitialized() { }
@@ -63,7 +70,7 @@ namespace Source1
 		{
 			if ( TimeSinceStateChange > GetPreRoundFreezeTime() )
 			{
-				State = GameState.Gameplay;
+				TransitionToState( GameState.Gameplay );
 			}
 		}
 
@@ -121,10 +128,10 @@ namespace Source1
 
 		public virtual void TickStates()
 		{
-			if ( LastState != State )
+			if ( State != NextState )
 			{
-				OnStateChanged( LastState, State );
-				LastState = State;
+				OnStateChanged( State, NextState );
+				State = NextState;
 			}
 
 			switch ( State )
@@ -146,11 +153,11 @@ namespace Source1
 		/// <param name="current"></param>
 		public virtual void OnStateChanged( GameState previous, GameState current )
 		{
+			TimeSinceStateChange = 0;
+
 			OnStateEnded( previous );
 			OnStateStarted( current );
 			// Log.Info( $"Game State Changed: {previous} → {current}" );
-
-			TimeSinceStateChange = 0;
 		}
 
 		/// <summary>

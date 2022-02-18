@@ -17,7 +17,7 @@ namespace Source1
 		{
 			// If we're already in humiliation, don't do anything.
 			if ( State == GameState.RoundEnd ) return;
-			State = GameState.RoundEnd;
+			TransitionToState( GameState.RoundEnd );
 
 			Winner = winner;
 			WinReason = reason;

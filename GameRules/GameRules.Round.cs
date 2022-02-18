@@ -30,7 +30,7 @@ namespace Source1
 				StartWaitingForPlayers();
 			}
 
-			State = GameState.PreRound;
+			TransitionToState( GameState.PreRound );
 			OnRoundRestart();
 		}
 
