@@ -134,7 +134,7 @@ namespace Source1
 			DeleteChildren();
 			UseAnimGraph = false;
 
-			// BecomeRagdollOnClient( Velocity, LastDamageInfo.Flags, LastDamageInfo.Position, LastDamageInfo.Force * 30, GetHitboxBone( LastDamageInfo.HitboxIndex ) );
+			BecomeRagdollOnClient( Velocity, LastDamageInfo.Flags, LastDamageInfo.Position, LastDamageInfo.Force * 30, GetHitboxBone( LastDamageInfo.HitboxIndex ) );
 
 			Controller = null;
 			Animator = null;
