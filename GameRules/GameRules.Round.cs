@@ -63,6 +63,9 @@ namespace Source1
 
 		public virtual void ClearMap()
 		{
+			// reset all the doors to their initial state.
+			var doors = All.OfType<DoorEntity>();
+			foreach ( var door in doors ) door.Reset();
 		}
 	}
 }
