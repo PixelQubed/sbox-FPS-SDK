@@ -14,6 +14,17 @@ namespace Source1
 		public GameRules()
 		{
 			Current = this;
+		}
+
+		public override void Spawn()
+		{
+			base.Spawn();
+			DeclareGameTeams();
+		}
+
+		public override void ClientSpawn()
+		{
+			base.ClientSpawn();
 			DeclareGameTeams();
 		}
 
