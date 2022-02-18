@@ -94,7 +94,12 @@ namespace Source1
 				RestartRound();
 			}
 		}
-		public virtual void StartedRoundEnd() { }
+
+		public virtual void StartedRoundEnd()
+		{
+			Event.Run( "Round_End" );
+		}
+
 		public virtual void EndedRoundEnd() { }
 
 		//

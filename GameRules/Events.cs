@@ -25,9 +25,9 @@ namespace Source1
 			/// <summary>
 			/// When a team wins a round
 			/// </summary>
-			public class WinAttribute : EventAttribute
+			public class EndAttribute : EventAttribute
 			{
-				public WinAttribute() : base( "Round_Win" ) { }
+				public EndAttribute() : base( "Round_End" ) { }
 			}
 		}
 
