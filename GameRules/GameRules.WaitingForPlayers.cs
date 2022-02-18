@@ -22,7 +22,7 @@ namespace Source1
 
 			if ( IsWaitingForPlayers )
 			{
-				if ( TimeSinceWaitingForPlayersStart >= mp_waiting_for_players_time )
+				if ( TimeSinceWaitingForPlayersStart > mp_waiting_for_players_time )
 				{
 					if ( IsEnoughPlayersToStartRound() )
 					{

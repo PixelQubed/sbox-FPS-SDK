@@ -33,11 +33,6 @@ namespace Source1
 
 		public abstract class Game
 		{
-			public class StartAttribute : EventAttribute
-			{
-				public StartAttribute() : base( "Game_Start" ) { }
-			}
-
 			public class RestartAttribute : EventAttribute
 			{
 				public RestartAttribute() : base( "Game_Restart" ) { }
@@ -47,6 +42,45 @@ namespace Source1
 			{
 				public OverAttribute() : base( "Game_Over" ) { }
 			}
+		}
+
+		public abstract class Client
+		{
+			#region Connect
+			public class ConnectAttribute : EventAttribute
+			{
+				public ConnectAttribute() : base( "Client_Connect" ) { }
+			}
+
+			public struct ConnectArgs
+			{
+				public Sandbox.Client Client;
+
+				public ConnectArgs( Sandbox.Client client )
+				{
+					Client = client;
+				}
+			}
+			#endregion
+
+			#region Disconnect
+			public class DisconnectAttribute : EventAttribute
+			{
+				public DisconnectAttribute() : base( "Client_Disconnect" ) { }
+			}
+
+			public struct DisconnectArgs
+			{
+				public Sandbox.Client Client;
+				public NetworkDisconnectionReason Reason;
+
+				public DisconnectArgs( Sandbox.Client client, NetworkDisconnectionReason reason )
+				{
+					Client = client;
+					Reason = reason;
+				}
+			}
+			#endregion
 		}
 
 		public abstract class Player

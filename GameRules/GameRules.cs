@@ -43,6 +43,18 @@ namespace Source1
 		/// </summary>
 		public override void ClientJoined( Client client )
 		{
+			Event.Run( "Client_Connect", new Source1Event.Client.ConnectArgs( client ) );
+		}
+
+		public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
+		{
+			Event.Run( "Client_Disconnect", new Source1Event.Client.DisconnectArgs( client, reason ) );
+
+			if ( client.Pawn.IsValid() )
+			{
+				client.Pawn.Delete();
+				client.Pawn = null;
+			}
 		}
 
 		public override void PostLevelLoaded()

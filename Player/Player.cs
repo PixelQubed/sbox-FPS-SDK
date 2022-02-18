@@ -143,11 +143,11 @@ namespace Source1
 			EnableAllCollisions = false;
 			EnableDrawing = false;
 
-			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 			TimeSinceDeath = 0;
-
 			LifeState = LifeState.Respawning;
 			StopUsing();
+
+			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 		}
 
 		public override void TakeDamage( DamageInfo info )

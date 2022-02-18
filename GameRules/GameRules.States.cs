@@ -40,7 +40,11 @@ namespace Source1
 			}
 		}
 
-		public virtual void StartedPreGame() { }
+		public virtual void StartedPreGame()
+		{
+			Event.Run( "Game_Restart" );
+		}
+
 		public virtual void EndedPreGame() { }
 
 		//
@@ -106,7 +110,11 @@ namespace Source1
 		// GameOver
 		//
 
-		public virtual void StartedGameOver() { }
+		public virtual void StartedGameOver()
+		{
+			Event.Run( "Game_Over" );
+		}
+
 		public virtual void SimulateGameOver() { }
 		public virtual void EndedGameOver() { }
 
