@@ -161,7 +161,7 @@ namespace Source1
 		public virtual void StepMove( Vector3 dest )
 		{
 			MoveHelper mover = new MoveHelper( Position, Velocity );
-			mover.Trace = mover.Trace.Size( GetPlayerMins(), GetPlayerMaxs() ).Ignore( Pawn );
+			mover.Trace = SetupBBoxTrace( 0, 0 );
 			mover.MaxStandableAngle = sv_maxstandableangle;
 
 			mover.TryMoveWithStep( Time.Delta, sv_stepsize );
@@ -173,7 +173,7 @@ namespace Source1
 		public virtual void TryPlayerMove()
 		{
 			MoveHelper mover = new MoveHelper( Position, Velocity );
-			mover.Trace = mover.Trace.Size( GetPlayerMins(), GetPlayerMaxs() ).Ignore( Pawn );
+			mover.Trace = SetupBBoxTrace( 0, 0 );
 			mover.MaxStandableAngle = sv_maxstandableangle;
 
 			mover.TryMove( Time.Delta );
@@ -206,8 +206,6 @@ namespace Source1
 
 			// Reduce wishspeed by the amount of veer.
 			var addspeed = wishspeed - currentspeed;
-
-			// DebugOverlay.ScreenText( $"{MathF.Floor( wishspeed )} - { MathF.Floor( currentspeed )} = {MathF.Floor( addspeed )}" );
 
 			// If not going to add any speed, done.
 			if ( addspeed <= 0 )
