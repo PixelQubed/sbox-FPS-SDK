@@ -111,7 +111,7 @@ namespace Source1
 					break;
 
 				case MoveType.MOVETYPE_NOCLIP:
-					// FullNoClipMove( sv_noclipspeed.GetFloat(), sv_noclipaccelerate.GetFloat() );
+					FullNoClipMove( sv_noclip_speed, sv_noclip_accelerate );
 					break;
 
 				case MoveType.MOVETYPE_FLY:
