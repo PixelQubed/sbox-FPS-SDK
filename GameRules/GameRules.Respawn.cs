@@ -1,4 +1,5 @@
-using Sandbox;
+﻿using Sandbox;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -45,35 +46,41 @@ namespace Source1
 				}
 			}
 
-			Log.Info( $"{result}" );
+			Transform transform = new( 0, Rotation.Identity );
 
 			// If we can't find a spawnpoint, fallback to default s&box spawn points.
-			if ( result == null )
+			if ( result != null )
 			{
-				base.MoveToSpawnpoint( player );
-				return;
+				transform = result.Transform;
+			}
+			else 
+			{
+				Log.Info( $"Failed to find a team spawn point for {player}. Fallback to default sbox points." );
+
+				var sboxpoint = All
+					.OfType<Sandbox.SpawnPoint>()
+					.OrderBy( x => Guid.NewGuid() )
+					.FirstOrDefault();
+
+				Log.Info( $"{sboxpoint}" );
+
+				if ( sboxpoint != null ) transform = sboxpoint.Transform;
+				else Log.Info( $"- This map lacks any spawn points, trying to land the player on [0,0,0]" );
 			}
 
-
-			// land the player on the ground
-			var origin = result.Position;
+			// trying to land the player on the ground
+			var origin = transform.Position;
 			var up = origin + Vector3.Up * 64;
-			var down = origin - Vector3.Up * 64;
+			var down = origin + Vector3.Down * 64;
 
+			// Trace down so maybe we can find a spot to land on.
 			var tr = Trace.Ray( up, down )
 				.Size( player.CollisionBounds )
 				.WorldOnly()
 				.Run();
 
-			if ( tr.Hit )
-			{
-				player.Transform = new( tr.EndPos + Vector3.Up, result.Rotation );
-				return;
-			}
-
-			// else just teleport them to point's transform.
-			Log.Info( $"Couldn't land the player on the ground, teleporting them directly to the spawn point." );
-			player.Transform = result.Transform;
+			if ( tr.Hit ) transform.Position = tr.EndPos;
+			player.Transform = transform;
 		}
 	}
 }
