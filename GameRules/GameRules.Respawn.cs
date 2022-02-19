@@ -65,7 +65,7 @@ namespace Source1
 				Log.Info( $"{sboxpoint}" );
 
 				if ( sboxpoint != null ) transform = sboxpoint.Transform;
-				else Log.Info( $"- This map lacks any spawn points, trying to land the player on [0,0,0]" );
+				else Log.Info( $"- This map lacks any valid spawn points, trying to land the player on [0,0,0]" );
 			}
 
 			// trying to land the player on the ground
@@ -76,7 +76,8 @@ namespace Source1
 			// Trace down so maybe we can find a spot to land on.
 			var tr = Trace.Ray( up, down )
 				.Size( player.CollisionBounds )
-				.WorldOnly()
+				.HitLayer( CollisionLayer.Solid, true )
+				.WithoutTags( "player", "projectile" )
 				.Run();
 
 			if ( tr.Hit ) transform.Position = tr.EndPos;
