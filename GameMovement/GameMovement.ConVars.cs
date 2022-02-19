@@ -7,11 +7,11 @@ namespace Source1
 	{
 		[ConVar.Replicated] public static float sv_gravity { get; set; } = 800;
 		[ConVar.Replicated] public static float sv_stopspeed { get; set; } = 100;
-		[ConVar.Replicated] public static float sv_noclipaccelerate { get; set; } = 5;
-		[ConVar.Replicated] public static float sv_noclipspeed { get; set; } = 5;
-		[ConVar.Replicated] public static float sv_specaccelerate { get; set; } = 5;
-		[ConVar.Replicated] public static float sv_specspeed { get; set; } = 3;
-		[ConVar.Replicated] public static float sv_specnoclip { get; set; } = 1;
+		[ConVar.Replicated] public static float sv_noclip_accelerate { get; set; } = 5;
+		[ConVar.Replicated] public static float sv_noclip_speed { get; set; } = 5;
+		[ConVar.Replicated] public static float sv_spectator_accelerate { get; set; } = 5;
+		[ConVar.Replicated] public static float sv_spectator_speed { get; set; } = 3;
+		[ConVar.Replicated] public static bool sv_spectator_noclip { get; set; }
 
 		[ConVar.Replicated] public static float sv_maxspeed { get; set; } = 500;
 		[ConVar.Replicated] public static float sv_accelerate { get; set; } = 10;

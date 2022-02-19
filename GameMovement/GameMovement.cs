@@ -129,7 +129,7 @@ namespace Source1
 					break;
 
 				case MoveType.MOVETYPE_OBSERVER:
-					// FullObserverMove(); // clips against world&players
+					FullObserverMove();
 					break;
 			}
 		}

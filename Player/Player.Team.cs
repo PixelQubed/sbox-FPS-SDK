@@ -16,16 +16,7 @@ namespace Source1
 			if ( TeamNumber == team ) return;
 			TeamNumber = team;
 
-			// If we can respawn 
-			if ( GameRules.Current.CanPlayerRespawn( this ) )
-			{
-				// Then auto respawn.
-				Respawn();
-			} else
-			{
-				// Otherwise die, we can't be alive on the new team.
-				Kill();
-			}
+			Kill();
 
 			// Run the event.
 			GameRules.Current.PlayerChangeTeam( this, team );
