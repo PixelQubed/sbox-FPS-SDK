@@ -55,7 +55,7 @@ namespace Source1
 
 		public virtual bool IsEnoughPlayersInTeamToStartRound( int team ) { return true; }
 
-		[ServerCmd( "mp_restart_round" )]
+		[AdminCmd( "mp_restart_round" )]
 		public static void Command_RestartRound()
 		{
 			Current?.RestartRound();
