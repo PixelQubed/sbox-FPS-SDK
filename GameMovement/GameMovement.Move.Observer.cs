@@ -11,7 +11,6 @@ namespace Source1
 
 			var forward = Input.Rotation.Forward;
 			var right = Input.Rotation.Right;
-			var up = Input.Rotation.Up;
 
 			if ( Input.Down( InputButton.Run ) ) factor /= 2.0f;
 
@@ -50,7 +49,7 @@ namespace Source1
 				//  threshhold, bleed the theshold amount.
 				float control = (spd < maxspeed / 4) ? (maxspeed / 4) : spd;
 
-				float friction = sv_friction;// * SurfaceFriction;
+				float friction = sv_friction * SurfaceFriction;
 
 				// Add the amount to the drop amount.
 				float drop = control * friction * Time.Delta;

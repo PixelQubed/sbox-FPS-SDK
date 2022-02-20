@@ -185,5 +185,6 @@ namespace Source1
 	{
 		public const string Ducked = "ducked";
 		public const string WaterJump = "waterjump";
+		public const string Noclipped = "noclipped";
 	}
 }

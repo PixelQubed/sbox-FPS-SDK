@@ -8,6 +8,7 @@ namespace Source1
 	partial class Source1Player
 	{
 		[Net] public ObserverMode ObserverMode { get; private set; }
+		public bool IsObserver => ObserverMode != ObserverMode.None;
 
 		public void SetObserverMode( ObserverMode mode )
 		{
