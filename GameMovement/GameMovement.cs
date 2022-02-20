@@ -184,7 +184,12 @@ namespace Source1
 
 		public virtual bool CanAccelerate()
 		{
-			// Sure, why not.
+			if ( !Player.IsAlive )
+				return false;
+
+			if ( IsJumpingFromWater )
+				return false;
+
 			return true;
 		}
 
@@ -212,7 +217,7 @@ namespace Source1
 				return;
 
 			// Determine amount of acceleration.
-			var accelspeed = acceleration * wishspeed * Time.Delta;
+			var accelspeed = acceleration * wishspeed * Time.Delta * SurfaceFriction;
 
 			// Cap at addspeed
 			if ( accelspeed > addspeed )
@@ -289,6 +294,9 @@ namespace Source1
 			SurfaceFriction = 1.0f;
 			CheckWater();
 
+			if ( Player.IsObserver )
+				return;
+
 			var point = Position - Vector3.Up * 2;
 			var bumpOrigin = Position;
 
@@ -307,7 +315,7 @@ namespace Source1
 			}
 
 
-			if ( bMovingUpRapidly || (bMovingUp && Player.MoveType == MoveType.MOVETYPE_LADDER) )
+			if ( bMovingUpRapidly || (bMovingUp && Player.MoveType == MoveType.MOVETYPE_LADDER) ) 
 			{
 				ClearGroundEntity();
 			}
@@ -570,12 +578,13 @@ namespace Source1
 
 		protected void ShowDebugOverlay()
 		{
-			if ( cl_debug_movement && Host.IsClient )
 			{
-				DebugOverlay.ScreenText( 0, $"MoveType          {Player.MoveType}" );
-				DebugOverlay.ScreenText( 1, $"Water Level       {Player.WaterLevelType}" );
-				DebugOverlay.ScreenText( 2, $"Water Fraction    {Player.WaterLevel.Fraction}" );
-				DebugOverlay.ScreenText( 3, $"m_flWaterJumpTime {WaterJumpTime}" );
+				DebugOverlay.ScreenText( 0, $"SurfaceFriction   {SurfaceFriction}" );
+
+				DebugOverlay.ScreenText( 1, $"MoveType          {Player.MoveType}" );
+				DebugOverlay.ScreenText( 2, $"Water Level       {Player.WaterLevelType}" );
+				DebugOverlay.ScreenText( 3, $"Water Fraction    {Player.WaterLevel.Fraction}" );
+				DebugOverlay.ScreenText( 4, $"WaterJumpTime     {WaterJumpTime}" );
 				/*
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
 				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );
