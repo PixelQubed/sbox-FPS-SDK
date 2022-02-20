@@ -13,7 +13,7 @@ namespace Source1
 		[ConVar.Replicated] public static float sv_spectator_speed { get; set; } = 3;
 		[ConVar.Replicated] public static bool sv_spectator_noclip { get; set; }
 
-		[ConVar.Replicated] public static float sv_maxspeed { get; set; } = 500;
+		[ConVar.Replicated] public static float sv_maxspeed { get; set; } = 320;
 		[ConVar.Replicated] public static float sv_accelerate { get; set; } = 10;
 
 		[ConVar.Replicated] public static float sv_airaccelerate { get; set; } = 10;
