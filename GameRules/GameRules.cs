@@ -40,12 +40,6 @@ namespace Source1
 		public virtual void Tick()
 		{
 			TickStates();
-
-			if ( IsServer )
-			{
-				// DebugOverlay.ScreenText( $"Game State: {State}" );
-			}
-
 			CheckWaitingForPlayers();
 		}
 
@@ -54,6 +48,11 @@ namespace Source1
 		/// </summary>
 		public override void ClientJoined( Client client )
 		{
+			if ( client.Pawn is Source1Player player ) 
+			{
+				player.Respawn();
+			}
+
 			Event.Run( "Client_Connect", new Source1Event.Client.ConnectArgs( client ) );
 		}
 

@@ -7,13 +7,88 @@ namespace Source1
 {
 	public partial class Source1Player : Player
 	{
-		public virtual WaterLevelType WaterLevelType { get; set; }
+		[Net] public float FallVelocity { get; set; }
 		[Net] public float MaxSpeed { get; set; }
+		[Net] public float MaxHealth { get; set; }
+
+		public override void Spawn()
+		{
+			base.Spawn();
+			Log.Info( $"Source1Player.Spawn()" );
+
+			EnableLagCompensation = true;
+
+			Controller = new Source1GameMovement();
+			Animator = new StandardPlayerAnimator();
+			Camera = new FirstPersonCamera();
+
+			TeamNumber = 0;
+			LastObserverMode = ObserverMode.Roaming;
+		}
+
+		public override void Respawn()
+		{
+			base.Respawn();
+			Log.Info( $"Source1Player.Respawn()" );
+
+			LifeState = LifeState.Alive;
+			Velocity = Vector3.Zero;
+			WaterLevel.Clear();
+			MoveType = MoveType.MOVETYPE_WALK;
+
+			EnableAllCollisions = true;
+			EnableDrawing = true;
+			EnableHideInFirstPerson = true;
+			EnableShadowInFirstPerson = false;
+			UseAnimGraph = true;
+
+			CollisionGroup = CollisionGroup.Player;
+			SetInteractsAs( CollisionLayer.Player );
+
+			// Health
+			Health = 100;
+			MaxHealth = Health;
+
+			// Movement
+			FallVelocity = 0;
+			MaxSpeed = GetMaxSpeed();
+			AllowAutoMovement = true;
+			SetCollisionBounds( GetPlayerMins(), GetPlayerMaxs() );
+
+			TimeSinceSprayed = sv_spray_cooldown + 1;
+			TimeSinceRespawned = 0;
+
+			// Tags
+			RemoveAllTags();
+			Tags.Add( "player" );
+			Tags.Add( TeamManager.GetTag( TeamNumber ) );
+
+			PreviousWeapon = null;
+
+			GameRules.Current.MoveToSpawnpoint( this );
+
+			if ( TeamManager.IsPlayable( TeamNumber ) )
+				StopObserverMode();
+			else
+				StartObserverMode( LastObserverMode );
+
+			GameRules.Current.PlayerRespawn( this );
+			ResetInterpolation();
+		}
+
+		public void SetCollisionBounds( Vector3 mins, Vector3 maxs )
+		{
+			var lastMoveType = MoveType;
+			SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, mins, maxs );
+			MoveType = lastMoveType;
+		}
+
+		public virtual WaterLevelType WaterLevelType { get; set; }
 		[Net] public bool AllowAutoMovement { get; set; } = true;
 
 		[Net] public TimeSince TimeSinceRespawned { get; set; }
-		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 		[Net] public TimeSince TimeSinceDeath { get; set; }
+		[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 
 		public DamageInfo LastDamageInfo { get; set; }
 
@@ -22,57 +97,14 @@ namespace Source1
 			SimulateVisuals();
 
 			if ( cl.IsBot ) SimulateBot( cl );
+			GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
 
 			SimulateActiveChild( cl, ActiveChild );
 			SimulatePassiveChildren( cl );
 		}
 
-		public override void Spawn()
+		public virtual void UpdateModel()
 		{
-			base.Spawn();
-			TeamNumber = 0;
-
-			LifeState = LifeState.Respawnable;
-			CollisionGroup = CollisionGroup.Player;
-			EnableLagCompensation = true;
-
-			MaxSpeed = GetMaxSpeed();
-			AllowAutoMovement = true;
-		}
-
-		/// <summary>
-		/// Respawn this player.
-		/// </summary>
-		public override void Respawn()
-		{
-			LifeState = LifeState.Alive;
-			Velocity = Vector3.Zero;
-			WaterLevel.Clear();
-
-			EnableAllCollisions = true;
-			EnableDrawing = true;
-			EnableHideInFirstPerson = true;
-			EnableShadowInFirstPerson = false;
-
-			UseAnimGraph = true;
-			Controller = new Source1GameMovement();
-			Animator = new StandardPlayerAnimator();
-			Camera = new FirstPersonCamera();
-
-			// Tags
-			RemoveAllTags();
-			Tags.Add( "player" );
-			Tags.Add( TeamManager.GetTag( TeamNumber ) );
-
-			CreateHull();
-			PreviousWeapon = null;
-			ResetInterpolation();
-
-			RespawnEffects();
-			GameRules.Current.MoveToSpawnpoint( this );
-			TimeSinceRespawned = 0;
-
-			GameRules.Current.PlayerRespawn( this );
 		}
 
 		public void RemoveAllTags()
@@ -136,10 +168,6 @@ namespace Source1
 
 			BecomeRagdollOnClient( Velocity, LastDamageInfo.Flags, LastDamageInfo.Position, LastDamageInfo.Force * 30, GetHitboxBone( LastDamageInfo.HitboxIndex ) );
 
-			Controller = null;
-			Animator = null;
-			Camera = new SpectateRagdollCamera();
-
 			EnableAllCollisions = false;
 			EnableDrawing = false;
 
@@ -186,5 +214,11 @@ namespace Source1
 		public const string Ducked = "ducked";
 		public const string WaterJump = "waterjump";
 		public const string Noclipped = "noclipped";
+	}
+
+	public static class Source1Team
+	{
+		public const int Unassigned = 0;
+		public const int Spectator = 1;
 	}
 }
