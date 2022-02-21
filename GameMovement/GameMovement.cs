@@ -7,7 +7,7 @@ namespace Source1
 	{
 		Source1Player Player { get; set; }
 		protected float MaxSpeed { get; set; }
-		protected float SurfaceFriction { get; set; }
+		protected float SurfaceFriction { get; set; } = 1;
 
 
 		protected float ForwardMove { get; set; }
@@ -67,6 +67,7 @@ namespace Source1
 
 			EyeRot = Input.Rotation;
 
+			/*
 			if ( Pawn.MoveType != MoveType.MOVETYPE_NOCLIP &&
 				Pawn.MoveType != MoveType.None &&
 				Pawn.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
@@ -78,10 +79,10 @@ namespace Source1
 					if ( CheckStuck() )
 					{
 						// Can't move, we're stuck
-						return;
+						// return;
 					}
 				}
-			}
+			}*/
 
 			if ( Velocity.z > 250.0f ) ClearGroundEntity();
 
@@ -105,18 +106,13 @@ namespace Source1
 				}
 			}
 
-			switch (Pawn.MoveType)
+			switch ( Pawn.MoveType )
 			{
 				case MoveType.None:
 					break;
 
 				case MoveType.MOVETYPE_NOCLIP:
 					FullNoClipMove( sv_noclip_speed, sv_noclip_accelerate );
-					break;
-
-				case MoveType.MOVETYPE_FLY:
-				case MoveType.MOVETYPE_FLYGRAVITY:
-					// FullTossMove();
 					break;
 
 				case MoveType.MOVETYPE_LADDER:
@@ -130,6 +126,12 @@ namespace Source1
 
 				case MoveType.MOVETYPE_OBSERVER:
 					FullObserverMove();
+					break;
+
+				// TODO: Implement later.
+				case MoveType.MOVETYPE_FLY:
+				case MoveType.MOVETYPE_FLYGRAVITY:
+					// FullTossMove();
 					break;
 			}
 		}
@@ -184,9 +186,6 @@ namespace Source1
 
 		public virtual bool CanAccelerate()
 		{
-			if ( !Player.IsAlive )
-				return false;
-
 			if ( IsJumpingFromWater )
 				return false;
 
@@ -580,11 +579,12 @@ namespace Source1
 		{
 			{
 				DebugOverlay.ScreenText( 0, $"SurfaceFriction   {SurfaceFriction}" );
-
 				DebugOverlay.ScreenText( 1, $"MoveType          {Player.MoveType}" );
-				DebugOverlay.ScreenText( 2, $"Water Level       {Player.WaterLevelType}" );
-				DebugOverlay.ScreenText( 3, $"Water Fraction    {Player.WaterLevel.Fraction}" );
-				DebugOverlay.ScreenText( 4, $"WaterJumpTime     {WaterJumpTime}" );
+				DebugOverlay.ScreenText( 3, $"ObserverMode      {Player.ObserverMode}" );
+
+				// DebugOverlay.ScreenText( 2, $"Water Level       {Player.WaterLevelType}" );
+				// DebugOverlay.ScreenText( 3, $"Water Fraction    {Player.WaterLevel.Fraction}" );
+				// DebugOverlay.ScreenText( 4, $"WaterJumpTime     {WaterJumpTime}" );
 				/*
 				DebugOverlay.ScreenText( 0, $"PlayerFlags.Ducked  {Pawn.Tags.Has( PlayerTags.Ducked )}" );
 				DebugOverlay.ScreenText( 1, $"IsDucking           {IsDucking}" );

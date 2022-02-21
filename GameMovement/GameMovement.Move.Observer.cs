@@ -85,14 +85,13 @@ namespace Source1
 
 			if ( mode == ObserverMode.InEye || mode == ObserverMode.Chase )
 			{
-
-				// return;
+				return;
 			}
 
 			if ( mode != ObserverMode.Roaming )
 			{
 				// don't move in fixed or death cam mode
-				// return;
+				return;
 			}
 
 			if ( sv_spectator_noclip )
@@ -130,7 +129,6 @@ namespace Source1
 			//
 
 			float maxspeed = sv_maxvelocity;
-
 
 			if ( wishspeed > maxspeed )
 			{

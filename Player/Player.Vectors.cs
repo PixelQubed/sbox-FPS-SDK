@@ -5,6 +5,16 @@ namespace Source1
 {
 	partial class Source1Player
 	{
+		public virtual Vector3 GetPlayerMins()
+		{
+			return GetPlayerMins( IsDucked );
+		}
+
+		public virtual Vector3 GetPlayerMaxs()
+		{
+			return GetPlayerMaxs( IsDucked );
+		}
+
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
 			return (ducked ? ViewVectors.DuckHullMin : ViewVectors.HullMin);

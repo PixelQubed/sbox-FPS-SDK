@@ -13,5 +13,10 @@ namespace Source1
 		{
 			return true;
 		}
+
+		public virtual void Holster()
+		{
+
+		}
 	}
 }
