@@ -80,7 +80,7 @@ namespace Source1
 				.WithoutTags( "player", "projectile" )
 				.Run();
 
-			if ( tr.Hit ) transform.Position = tr.EndPos;
+			if ( tr.Hit ) transform.Position = tr.EndPosition;
 			player.Transform = transform;
 		}
 	}

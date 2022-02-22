@@ -19,7 +19,7 @@ namespace Source1
 
 				if ( tr.Hit )
 				{
-					Sound.FromWorld( "player.sprayer", tr.EndPos );
+					Sound.FromWorld( "player.sprayer", tr.EndPosition );
 					var decal = DecalDefinition.ByPath["data/decal/spray.default.decal"];
 					decal.PlaceUsingTrace( tr );
 

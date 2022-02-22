@@ -211,7 +211,7 @@ namespace Source1
 
 			if ( pm.Fraction == 1 )
 			{
-				Position = pm.EndPos;
+				Position = pm.EndPosition;
 				Velocity -= BaseVelocity;
 				StayOnGround();
 				return;

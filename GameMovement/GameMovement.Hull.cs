@@ -52,11 +52,11 @@ namespace Source1
 
 			Vector3 vecDuckViewOffset = GetPlayerViewOffset( true );
 			Vector3 vecStandViewOffset = GetPlayerViewOffset( false );
-			Vector3 temp = EyePosLocal;
+			Vector3 temp = EyeLocalPosition;
 
 			temp.z = ((vecDuckViewOffset.z - fMore) * duckFraction) +
 						(vecStandViewOffset.z * (1 - duckFraction));
-			EyePosLocal = temp;
+			EyeLocalPosition = temp;
 		}
 	}
 }

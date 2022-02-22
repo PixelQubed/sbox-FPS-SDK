@@ -188,7 +188,7 @@ namespace Source1
 			// his view height is at the standing height.
 			else if ( !IsDead() /*&& !player->IsObserver() */ )
 			{
-				if ( (DuckJumpTime == 0.0f) && (MathF.Abs( EyePosLocal.z - GetPlayerViewOffset( false ).z ) > 0.1f) ) 
+				if ( (DuckJumpTime == 0.0f) && (MathF.Abs( EyeLocalPosition.z - GetPlayerViewOffset( false ).z ) > 0.1f) ) 
 				{
 					// set the eye height to the non-ducked height
 					SetDuckedEyeOffset( 0.0f );
@@ -214,7 +214,7 @@ namespace Source1
 			IsDucked = true;
 			IsDucking = false;
 
-			EyePosLocal = GetPlayerViewOffset( true );
+			EyeLocalPosition = GetPlayerViewOffset( true );
 
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
@@ -298,7 +298,7 @@ namespace Source1
 
 			var vecViewOffset = GetPlayerViewOffset( false );
 			vecViewOffset.z -= flDeltaZ;
-			EyePosLocal = vecViewOffset;
+			EyeLocalPosition = vecViewOffset;
 
 			Position -= viewDelta;
 
@@ -344,7 +344,7 @@ namespace Source1
 			IsDucked = true;
 			IsDucking = false;
 
-			EyePosLocal = GetPlayerViewOffset( true );
+			EyeLocalPosition = GetPlayerViewOffset( true );
 
 			// HACKHACK - Fudge for collision bug - no time to fix this properly
 			if ( IsGrounded() )
@@ -375,7 +375,7 @@ namespace Source1
 			InDuckJump = false;
 			DuckTime = 0;
 
-			EyePosLocal = GetPlayerViewOffset( false );
+			EyeLocalPosition = GetPlayerViewOffset( false );
 
 			if ( IsGrounded() )
 			{

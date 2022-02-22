@@ -29,7 +29,7 @@ namespace Source1
 		public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 		{
 			var tr = SetupBBoxTrace( start + TraceOffset, end + TraceOffset, mins, maxs ).Run();
-			tr.EndPos -= TraceOffset;
+			tr.EndPosition -= TraceOffset;
 			return tr;
 		}
 

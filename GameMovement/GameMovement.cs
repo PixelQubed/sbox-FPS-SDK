@@ -352,7 +352,7 @@ namespace Source1
 			Vector3 maxsSrc = GetPlayerMaxs( isDucked );
 
 			float fraction = pm.Fraction;
-			Vector3 endpos = pm.EndPos;
+			Vector3 endpos = pm.EndPosition;
 
 			// Check the -x, -y quadrant
 			mins = minsSrc;
@@ -362,7 +362,7 @@ namespace Source1
 			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
 			{
 				pm.Fraction = fraction;
-				pm.EndPos = endpos;
+				pm.EndPosition = endpos;
 				return pm;
 			}
 
@@ -374,7 +374,7 @@ namespace Source1
 			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
 			{
 				pm.Fraction = fraction;
-				pm.EndPos = endpos;
+				pm.EndPosition = endpos;
 				return pm;
 			}
 
@@ -386,7 +386,7 @@ namespace Source1
 			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
 			{
 				pm.Fraction = fraction;
-				pm.EndPos = endpos;
+				pm.EndPosition = endpos;
 				return pm;
 			}
 
@@ -398,12 +398,12 @@ namespace Source1
 			if ( pm.Entity != null && Vector3.GetAngle( Vector3.Up, pm.Normal ) >= sv_maxstandableangle )
 			{
 				pm.Fraction = fraction;
-				pm.EndPos = endpos;
+				pm.EndPosition = endpos;
 				return pm;
 			}
 
 			pm.Fraction = fraction;
-			pm.EndPos = endpos;
+			pm.EndPosition = endpos;
 			return pm;
 		}
 
@@ -468,7 +468,7 @@ namespace Source1
 
 			// See how far up we can go without getting stuck
 			var trace = TraceBBox( Position, start );
-			start = trace.EndPos;
+			start = trace.EndPosition;
 
 			// Now trace down from a known safe position
 			trace = TraceBBox( start, end );
@@ -478,7 +478,7 @@ namespace Source1
 			if ( trace.StartedSolid ) return;
 			if ( Vector3.GetAngle( Vector3.Up, trace.Normal ) > sv_maxstandableangle ) return;
 
-			Position = trace.EndPos;
+			Position = trace.EndPosition;
 		}
 
 		public Entity TestPlayerPosition( Vector3 pos, ref TraceResult pm )

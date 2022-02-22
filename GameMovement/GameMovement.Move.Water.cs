@@ -236,7 +236,7 @@ namespace Source1
 				if ( !pm.StartedSolid ) 
 				{
 					// walked up the step, so just keep result and exit
-					Position = pm.EndPos;
+					Position = pm.EndPosition;
 					Velocity -= BaseVelocity;
 					return;
 				}
