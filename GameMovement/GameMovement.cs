@@ -18,7 +18,7 @@ namespace Source1
 		public override void FrameSimulate()
 		{
 			base.FrameSimulate();
-			EyeRot = Input.Rotation;
+			EyeRotation = Input.Rotation;
 		}
 
 		public virtual void PawnChanged( Source1Player player, Source1Player prev )
@@ -65,7 +65,7 @@ namespace Source1
 		{
 			ReduceTimers();
 
-			EyeRot = Input.Rotation;
+			EyeRotation = Input.Rotation;
 
 			if ( Pawn.MoveType != MoveType.MOVETYPE_NOCLIP &&
 				Pawn.MoveType != MoveType.None &&

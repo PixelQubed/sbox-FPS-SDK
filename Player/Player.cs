@@ -47,7 +47,6 @@ namespace Source1
 		{
 			LifeState = LifeState.Alive;
 			Velocity = Vector3.Zero;
-			WaterLevel.Clear();
 
 			EnableAllCollisions = true;
 			EnableDrawing = true;
@@ -57,7 +56,7 @@ namespace Source1
 			UseAnimGraph = true;
 			Controller = new Source1GameMovement();
 			Animator = new StandardPlayerAnimator();
-			Camera = new FirstPersonCamera();
+			CameraMode = new FirstPersonCamera();
 
 			// Tags
 			RemoveAllTags();
@@ -138,7 +137,7 @@ namespace Source1
 
 			Controller = null;
 			Animator = null;
-			Camera = new SpectateRagdollCamera();
+			CameraMode = new SpectateRagdollCamera();
 
 			EnableAllCollisions = false;
 			EnableDrawing = false;
@@ -158,7 +157,7 @@ namespace Source1
 			GameRules.Event_OnPlayerHurt( this, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
 
 			// flinch the model.
-			Animator?.SetParam( "b_flinch", true );
+			Animator?.SetAnimParameter( "b_flinch", true );
 			base.TakeDamage( info );
 		}
 
