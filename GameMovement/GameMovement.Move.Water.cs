@@ -103,7 +103,7 @@ namespace Source1
 
 			var eyeHeight = GetPlayerViewOffset().z;
 
-			var waterFraction = Player.WaterLevel.Fraction;
+			var waterFraction = Player.WaterLevel;
 			var waterHeight = waterFraction * playerHeight;
 
 			// last water type

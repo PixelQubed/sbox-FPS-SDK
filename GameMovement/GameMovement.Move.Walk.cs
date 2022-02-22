@@ -87,7 +87,7 @@ namespace Source1
 			{
 				float fvol = 0.5f;
 
-				if ( Pawn.WaterLevel.Fraction > 0 ) 
+				if ( Pawn.WaterLevel > 0 ) 
 				{
 					// They landed in water.
 				}
@@ -217,7 +217,7 @@ namespace Source1
 				return;
 			}
 
-			if ( oldGround == null && Pawn.WaterLevel.Fraction == 0 )
+			if ( oldGround == null && Pawn.WaterLevel == 0 )
 			{
 				Velocity -= BaseVelocity;
 				return;

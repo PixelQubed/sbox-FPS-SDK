@@ -81,11 +81,12 @@ namespace Source1
 				var child = Children[i];
 				if ( child == null || !child.IsValid ) continue;
 
-				child.OnCarryDrop( this );
-				if ( ActiveChild == child )
+				if ( child is BaseCarriable carriable )
 				{
-					child.ActiveEnd( this, true );
-				} 
+					carriable.OnCarryDrop( this );
+					carriable.ActiveEnd( this, true );
+				}
+
 
 				child.Parent = null;
 				child.SetParent( null );
