@@ -68,7 +68,7 @@ namespace Source1
 			var floor = Position;
 			floor.z += GetPlayerMins().z - 1;
 
-			bool onFloor = Physics.GetPointContents( floor ).HasFlag( CollisionLayer.Solid ) || IsGrounded(); 
+			bool onFloor = IsGrounded(); 
 
 			// player->SetGravity( 0 );
 
