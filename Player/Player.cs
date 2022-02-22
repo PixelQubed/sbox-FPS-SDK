@@ -169,6 +169,8 @@ namespace Source1
 
 		public override void OnKilled()
 		{
+			Log.Info( "Source1Player.OnKilled()" );
+
 			DeleteChildren();
 			UseAnimGraph = false;
 
@@ -182,6 +184,8 @@ namespace Source1
 			StopUsing();
 
 			GameRules.Current.PlayerDeath( this, LastDamageInfo );
+
+			SetObserverMode( ObserverMode.Roaming );
 		}
 
 		public override void TakeDamage( DamageInfo info )

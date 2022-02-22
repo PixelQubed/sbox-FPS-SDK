@@ -42,7 +42,9 @@ namespace Source1
 		public void SetObserverMode( ObserverMode mode )
 		{
 			Log.Info( $"Source1Player.StartObserverMode( {mode} )" );
+
 			ObserverMode = mode;
+
 			switch ( mode )
 			{
 				case ObserverMode.None:
@@ -72,7 +74,6 @@ namespace Source1
 		{
 			return All.OfType<Source1Player>();
 		}
-
 
 		public virtual bool IsValidObserverTarget( Entity target )
 		{

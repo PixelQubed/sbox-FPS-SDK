@@ -40,7 +40,11 @@ namespace Source1
 		public virtual void Tick()
 		{
 			TickStates();
-			CheckWaitingForPlayers();
+
+			if ( IsServer )
+			{
+				CheckWaitingForPlayers();
+			}
 		}
 
 		/// <summary>
@@ -160,38 +164,46 @@ namespace Source1
 		/// <summary>
 		/// Respawn all players.
 		/// </summary>
-		/// <param name="forceRespawn"></param>
-		/// <param name="team"></param>
-		public void RespawnPlayers( bool forceRespawn, int team = 0 )
+		public virtual void RespawnPlayers( bool forceRespawn, bool teamonly = false, int team = 0 )
 		{
 			var players = All.OfType<Source1Player>().ToList();
-			for ( int i = players.Count - 1; i >= 0; i-- )
+
+			foreach ( var player in players )
 			{
-				var player = players[i];
-				if ( !player.IsValid() ) continue;
+				// if we only respawn 
+				if ( teamonly && player.TeamNumber != team )
+					continue;
 
-				// Check for a certain team, if we are not unassigned.
-				if ( team != 0 && player.TeamNumber != team ) continue;
+				if ( !player.IsReadyToPlay() )
+					continue;
 
-				// TODO: Check for ready to play
-				if ( !forceRespawn && player.IsAlive ) continue;
+				if ( !forceRespawn )
+				{
+					if ( player.IsAlive )
+						continue;
+
+					if ( !AreRespawnConditionsMet( player ) )
+						continue;
+				}
 
 				player.Respawn();
 			}
 		}
 
+		/// <summary>
+		/// Player can technically respawn, but we must wait for certain condition to happen in order to 
+		/// be respawned. (i.e. respawn waves)
+		/// </summary>
+		/// <param name="player"></param>
+		/// <returns></returns>
+		public virtual bool AreRespawnConditionsMet( Source1Player player )
+		{
+			return true;
+		}
+
 		public bool HasPlayers()
 		{
-			var all = All.OfType<Source1Player>();
-			foreach ( var player in all )
-			{
-				if ( player.IsValid && player.IsReadyToPlay() )
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return All.OfType<Source1Player>().Where( x => x.IsReadyToPlay() ).Any();
 		}
 
 		//
