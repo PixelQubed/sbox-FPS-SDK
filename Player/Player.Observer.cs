@@ -8,43 +8,26 @@ namespace Source1
 	partial class Source1Player
 	{
 		[Net] public ObserverMode ObserverMode { get; private set; }
-		[Net] public bool IsForcedObserverMode { get; set; }
+		public ObserverMode LastObserverMode { get; set; }
+		public bool IsObserver => ObserverMode != ObserverMode.None;
 		[Net] public Entity ObserverTarget { get; set; }
 
-		ObserverMode LastObserverMode { get; set; }
-		public bool IsObserver => ObserverMode != ObserverMode.None;
 
 		public void StopObserverMode()
 		{
 			Log.Info( "Source1Player.StopObserverMode()" );
-			IsForcedObserverMode = false;
 
 			if ( ObserverMode == ObserverMode.None )
 				return;
 
-			if ( ObserverMode > ObserverMode.Deathcam )
-			{
-				LastObserverMode = ObserverMode;
-			}
-
+			LastObserverMode = ObserverMode;
 			ObserverMode = ObserverMode.None;
 		}
 
-		bool StartObserverMode( ObserverMode mode )
+		public bool StartObserverMode( ObserverMode mode )
 		{
-			Log.Info( "Source1Player.StartObserverMode()" );
-			if ( !IsObserver )
-			{
-				// set position to last view offset
-				Position = EyePosition;
-				EyeLocalPosition = 0;
-			}
+			Log.Info( $"Source1Player.StartObserverMode( {mode} )" );
 
-			if ( ActiveWeapon != null )
-				ActiveWeapon.Holster();
-
-			GroundEntity = null;
-			Tags.Remove( PlayerTags.Ducked );
 			UsePhysicsCollision = false;
 
 			SetObserverMode( mode );
@@ -58,61 +41,29 @@ namespace Source1
 
 		public void SetObserverMode( ObserverMode mode )
 		{
-			Log.Info( $"Source1Player.SetObserverMode( {mode} )" );
-			if ( mode > ObserverMode.Fixed && TeamManager.IsPlayable( TeamNumber ) )
-			{
-				switch( mp_forcecamera )
-				{
-					case ObserverRestriction.All: 
-						break;
-
-					case ObserverRestriction.Team:
-						mode = ObserverMode.InEye;
-						break;
-
-					case ObserverRestriction.None:
-						mode = ObserverMode.Fixed;
-						break;
-				}
-			}
-
-			if ( ObserverMode > ObserverMode.Deathcam )
-			{
-				// remember mode if we were really spectating before
-				LastObserverMode = ObserverMode;
-			}
-
+			Log.Info( $"Source1Player.StartObserverMode( {mode} )" );
 			ObserverMode = mode;
-
-			switch(mode)
+			switch ( mode )
 			{
 				case ObserverMode.None:
 				case ObserverMode.Fixed:
 				case ObserverMode.Deathcam:
-					// SetFOV(this, 0);
-					// SetViewOffset(0);
+					Log.Info( $"SetObserverMode - Entered static mode" );
 					MoveType = MoveType.None;
 					break;
 
 				case ObserverMode.Chase:
 				case ObserverMode.InEye:
-					// SetObserverTarget( ObserverTarget );
+					Log.Info( $"SetObserverMode - Entered target follow mode" );
 					MoveType = MoveType.MOVETYPE_OBSERVER;
 					break;
 
 				case ObserverMode.Roaming:
-				case ObserverMode.Freezecam:
-					// SetFOV(this, 0);
-					// SetObserverTarget( ObserverTarget );
-					// SetViewOffset(0);
+					Log.Info( $"SetObserverMode - Entered roaming mode" );
 					MoveType = MoveType.MOVETYPE_OBSERVER;
 					break;
 
 			}
-		}
-
-		public void CheckObserverSettings()
-		{
 		}
 
 		public virtual float DeathAnimationTime => 3;
@@ -150,46 +101,8 @@ namespace Source1
 				}
 			}
 
-			// check forcecamera settings for active players
-			if ( !TeamManager.IsPlayable( TeamNumber ) ) 
-			{
-				switch ( mp_forcecamera )
-				{
-					case ObserverRestriction.All: 
-						break;
-
-					case ObserverRestriction.Team:
-						if ( !ITeam.IsSame( this, target ) )
-							return false;
-
-						break;
-
-					case ObserverRestriction.None: 
-						return false;
-				}
-			}
-
 			return true;
 		}
-
-		[ConVar.Replicated] public static ObserverRestriction mp_forcecamera { get; set; }
-	}
-
-
-	public enum ObserverRestriction
-	{
-		/// <summary>
-		/// Allow all modes, all targets
-		/// </summary>
-		All,
-		/// <summary>
-		/// Allow only own team and first person, no PIP
-		/// </summary>
-		Team,
-		/// <summary>
-		/// Don't allow any spectating after death (fixed & fade to black)
-		/// </summary>
-		None
 	}
 
 	public enum ObserverMode

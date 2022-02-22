@@ -580,7 +580,9 @@ namespace Source1
 			{
 				DebugOverlay.ScreenText( 0, $"SurfaceFriction   {SurfaceFriction}" );
 				DebugOverlay.ScreenText( 1, $"MoveType          {Player.MoveType}" );
-				DebugOverlay.ScreenText( 3, $"ObserverMode      {Player.ObserverMode}" );
+				DebugOverlay.ScreenText( 2, $"ObserverMode      {Player.ObserverMode}" );
+				DebugOverlay.ScreenText( 3, $"LifeState         {Player.LifeState}" );
+				DebugOverlay.ScreenText( 4, $"TeamNumber        {Player.TeamNumber}" );
 
 				// DebugOverlay.ScreenText( 2, $"Water Level       {Player.WaterLevelType}" );
 				// DebugOverlay.ScreenText( 3, $"Water Fraction    {Player.WaterLevel.Fraction}" );

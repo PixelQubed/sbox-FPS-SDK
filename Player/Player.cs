@@ -26,6 +26,12 @@ namespace Source1
 			LastObserverMode = ObserverMode.Roaming;
 		}
 
+		[ServerCmd("respawn_me")]
+		public static void Command_Respawn()
+		{
+			((Source1Player)ConsoleSystem.Caller.Pawn).Respawn();
+		}
+
 		public override void Respawn()
 		{
 			base.Respawn();

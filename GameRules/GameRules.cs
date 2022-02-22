@@ -48,11 +48,6 @@ namespace Source1
 		/// </summary>
 		public override void ClientJoined( Client client )
 		{
-			if ( client.Pawn is Source1Player player ) 
-			{
-				player.Respawn();
-			}
-
 			Event.Run( "Client_Connect", new Source1Event.Client.ConnectArgs( client ) );
 		}
 
