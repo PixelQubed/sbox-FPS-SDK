@@ -20,7 +20,7 @@ namespace Source1
 
 			Controller = new Source1GameMovement();
 			Animator = new StandardPlayerAnimator();
-			Camera = new FirstPersonCamera();
+			CameraMode = new FirstPersonCamera();
 
 			TeamNumber = 0;
 			LastObserverMode = ObserverMode.Roaming;
@@ -39,7 +39,6 @@ namespace Source1
 
 			LifeState = LifeState.Alive;
 			Velocity = Vector3.Zero;
-			WaterLevel.Clear();
 			MoveType = MoveType.MOVETYPE_WALK;
 
 			EnableAllCollisions = true;
@@ -196,7 +195,7 @@ namespace Source1
 			GameRules.Event_OnPlayerHurt( this, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
 
 			// flinch the model.
-			Animator?.SetParam( "b_flinch", true );
+			Animator?.SetAnimParameter( "b_flinch", true );
 			base.TakeDamage( info );
 		}
 
