@@ -155,13 +155,13 @@ namespace Source1
 
 
 		[Event.BuildInput]
-		public virtual void ProcessInput( InputBuilder input )
+		protected new virtual void BuildInput( InputBuilder builder )
 		{
-			input.AnalogLook *= GetSensitivityMultiplier();
+			builder.AnalogLook *= GetSensitivityMultiplier();
 
 			if ( ForcedWeapon != null )
 			{
-				input.ActiveChild = ForcedWeapon;
+				builder.ActiveChild = ForcedWeapon;
 				ForcedWeapon = null;
 			}
 		}
