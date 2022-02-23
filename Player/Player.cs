@@ -7,6 +7,8 @@ namespace Source1
 {
 	public partial class Source1Player : Player
 	{
+		public static Source1Player Local => Sandbox.Local.Pawn as Source1Player;
+
 		[Net] public float FallVelocity { get; set; }
 		[Net] public float MaxSpeed { get; set; }
 		[Net] public float MaxHealth { get; set; }

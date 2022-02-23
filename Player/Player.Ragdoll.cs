@@ -26,7 +26,7 @@ namespace Source1
 			ent.RenderColor = RenderColor;
 			ent.PhysicsGroup.Velocity = velocity;
 
-			if ( Local.Pawn == this )
+			if ( Local == this )
 			{
 				//ent.EnableDrawing = false; wtf
 			}
