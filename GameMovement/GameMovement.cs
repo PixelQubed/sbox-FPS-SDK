@@ -577,6 +577,7 @@ namespace Source1
 
 		protected void ShowDebugOverlay()
 		{
+			if ( sv_debug_movement && Player.Client.IsListenServerHost ) 
 			{
 				DebugOverlay.ScreenText( 0, $"SurfaceFriction   {SurfaceFriction}" );
 				DebugOverlay.ScreenText( 1, $"MoveType          {Player.MoveType}" );
@@ -599,5 +600,7 @@ namespace Source1
 				DebugOverlay.ScreenText( 8, $"Speed:              {Pawn.Velocity.Length}HU" );*/
 			}
 		}
+
+		[ConVar.Replicated] public static bool sv_debug_movement { get; set; }
 	}
 }

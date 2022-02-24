@@ -33,6 +33,5 @@ namespace Source1
 		[ConVar.Replicated] public static float sv_stepsize { get; set; } = 18;
 		[ConVar.Replicated] public static float sv_backspeed { get; set; } = 0.6f;
 		[ConVar.Replicated] public static float sv_waterdist { get; set; } = 12;
-		[ClientVar] public static bool cl_debug_movement { get; set; } = false;
 	}
 }
