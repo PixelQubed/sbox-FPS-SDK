@@ -212,8 +212,6 @@ namespace Source1
 					break;
 
 			}
-
-			CheckObserverSettings();
 		}
 
 		public virtual float DeathAnimationTime => 3;
