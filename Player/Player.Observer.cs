@@ -41,6 +41,8 @@ namespace Source1
 						var target = FindNextObserverTarget( true );
 						if ( target != null ) SetObserverTarget( target );
 					}
+
+					CheckObserverSettings();
 				}
 			}
 		}
@@ -112,6 +114,7 @@ namespace Source1
 
 		public void ValidateCurrentObserverTarget()
 		{
+			// Log.Info( $"::ValidateCurrentObserverTarget()" );
 			if ( !IsValidObserverTarget( ObserverTarget ) )
 			{
 				var target = FindNextObserverTarget( false );
@@ -129,10 +132,11 @@ namespace Source1
 		public virtual Entity FindNextObserverTarget( bool reverse )
 		{
 			var ents = FindObserverableEntities().ToList();
+
+			// There's nothing to spectate.
+			if ( ents.Count == 0 ) return null;
+
 			var max = ents.Count - 1;
-
-			// Log.Info( $"Ents: {ents.Count}" );
-
 			var startIndex = ents.IndexOf( ObserverTarget );
 			var index = startIndex;
 
@@ -148,7 +152,6 @@ namespace Source1
 					index = max;
 
 				var target = ents[index];
-				// Log.Info( $"index: {index} / startIndex: {startIndex} / target: {target}" );
 
 				if ( IsValidObserverTarget( target ) )
 					return target;
@@ -217,12 +220,7 @@ namespace Source1
 
 		public virtual IEnumerable<Entity> FindObserverableEntities()
 		{
-			var all = All.OfType<Source1Player>().Where( x => x.IsAlive );
-
-			if ( TeamManager.IsPlayable( TeamNumber ) )
-				all = all.Where( x => ITeam.IsSame( x, this ) );
-
-			return all;
+			return All.OfType<Source1Player>().Where( x => x.IsAlive );
 		}
 
 		public virtual bool IsValidObserverTarget( Entity target )
@@ -248,7 +246,13 @@ namespace Source1
 				{
 					// allow watching until 3 seconds after death to see death animation
 					if ( TimeSinceDeath > DeathAnimationTime ) 
-						return false;   
+						return false;
+				}
+
+				if ( TeamManager.IsPlayable( TeamNumber ) )
+				{
+					if ( player.TeamNumber != TeamNumber )
+						return false;
 				}
 			}
 
