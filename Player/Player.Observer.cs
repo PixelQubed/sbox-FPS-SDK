@@ -131,7 +131,7 @@ namespace Source1
 			var ents = FindObserverableEntities().ToList();
 			var max = ents.Count - 1;
 
-			Log.Info( $"Ents: {ents.Count}" );
+			// Log.Info( $"Ents: {ents.Count}" );
 
 			var startIndex = ents.IndexOf( ObserverTarget );
 			var index = startIndex;
@@ -148,7 +148,7 @@ namespace Source1
 					index = max;
 
 				var target = ents[index];
-				Log.Info( $"index: {index} / startIndex: {startIndex} / target: {target}" );
+				// Log.Info( $"index: {index} / startIndex: {startIndex} / target: {target}" );
 
 				if ( IsValidObserverTarget( target ) )
 					return target;
@@ -199,18 +199,12 @@ namespace Source1
 				case ObserverMode.None:
 				case ObserverMode.Fixed:
 				case ObserverMode.Deathcam:	
-					Log.Info( $"SetObserverMode - Entered static mode" );
 					MoveType = MoveType.None;
 					break;
 
 				case ObserverMode.Chase:
 				case ObserverMode.InEye:
-					Log.Info( $"SetObserverMode - Entered target follow mode" );
-					MoveType = MoveType.MOVETYPE_OBSERVER;
-					break;
-
 				case ObserverMode.Roaming:
-					Log.Info( $"SetObserverMode - Entered roaming mode" );
 					MoveType = MoveType.MOVETYPE_OBSERVER;
 					break;
 
@@ -223,11 +217,12 @@ namespace Source1
 
 		public virtual IEnumerable<Entity> FindObserverableEntities()
 		{
-			var list = new List<Entity>();
+			var all = All.OfType<Source1Player>().Where( x => x.IsAlive );
 
-			list.AddRange( All.OfType<Source1Player>().Where( x => x.IsAlive ) );
+			if ( TeamManager.IsPlayable( TeamNumber ) )
+				all = all.Where( x => ITeam.IsSame( x, this ) );
 
-			return list;
+			return all;
 		}
 
 		public virtual bool IsValidObserverTarget( Entity target )
