@@ -579,11 +579,21 @@ namespace Source1
 		{
 			if ( sv_debug_movement && Player.Client.IsListenServerHost ) 
 			{
-				DebugOverlay.ScreenText( 0, $"SurfaceFriction   {SurfaceFriction}" );
-				DebugOverlay.ScreenText( 1, $"MoveType          {Player.MoveType}" );
-				DebugOverlay.ScreenText( 2, $"ObserverMode      {Player.ObserverMode}" );
-				DebugOverlay.ScreenText( 3, $"LifeState         {Player.LifeState}" );
-				DebugOverlay.ScreenText( 4, $"TeamNumber        {Player.TeamNumber}" );
+				DebugOverlay.ScreenText( new Vector2( 60, 400 ),
+					$"[PLAYER]\n" +
+					$"LifeState             {Player.LifeState}\n" +
+					$"TeamNumber            {Player.TeamNumber}\n" +
+					$"\n" +
+					$"[MOVEMENT]\n" +
+					$"SurfaceFriction       {SurfaceFriction}\n" +
+					$"MoveType              {Player.MoveType}\n" +
+					$"IsDucked              {IsDucked}\n" +
+					$"IsDucking             {IsDucking}\n" +
+					$"\n" +
+					$"[OBSERVER]\n" +
+					$"ObserverMode          {Player.ObserverMode}\n" +
+					$"ObserverTarget        {Player.ObserverTarget}"
+					);
 
 				// DebugOverlay.ScreenText( 2, $"Water Level       {Player.WaterLevelType}" );
 				// DebugOverlay.ScreenText( 3, $"Water Fraction    {Player.WaterLevel.Fraction}" );

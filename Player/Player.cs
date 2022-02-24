@@ -22,13 +22,13 @@ namespace Source1
 
 			Controller = new Source1GameMovement();
 			Animator = new StandardPlayerAnimator();
-			CameraMode = new FirstPersonCamera();
+			CameraMode = new Source1Camera();
 
 			TeamNumber = 0;
 			LastObserverMode = ObserverMode.Roaming;
 		}
 
-		[ServerCmd("respawn_me")]
+		[AdminCmd( "respawn_me" )]
 		public static void Command_Respawn()
 		{
 			((Source1Player)ConsoleSystem.Caller.Pawn).Respawn();

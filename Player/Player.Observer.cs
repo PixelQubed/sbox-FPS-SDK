@@ -121,7 +121,7 @@ namespace Source1
 		/// </summary>
 		Freezecam,
 		/// <summary>
-		/// Ziew from a fixed camera position
+		/// View from a fixed camera position
 		/// </summary>
 		Fixed,
 		/// <summary>

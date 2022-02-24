@@ -1,12 +1,12 @@
 using Sandbox;
 
-namespace TFS2
+namespace Source1
 {
 	partial class Source1Camera : CameraMode
 	{
 		public override void Update()
 		{
-			var pawn = Local.Pawn;
+			var pawn = Source1Player.Local;
 			var eyeRot = pawn.EyeRotation;
 			var fov = 90f;
 
@@ -16,7 +16,7 @@ namespace TFS2
 
 			if ( cl_enable_view_punch )
 			{
-				var punchRot = (pawn as TFPlayer).ViewPunch;
+				var punchRot = pawn.ViewPunch;
 				eyeRot = Rotation.From( eyeRot.Pitch() + punchRot.Pitch(), eyeRot.Yaw() + punchRot.Yaw(), eyeRot.Roll() + punchRot.Roll() );
 			}
 
