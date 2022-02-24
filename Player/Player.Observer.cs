@@ -75,9 +75,6 @@ namespace Source1
 
 		public void NextObserverMode()
 		{
-			if ( ObserverMode < ObserverMode.InEye )
-				return;
-
 			switch( ObserverMode )
 			{
 				case ObserverMode.InEye:
@@ -101,25 +98,14 @@ namespace Source1
 
 		public void CheckObserverSettings()
 		{
-			if ( LastObserverMode < ObserverMode.Fixed )
-				LastObserverMode = ObserverMode.Roaming;
-
 			if ( ObserverMode >= ObserverMode.InEye )
 			{
-				ValidateCurrentObserverTarget();
-
-				var target = ObserverTarget as Source1Player;
-
-				if ( target != null && ObserverMode == ObserverMode.InEye )
-				{
-					// copy flags?
-				}
+				CheckObserverTarget();
 			}
 		}
 
-		public void ValidateCurrentObserverTarget()
+		public void CheckObserverTarget()
 		{
-			// Log.Info( $"::ValidateCurrentObserverTarget()" );
 			if ( !IsValidObserverTarget( ObserverTarget ) )
 			{
 				var target = FindNextObserverTarget( false );
@@ -137,31 +123,28 @@ namespace Source1
 		public virtual Entity FindNextObserverTarget( bool reverse )
 		{
 			var ents = FindObserverableEntities().ToList();
+			var count = ents.Count;
 
 			// There's nothing to spectate.
-			if ( ents.Count == 0 ) return null;
-
-			var max = ents.Count - 1;
-			var startIndex = ents.IndexOf( ObserverTarget );
-			var index = startIndex;
-
+			if ( count == 0 ) return null;
+			var index = ents.IndexOf( ObserverTarget ); ;
 			var delta = reverse ? -1 : 1;
 
-			do
+			for ( int i = 0; i < count; i++ )
 			{
 				index += delta;
 
-				if ( index > max )
-					index = 0;
-				else if ( index < 0 )
-					index = max;
+				// Put slot on the other side of the list if we overflow the list.
+				if ( index >= count ) index = 0;
+				else if ( index < 0 ) index = count - 1;
 
-				var target = ents[index];
+				var target = ents[i];
 
-				if ( IsValidObserverTarget( target ) )
-					return target;
+				if ( !IsValidObserverTarget( target ) ) 
+					continue;
 
-			} while ( index != startIndex );
+				return target;
+			}
 
 			return null;
 		}
@@ -190,9 +173,6 @@ namespace Source1
 
 		public void SetObserverMode( ObserverMode mode )
 		{
-			if ( ObserverMode > ObserverMode.Deathcam )
-				LastObserverMode = ObserverMode;
-			
 			ObserverMode = mode;
 
 			switch ( mode )
@@ -232,13 +212,9 @@ namespace Source1
 			if ( !target.EnableDrawing ) 
 				return false;
 
-			// target is dead, waiting for respawn
-			if ( target.LifeState == LifeState.Respawnable )
-				return false;
-
 			if ( target is Source1Player player )
 			{
-				if ( target.LifeState == LifeState.Dead || target.LifeState == LifeState.Dying )
+				if ( !player.IsAlive )
 				{
 					// allow watching until 3 seconds after death to see death animation
 					if ( TimeSinceDeath > DeathAnimationTime ) 
