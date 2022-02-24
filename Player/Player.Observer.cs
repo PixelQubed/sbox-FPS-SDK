@@ -85,7 +85,12 @@ namespace Source1
 					break;
 
 				case ObserverMode.Chase:
-					SetObserverMode( ObserverMode.Roaming );
+
+					if ( !IsAlive && TeamManager.IsPlayable( TeamNumber ) )
+						SetObserverMode( ObserverMode.InEye );
+					else
+						SetObserverMode( ObserverMode.Roaming );
+
 					break;
 
 				case ObserverMode.Roaming:
@@ -185,13 +190,6 @@ namespace Source1
 
 		public void SetObserverMode( ObserverMode mode )
 		{
-			// skip roaming for dead players
-			if ( TeamManager.IsPlayable( TeamNumber ) )
-			{
-				if ( !IsAlive && mode == ObserverMode.Roaming )
-					mode = ObserverMode.Chase;
-			}
-
 			if ( ObserverMode > ObserverMode.Deathcam )
 				LastObserverMode = ObserverMode;
 			
