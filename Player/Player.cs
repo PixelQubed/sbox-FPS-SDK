@@ -75,9 +75,13 @@ namespace Source1
 			GameRules.Current.MoveToSpawnpoint( this );
 
 			if ( TeamManager.IsPlayable( TeamNumber ) )
+			{
 				StopObserverMode();
+			}
 			else
+			{
 				StartObserverMode( LastObserverMode );
+			}
 
 			GameRules.Current.PlayerRespawn( this );
 			ResetInterpolation();
@@ -102,6 +106,9 @@ namespace Source1
 		public override void Simulate( Client cl )
 		{
 			SimulateVisuals();
+
+			if ( IsObserver ) 
+				SimulateObserver();
 
 			if ( cl.IsBot ) SimulateBot( cl );
 			GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
@@ -186,7 +193,7 @@ namespace Source1
 
 			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 
-			SetObserverMode( ObserverMode.Roaming );
+			StartObserverMode( ObserverMode.Roaming );
 		}
 
 		public override void TakeDamage( DamageInfo info )

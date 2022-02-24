@@ -592,6 +592,7 @@ namespace Source1
 					$"\n" +
 					$"[OBSERVER]\n" +
 					$"ObserverMode          {Player.ObserverMode}\n" +
+					$"LastObserverMode      {Player.LastObserverMode}\n" +
 					$"ObserverTarget        {Player.ObserverTarget}"
 					);
 

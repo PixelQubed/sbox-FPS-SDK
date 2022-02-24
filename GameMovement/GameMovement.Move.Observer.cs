@@ -85,14 +85,20 @@ namespace Source1
 
 			if ( mode == ObserverMode.InEye || mode == ObserverMode.Chase )
 			{
+				var target = Player.ObserverTarget;
+				if ( target != null )
+				{
+					Position = target.Position;
+					Rotation = target.Rotation;
+					Velocity = target.Velocity;
+				}
+
 				return;
 			}
 
 			if ( mode != ObserverMode.Roaming )
-			{
 				// don't move in fixed or death cam mode
 				return;
-			}
 
 			if ( sv_spectator_noclip )
 			{
