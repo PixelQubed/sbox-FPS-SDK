@@ -25,13 +25,10 @@ namespace Source1
 				CalculatePlayerView( player, ref eyepos, ref eyerot, ref fov );
 			}
 
-			// DebugOverlay.Sphere( eyepos, 2, Color.Red, false, 0 );
-			// DebugOverlay.Sphere( LastPosition, 2, Color.Yellow, false, 0 );
-
 			if ( eyepos.Distance( LastPosition ) < 60 )
+			{
 				eyepos = LastPosition.LerpTo( eyepos, 40 * Time.Delta );
-
-			// DebugOverlay.Sphere( eyepos, 2, Color.Green, false, 0 );
+			}
 
 			FieldOfView = fov;
 			Rotation = eyerot;

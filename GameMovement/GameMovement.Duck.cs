@@ -183,19 +183,20 @@ namespace Source1
 					}
 				}
 			}
-
-			// If the player is still alive and not an observer, check to make sure that
-			// his view height is at the standing height.
-			else if ( !IsDead() /*&& !player->IsObserver() */ )
+			else if ( !IsDead() && !Player.IsObserver )
 			{
-				if ( (DuckJumpTime == 0.0f) && (MathF.Abs( EyeLocalPosition.z - GetPlayerViewOffset( false ).z ) > 0.1f) ) 
+				// If the player is still alive and not an observer, check to make sure that
+				// his view height is at the standing height.
+
+				if ( DuckJumpTime == 0 && MathF.Abs( EyeLocalPosition.z - GetPlayerViewOffset( false ).z ) > 0.1f ) 
 				{
 					// set the eye height to the non-ducked height
 					SetDuckedEyeOffset( 0.0f );
 				}
 			}
 
-			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) SetTag( PlayerTags.Ducked );
+			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) 
+				SetTag( PlayerTags.Ducked );
 		}
 
 		public virtual float TimeToDuck => 0.2f;

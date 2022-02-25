@@ -46,6 +46,7 @@ namespace Source1
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = false;
 			UseAnimGraph = true;
+			EnableHitboxes = true;
 
 			CollisionGroup = CollisionGroup.Player;
 			SetInteractsAs( CollisionLayer.Player );
@@ -56,9 +57,13 @@ namespace Source1
 
 			// Movement
 			FallVelocity = 0;
+			Velocity = 0;
+			BaseVelocity = 0;
+
 			MaxSpeed = GetMaxSpeed();
 			AllowAutoMovement = true;
-			SetCollisionBounds( GetPlayerMins(), GetPlayerMaxs() );
+
+			GameRules.Current.PlayerRespawn( this );
 
 			TimeSinceSprayed = sv_spray_cooldown + 1;
 			TimeSinceRespawned = 0;
@@ -69,27 +74,24 @@ namespace Source1
 			Tags.Add( TeamManager.GetTag( TeamNumber ) );
 
 			PreviousWeapon = null;
-
 			GameRules.Current.MoveToSpawnpoint( this );
 
-			if ( TeamManager.IsPlayable( TeamNumber ) )
-			{
-				StopObserverMode();
-			}
-			else
-			{
-				StartObserverMode( LastObserverMode );
-			}
-
-			GameRules.Current.PlayerRespawn( this );
+			if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
+			else StartObserverMode( LastObserverMode );
 			ResetInterpolation();
+
+			SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 		}
 
 		public void SetCollisionBounds( Vector3 mins, Vector3 maxs )
 		{
+			var lastEnableHitboxes = EnableHitboxes;
 			var lastMoveType = MoveType;
+
 			SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, mins, maxs );
+
 			MoveType = lastMoveType;
+			EnableHitboxes = lastEnableHitboxes;
 		}
 
 		public virtual WaterLevelType WaterLevelType { get; set; }
@@ -202,7 +204,21 @@ namespace Source1
 
 			// flinch the model.
 			Animator?.SetAnimParameter( "b_flinch", true );
-			base.TakeDamage( info );
+
+			// moved this up from entity class to not call procedural hit react from base
+
+			LastAttacker = info.Attacker;
+			LastAttackerWeapon = info.Weapon;
+
+			if ( IsServer && Health > 0f && LifeState == LifeState.Alive )
+			{
+				Health -= info.Damage;
+				if ( Health <= 0f )
+				{
+					Health = 0f;
+					OnKilled();
+				}
+			}
 		}
 
 		public virtual bool IsReadyToPlay()

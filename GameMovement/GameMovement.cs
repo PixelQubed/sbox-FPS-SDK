@@ -14,7 +14,6 @@ namespace Source1
 		protected float SideMove { get; set; }
 		protected float UpMove { get; set; }
 
-
 		public override void FrameSimulate()
 		{
 			base.FrameSimulate();

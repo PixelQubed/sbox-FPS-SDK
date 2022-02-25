@@ -5,24 +5,30 @@ namespace Source1
 {
 	partial class Source1Player
 	{
-		public virtual Vector3 GetPlayerMins()
-		{
-			return GetPlayerMins( IsDucked );
-		}
-
-		public virtual Vector3 GetPlayerMaxs()
-		{
-			return GetPlayerMaxs( IsDucked );
-		}
-
 		public virtual Vector3 GetPlayerMins( bool ducked )
 		{
-			return (ducked ? ViewVectors.DuckHullMin : ViewVectors.HullMin);
+			if ( IsObserver ) 
+				return ViewVectors.ObserverHullMin;
+			else 
+				return ducked ? ViewVectors.DuckHullMin : ViewVectors.HullMin;
+		}
+
+		public Vector3 GetPlayerMinsScaled( bool ducked )
+		{
+			return GetPlayerMins( ducked ) * Scale;
 		}
 
 		public virtual Vector3 GetPlayerMaxs( bool ducked )
 		{
-			return (ducked ? ViewVectors.DuckHullMax : ViewVectors.HullMax);
+			if ( IsObserver ) 
+				return ViewVectors.ObserverHullMax;
+			else 
+				return ducked ? ViewVectors.DuckHullMax : ViewVectors.HullMax;
+		}
+
+		public Vector3 GetPlayerMaxsScaled( bool ducked )
+		{
+			return GetPlayerMaxs( ducked ) * Scale;
 		}
 
 		public virtual Vector3 GetPlayerExtents( bool ducked )
@@ -33,9 +39,22 @@ namespace Source1
 			return mins.Abs() + maxs.Abs();
 		}
 
+		public Vector3 GetPlayerExtentsScaled( bool ducked )
+		{
+			return GetPlayerExtents( ducked ) * Scale;
+		}
+
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
-			return (ducked ? ViewVectors.DuckViewOffset : ViewVectors.ViewOffset) * Scale;
+			if ( IsObserver )
+				return ViewVectors.ObserverDeadViewPosition;
+			else
+				return ducked ? ViewVectors.DuckViewOffset : ViewVectors.ViewOffset;
+		}
+
+		public Vector3 GetPlayerViewOffsetScaled( bool ducked )
+		{
+			return GetPlayerViewOffset( ducked ) * Scale;
 		}
 
 		public virtual ViewVectors ViewVectors => new()
