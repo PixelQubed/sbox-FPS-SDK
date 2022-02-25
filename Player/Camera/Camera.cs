@@ -5,6 +5,7 @@ namespace Source1
 	partial class Source1Camera : CameraMode
 	{
 		Vector3 LastPosition { get; set; }
+		bool ShouldLerp { get; set; }
 
 		public override void Update()
 		{
@@ -16,6 +17,8 @@ namespace Source1
 			var eyerot = player.EyeRotation;
 			var fov = 90f;
 
+			ShouldLerp = true;
+
 			if ( player.IsObserver )
 			{
 				CalculateObserverView( player, ref eyepos, ref eyerot, ref fov );
@@ -25,7 +28,7 @@ namespace Source1
 				CalculatePlayerView( player, ref eyepos, ref eyerot, ref fov );
 			}
 
-			if ( eyepos.Distance( LastPosition ) < 60 )
+			if ( ShouldLerp && eyepos.Distance( LastPosition ) < 60 )
 			{
 				eyepos = LastPosition.LerpTo( eyepos, 40 * Time.Delta );
 			}
@@ -90,6 +93,8 @@ namespace Source1
 
 		public void CalculateChaseCamView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
 		{
+			ShouldLerp = false;
+
 			var target = player.ObserverTarget;
 
 			if ( target == null )
