@@ -10,7 +10,7 @@ namespace Source1
 	public partial class SpawnPoint : Entity
 	{
 		/// <summary>
-		/// Cam this player spawn on this spawn point.
+		/// Can this player spawn on this spawn point.
 		/// </summary>
 		/// <param name="player"></param>
 		/// <returns></returns>
