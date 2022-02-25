@@ -37,6 +37,11 @@ namespace Source1
 		{
 			base.Respawn();
 
+			// Tags
+			RemoveAllTags();
+			Tags.Add( "player" );
+			Tags.Add( TeamManager.GetTag( TeamNumber ) );
+
 			LifeState = LifeState.Alive;
 			Velocity = Vector3.Zero;
 			MoveType = MoveType.MOVETYPE_WALK;
@@ -50,6 +55,8 @@ namespace Source1
 
 			CollisionGroup = CollisionGroup.Player;
 			SetInteractsAs( CollisionLayer.Player );
+
+			SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 
 			// Health
 			Health = 100;
@@ -68,19 +75,12 @@ namespace Source1
 			TimeSinceSprayed = sv_spray_cooldown + 1;
 			TimeSinceRespawned = 0;
 
-			// Tags
-			RemoveAllTags();
-			Tags.Add( "player" );
-			Tags.Add( TeamManager.GetTag( TeamNumber ) );
-
 			PreviousWeapon = null;
 			GameRules.Current.MoveToSpawnpoint( this );
 
 			if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
 			else StartObserverMode( LastObserverMode );
 			ResetInterpolation();
-
-			SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 		}
 
 		public void SetCollisionBounds( Vector3 mins, Vector3 maxs )
@@ -92,6 +92,14 @@ namespace Source1
 
 			MoveType = lastMoveType;
 			EnableHitboxes = lastEnableHitboxes;
+
+			if ( IsServer ) SetCollisionBoundsClient( mins, maxs );
+		}
+
+		[ClientRpc]
+		void SetCollisionBoundsClient( Vector3 mins, Vector3 maxs )
+		{
+			SetCollisionBounds( mins, maxs );
 		}
 
 		public virtual WaterLevelType WaterLevelType { get; set; }
