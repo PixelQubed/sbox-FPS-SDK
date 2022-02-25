@@ -4,6 +4,8 @@ namespace Source1
 {
 	partial class Source1Camera : CameraMode
 	{
+		Vector3 LastPosition { get; set; }
+
 		public override void Update()
 		{
 			var player = Source1Player.Local;
@@ -23,9 +25,19 @@ namespace Source1
 				CalculatePlayerView( player, ref eyepos, ref eyerot, ref fov );
 			}
 
+			// DebugOverlay.Sphere( eyepos, 2, Color.Red, false, 0 );
+			// DebugOverlay.Sphere( LastPosition, 2, Color.Yellow, false, 0 );
+
+			if ( eyepos.Distance( LastPosition ) < 60 )
+				eyepos = LastPosition.LerpTo( eyepos, 40 * Time.Delta );
+
+			// DebugOverlay.Sphere( eyepos, 2, Color.Green, false, 0 );
+
 			FieldOfView = fov;
 			Rotation = eyerot;
 			Position = eyepos;
+
+			LastPosition = eyepos;
 		}
 
 		public void CalculatePlayerView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
