@@ -577,12 +577,13 @@ namespace Source1
 
 		protected void ShowDebugOverlay()
 		{
-			if ( sv_debug_movement && Player.Client.IsListenServerHost ) 
+			if ( sv_debug_movement && Player.Client.IsListenServerHost && Host.IsServer ) 
 			{
 				DebugOverlay.ScreenText( new Vector2( 60, 400 ),
 					$"[PLAYER]\n" +
 					$"LifeState             {Player.LifeState}\n" +
 					$"TeamNumber            {Player.TeamNumber}\n" +
+					$"EnableLagCompensation {Player.EnableLagCompensation}\n" +
 					$"\n" +
 					$"[MOVEMENT]\n" +
 					$"SurfaceFriction       {SurfaceFriction}\n" +
@@ -593,6 +594,7 @@ namespace Source1
 					$"[OBSERVER]\n" +
 					$"ObserverMode          {Player.ObserverMode}\n" +
 					$"LastObserverMode      {Player.LastObserverMode}\n" +
+					$"ForcedObserverMode    {Player.IsForcedObserverMode}\n" +
 					$"ObserverTarget        {Player.ObserverTarget}"
 					);
 

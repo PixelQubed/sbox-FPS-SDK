@@ -16,8 +16,7 @@ namespace Source1
 		public override void Spawn()
 		{
 			base.Spawn();
-			Log.Info( $"Source1Player.Spawn()" );
-
+			Log.Info( $"Entity has been put on the server." );
 			EnableLagCompensation = true;
 
 			Controller = new Source1GameMovement();
@@ -25,7 +24,7 @@ namespace Source1
 			CameraMode = new Source1Camera();
 
 			TeamNumber = 0;
-			LastObserverMode = ObserverMode.Roaming;
+			LastObserverMode = ObserverMode.Chase;
 		}
 
 		[AdminCmd( "respawn_me" )]
@@ -37,7 +36,6 @@ namespace Source1
 		public override void Respawn()
 		{
 			base.Respawn();
-			Log.Info( $"Source1Player.Respawn()" );
 
 			LifeState = LifeState.Alive;
 			Velocity = Vector3.Zero;
@@ -117,10 +115,6 @@ namespace Source1
 			SimulatePassiveChildren( cl );
 		}
 
-		public virtual void UpdateModel()
-		{
-		}
-
 		public void RemoveAllTags()
 		{
 			var list = Tags.List.ToList();
@@ -158,7 +152,10 @@ namespace Source1
 		{
 			if ( !IsAlive ) return;
 
-			var dmg = DamageInfo.Generic( Health * 2 ).WithAttacker( this ).WithPosition( Position );
+			var dmg = DamageInfo.Generic( Health * 2 )
+				.WithAttacker( this )
+				.WithPosition( Position );
+
 			TakeDamage( dmg );
 		}
 
@@ -193,7 +190,7 @@ namespace Source1
 
 			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 
-			StartObserverMode( ObserverMode.Roaming );
+			StartObserverMode( ObserverMode.Chase );
 		}
 
 		public override void TakeDamage( DamageInfo info )
@@ -214,6 +211,7 @@ namespace Source1
 		}
 
 		[ConVar.Replicated] public static bool mp_player_freeze_on_round_start { get; set; } = true;
+
 		public virtual bool CanPlayerMove()
 		{
 			var inPreRound = GameRules.Current.State == GameState.PreRound;
