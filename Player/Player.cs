@@ -35,52 +35,74 @@ namespace Source1
 
 		public override void Respawn()
 		{
-			base.Respawn();
-
+			//
 			// Tags
+			//
 			RemoveAllTags();
 			Tags.Add( "player" );
 			Tags.Add( TeamManager.GetTag( TeamNumber ) );
 
+			//
+			// Life State
+			//
 			LifeState = LifeState.Alive;
-			Velocity = Vector3.Zero;
-			MoveType = MoveType.MOVETYPE_WALK;
+			Health = 100;
+			MaxHealth = Health;
+			TimeSinceRespawned = 0;
 
+			//
+			// Rendering
+			//
 			EnableAllCollisions = true;
 			EnableDrawing = true;
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = false;
 			UseAnimGraph = true;
-			EnableHitboxes = true;
+
+			//
+			// Teamplay
+			// 
+			if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
+			else StartObserverMode( LastObserverMode );
+
+			//
+			// Movement
+			//
+			Velocity = Vector3.Zero;
+			MoveType = MoveType.MOVETYPE_WALK;
+			FallVelocity = 0;
+			BaseVelocity = 0;
+			MaxSpeed = GetMaxSpeed();
+			AllowAutoMovement = true;
 
 			CollisionGroup = CollisionGroup.Player;
 			SetInteractsAs( CollisionLayer.Player );
 
+			EnableHitboxes = true;
 			SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 
-			// Health
-			Health = 100;
-			MaxHealth = Health;
-
-			// Movement
-			FallVelocity = 0;
-			Velocity = 0;
-			BaseVelocity = 0;
-
-			MaxSpeed = GetMaxSpeed();
-			AllowAutoMovement = true;
-
-			GameRules.Current.PlayerRespawn( this );
-
-			TimeSinceSprayed = sv_spray_cooldown + 1;
-			TimeSinceRespawned = 0;
-
+			//
+			// Weapons
+			//
 			PreviousWeapon = null;
-			GameRules.Current.MoveToSpawnpoint( this );
 
-			if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
-			else StartObserverMode( LastObserverMode );
+			//
+			// Misc
+			//
+			TimeSinceSprayed = sv_spray_cooldown + 1;
+
+			// move the player to the spawn point
+			GameRules.Current.MoveToSpawnpoint( this );
 			ResetInterpolation();
+
+			// let gamerules know that we have respawned.
+			GameRules.Current.PlayerRespawn( this );
+		}
+
+		public override void OnNewModel( Model model )
+		{
+			base.OnNewModel( model );
+			SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 		}
 
 		public void SetCollisionBounds( Vector3 mins, Vector3 maxs )
