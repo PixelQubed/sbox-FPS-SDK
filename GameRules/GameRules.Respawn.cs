@@ -28,7 +28,7 @@ namespace Source1
 			var up = center + Vector3.Up * 64;
 			var down = center + Vector3.Down * 64;
 
-			DebugOverlay.Sphere( center, 10, Color.Red, false, 5 );
+			// DebugOverlay.Sphere( center, 10, Color.Red, false, 5 );
 
 			// 
 			// Land the player on the ground
@@ -41,7 +41,7 @@ namespace Source1
 				.WithoutTags( "player", "projectile" )
 				.Run();
 
-			DebugOverlay.Sphere( tr.EndPosition, 10, Color.Yellow, false, 5 );
+			// DebugOverlay.Sphere( tr.EndPosition, 10, Color.Yellow, false, 5 );
 
 			// we landed on something, update our transform position.
 			if ( tr.Hit )
