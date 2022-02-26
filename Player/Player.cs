@@ -13,6 +13,11 @@ namespace Source1
 		[Net] public float MaxSpeed { get; set; }
 		[Net] public float MaxHealth { get; set; }
 
+		// These are from Entity, but they're not networked by default.
+		// Client needs to be aware about these things.
+		[Net] public new Entity LastAttacker { get; set; }
+		[Net] public new Entity LastAttackerWeapon { get; set; }
+
 		public override void Spawn()
 		{
 			base.Spawn();
@@ -49,6 +54,10 @@ namespace Source1
 			Health = GetMaxHealth();
 			MaxHealth = Health;
 			TimeSinceRespawned = 0;
+
+			LastAttacker = null;
+			LastAttackerWeapon = null;
+			LastDamageInfo = default;
 
 			//
 			// Rendering
@@ -207,8 +216,6 @@ namespace Source1
 			StopUsing();
 
 			StartObserverMode( ObserverMode.Deathcam );
-
-			if ( LastAttacker != null ) SetObserverTarget( LastAttacker );
 
 			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 		}

@@ -132,15 +132,11 @@ namespace Source1
 		public void CalculateDeathCamView( Source1Player player )
 		{
 			LerpEnabled = false;
-
-			var killer = player.ObserverTarget;
+			var killer = player.LastAttacker;
 
 			// if we dont have a killer use chase cam
 			if ( killer == null ) 
-			{
-				CalculateChaseCamView( player );
 				return;
-			}
 
 			var deathAnimTime = player.DeathAnimationTime;
 			if ( player.TimeSinceDeath > deathAnimTime )
@@ -177,10 +173,7 @@ namespace Source1
 				.Run();
 
 			target = tr.EndPosition;
-			if ( tr.Hit )
-			{
-				target += toKiller * 6;
-			}
+			if ( tr.Hit ) target += toKiller * 6;
 
 			Position = target;
 
@@ -198,7 +191,7 @@ namespace Source1
 
 		public void CalculateFreezeCamView( Source1Player player )
 		{
-			var killer = player.ObserverTarget;
+			var killer = player.LastAttacker;
 
 			if ( killer == null ) 
 				return;

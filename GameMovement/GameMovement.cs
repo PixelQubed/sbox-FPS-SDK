@@ -582,7 +582,8 @@ namespace Source1
 					$"[PLAYER]\n" +
 					$"LifeState             {Player.LifeState}\n" +
 					$"TeamNumber            {Player.TeamNumber}\n" +
-					$"EnableLagCompensation {Player.EnableLagCompensation}\n" +
+					$"LastAttacker          {Player.LastAttacker}\n" +
+					$"LastAttackerWeapon    {Player.LastAttackerWeapon}\n" +
 					$"\n" +
 					$"[MOVEMENT]\n" +
 					$"SurfaceFriction       {SurfaceFriction}\n" +

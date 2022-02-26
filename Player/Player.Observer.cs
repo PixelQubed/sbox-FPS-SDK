@@ -251,7 +251,7 @@ namespace Source1
 				// we can't observe other players, unless we're in deathcam
 				if ( TeamManager.IsPlayable( TeamNumber ) )
 				{
-					if ( !IsInDeathcam && player.TeamNumber != TeamNumber )
+					if ( player.TeamNumber != TeamNumber )
 						return false;
 				}
 			}
