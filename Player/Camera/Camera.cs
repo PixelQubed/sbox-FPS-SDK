@@ -159,7 +159,7 @@ namespace Source1
 			Rotation = Rotation.Lerp( Rotation, rotToKiller, rotLerp );
 
 			//
-			//
+			// Zoom out from our target
 			//
 
 			float posLerp = player.TimeSinceDeath / deathAnimTime;
@@ -168,7 +168,6 @@ namespace Source1
 			var target = Position + -toKiller * posLerp * ChaseDistanceMax * Easing.QuadraticInOut( posLerp );
 
 			var tr = Trace.Ray( Position, target )
-				.Size( player.GetPlayerExtentsScaled( false ) )
 				.HitLayer( CollisionLayer.Solid, true )
 				.Run();
 
@@ -196,26 +195,43 @@ namespace Source1
 			if ( killer == null ) 
 				return;
 
-			// time for death animation
+			// get time for death animation
 			var deathAnimTime = player.DeathAnimationTime;
-			// time for freeze cam to move to the player
+			// get time for freeze cam to move to the player
 			var travelTime = Source1Player.sv_spectator_freeze_traveltime;
 
 			// time that has passed while we are in freeze cam
 			var timeInFreezeCam = player.TimeSinceDeath - deathAnimTime;
 			timeInFreezeCam = MathF.Max( 0, timeInFreezeCam );
 
-			// lerp of the travel
+			// get lerp of the travel
 			var travelLerp = Math.Clamp( timeInFreezeCam / travelTime, 0, 1 );
 				
+			// getting origin position and killer eye position
 			var originPos = LastDeathcamPosition;
 			var killerPos = killer.EyePosition;
 
+			// direction to target from us.
 			var toTarget = killerPos - originPos;
 			toTarget = toTarget.Normal;
 
+			// getting distance from that we need to keep from killer's eyes.
 			var distFromTarget = FreezeCamDistanceMin;
+
+			// final position, this is where the freezecam will end.
 			var targetPos = killerPos - toTarget * distFromTarget;
+
+			//
+			// making sure there are no walls in between us
+			//
+
+			var tr = Trace.Ray( killerPos, targetPos )
+				.HitLayer( CollisionLayer.Solid, true )
+				.Run();
+
+			targetPos = tr.EndPosition;
+			if ( tr.Hit ) targetPos += toTarget * MathF.Min( 5, tr.Distance );
+
 
 			Position = originPos.LerpTo( targetPos, travelLerp * Easing.EaseIn( travelLerp ) );
 			Rotation = Rotation.LookAt( toTarget );
@@ -232,6 +248,10 @@ namespace Source1
 				WillPlayFreezeCamSound = false;
 				PlayFreezeCamSound();
 			}
+
+			//
+			// Freezing screen when we reach lerp 1.
+			//
 
 			if ( WillFreezeGameScene && travelLerp >= 1 )
 			{
