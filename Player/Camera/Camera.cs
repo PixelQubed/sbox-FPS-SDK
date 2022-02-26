@@ -1,11 +1,16 @@
 using Sandbox;
+using System;
 
 namespace Source1
 {
 	partial class Source1Camera : CameraMode
 	{
 		Vector3 LastPosition { get; set; }
-		bool ShouldLerp { get; set; }
+		Rotation LastRotation { get; set; }
+
+		bool LerpEnabled { get; set; }
+
+		float ChaseDistance { get; set; }
 
 		public override void Update()
 		{
@@ -13,85 +18,89 @@ namespace Source1
 			if ( player == null ) return;
 
 			Viewer = player;
-			var eyepos = player.EyePosition;
-			var eyerot = player.EyeRotation;
-			var fov = 90f;
+			Position = player.EyePosition;
+			Rotation = player.EyeRotation;
+			FieldOfView = 90f;
 
-			ShouldLerp = true;
+			LerpEnabled = true;
 
-			if ( player.IsObserver )
-			{
-				CalculateObserverView( player, ref eyepos, ref eyerot, ref fov );
-			}
-			else
-			{
-				CalculatePlayerView( player, ref eyepos, ref eyerot, ref fov );
-			}
+			if ( player.IsObserver ) CalculateObserverView( player );
+			else CalculatePlayerView( player );
 
-			if ( ShouldLerp && eyepos.Distance( LastPosition ) < 60 )
-			{
-				eyepos = LastPosition.LerpTo( eyepos, 40 * Time.Delta );
-			}
+			if ( LerpEnabled )
+				CalculateLerp();
 
-			FieldOfView = fov;
-			Rotation = eyerot;
-			Position = eyepos;
-
-			LastPosition = eyepos;
+			LastPosition = Position;
+			LastRotation = Rotation;
 		}
 
-		public void CalculatePlayerView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
+		public void CalculateLerp()
+		{
+			if ( Position.Distance( LastPosition ) < 15 ) 
+			{
+				Position = LastPosition.LerpTo( Position, 40 * Time.Delta );
+			}
+
+			Rotation = Rotation.Lerp( LastRotation, Rotation, 80 * Time.Delta );
+		}
+
+		public virtual void CalculatePlayerView( Source1Player player )
 		{
 		}
 
-		public void CalculateObserverView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
+		public virtual void CalculateObserverView( Source1Player player)
 		{
 			switch( player.ObserverMode )
 			{
-				case ObserverMode.Deathcam:
 				case ObserverMode.Roaming:
-					CalculateUnimplementedCamView( player, ref eyepos, ref eyerot, ref fov );
+					CalculateRoamingCamView( player );
 					break;
 
 				case ObserverMode.InEye:
-					CalculateInEyeCamView( player, ref eyepos, ref eyerot, ref fov );
+					CalculateInEyeCamView( player );
 					break;
 
 				case ObserverMode.Chase:
-					CalculateChaseCamView( player, ref eyepos, ref eyerot, ref fov );
+					CalculateChaseCamView( player );
+					break;
+
+				case ObserverMode.Deathcam:
+					CalculateDeathCamView( player );
 					break;
 			}
 		}
 
-		public void CalculateUnimplementedCamView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
+		//
+		// Observer Camera Modes
+		//
+
+		public void CalculateRoamingCamView( Source1Player player )
 		{
-			FieldOfView = fov;
-			Rotation = eyerot;
-			Position = eyepos;
-			Viewer = Local.Pawn;
 		}
 
-		public void CalculateInEyeCamView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
+		public void CalculateInEyeCamView( Source1Player player )
 		{
 			var target = player.ObserverTarget;
 
+			// dont do anything, we don't have target.
 			if ( target == null )
 				return;
 
 			if ( target.LifeState != LifeState.Alive )
 			{
-				CalculateChaseCamView( player, ref eyepos, ref eyerot, ref fov );
+				CalculateChaseCamView( player );
 				return;
 			}
 
-			eyepos = target.EyePosition;
-			eyerot = target.EyeRotation;
+			Position = target.EyePosition;
+			Rotation = target.EyeRotation;
 			Viewer = target;
 		}
 
-		public void CalculateChaseCamView( Source1Player player, ref Vector3 eyepos, ref Rotation eyerot, ref float fov )
+		public void CalculateChaseCamView( Source1Player player )
 		{
-			ShouldLerp = false;
+			// disable position lerp on chase camera 
+			LerpEnabled = false;
 
 			var target = player.ObserverTarget;
 
@@ -104,17 +113,46 @@ namespace Source1
 			// Instead of letting the player rotate around an invisible point, treat
 			// the point as a fixed camera.
 
-			var specPos = target.EyePosition - eyerot.Forward * 96;
+			var specPos = target.EyePosition - Rotation.Forward * 96;
 
 			var tr = Trace.Ray( target.EyePosition, specPos )
 				.Ignore( target )
 				.HitLayer( CollisionLayer.Solid, true )
 				.Run();
 
-			eyepos = specPos;
+			Position = specPos;
 		}
 
+		public virtual float ChaseDistanceMin => 16;
+		public virtual float ChaseDistanceMax => 96;
 
-		[ClientVar] public static bool cl_enable_view_punch { get; set; } = true;
+		public virtual float GetDeathCamInterpolationTime( Source1Player player )
+		{
+			return player.DeathAnimationTime;
+		}
+
+		public void CalculateDeathCamView( Source1Player player )
+		{
+			var killer = player.ObserverTarget;
+
+			// if we dont have a killer use chase cam
+			if ( killer == null ) 
+			{
+				CalculateChaseCamView( player );
+				return;
+			}
+
+			//
+			// Force look at enemy
+			//
+
+			float interpolation = player.TimeSinceDeath / GetDeathCamInterpolationTime( player );
+			interpolation = Math.Clamp( interpolation, 0, 1.0f );
+
+			var toKiller = killer.EyePosition - Position;
+			var rotToKiller = Rotation.LookAt( toKiller );
+
+			Rotation = Rotation.Lerp( Rotation, rotToKiller, interpolation );
+		}
 	}
 }
