@@ -76,6 +76,7 @@ namespace Source1
 
 		public void CalculateRoamingCamView( Source1Player player )
 		{
+			LerpEnabled = false;
 		}
 
 		public void CalculateInEyeCamView( Source1Player player )
