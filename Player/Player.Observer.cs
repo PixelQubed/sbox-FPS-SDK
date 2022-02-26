@@ -12,49 +12,59 @@ namespace Source1
 		public ObserverMode LastObserverMode { get; set; }
 		public bool IsForcedObserverMode { get; private set; }
 
-		/// <summary>
-		/// The player is currently using the spectator mode to observe the map.
-		/// </summary>
-		public bool IsSpectating => ObserverMode >= ObserverMode.Fixed;
-		/// <summary>
-		/// The player is currently observing something, might possibly be deathcam or freezecam.
-		/// </summary>
+		public bool IsSpectating => ObserverMode >= ObserverMode.InEye;
 		public bool IsObserver => ObserverMode != ObserverMode.None;
 
-		public void SimulateObserver()
+		//
+		// State Shortcuts
+		//
+
+		public bool IsInDeathcam => ObserverMode == ObserverMode.Deathcam;
+		public bool IsInEye => ObserverMode == ObserverMode.InEye;
+		public bool IsChasing => ObserverMode == ObserverMode.Chase;
+		public bool IsRoaming => ObserverMode == ObserverMode.Roaming;
+
+		public bool WillPlayFreezeCameraSound { get; set; }
+
+		public virtual void SimulateObserver()
 		{
 			if ( IsServer )
 			{
 				if ( IsSpectating )
 				{
+					// change the mode
 					if ( Input.Pressed( InputButton.Jump ) )
-						NextObserverMode();
+					{
+						SwitchToNextObserverMode();
+					}
 
+					// next target
 					if ( Input.Pressed( InputButton.Attack1 ) )
 					{
 						var target = FindNextObserverTarget( false );
 						if ( target != null ) SetObserverTarget( target );
 					}
 
+					// prev target
 					if ( Input.Pressed( InputButton.Attack2 ) )
 					{
 						var target = FindNextObserverTarget( true );
 						if ( target != null ) SetObserverTarget( target );
 					}
-
-					CheckObserverSettings();
 				}
+
+				ValidateObserverSettings();
 			}
 		}
 
 		public virtual bool SetObserverTarget( Entity target )
 		{
-			if ( !IsValidObserverTarget( target ) )
+			if ( !CanObserveTarget( target ) )
 				return false;
 
 			ObserverTarget = target;
 
-			if ( ObserverMode == ObserverMode.Roaming ) 
+			if ( IsRoaming ) 
 			{
 				var start = target.EyePosition;
 				var dir = target.EyeRotation.Forward.WithZ( 0 );
@@ -73,70 +83,57 @@ namespace Source1
 			return true;
 		}
 
-		public void NextObserverMode()
+		public void SwitchToNextObserverMode()
 		{
 			var mode = ObserverMode + 1;
 			var count = Enum.GetValues( typeof( ObserverMode ) ).Length;
 
 			if ( (int)mode >= count )
-			{
 				mode = ObserverMode.InEye;
-			}
-			else if ( mode < ObserverMode.InEye )
-			{
-				mode = ObserverMode.Roaming;
-			}
 
-			if ( ObserverMode > ObserverMode.Deathcam )
-			{
-				SetObserverMode( mode );
-			} else
-			{
-				LastObserverMode = mode;
-			}
+			SetObserverMode( mode );
 		}
 
-		public void CheckObserverSettings()
+		public void ValidateObserverSettings()
 		{
+			// If we're forced into observer mode
 			if( IsForcedObserverMode )
 			{
-				var target = ObserverTarget;
-
-				if ( !IsValidObserverTarget( target ) )
+				if ( !CanObserveTarget( ObserverTarget ) )
 				{
-					target = FindNextObserverTarget( false );
-				}
-
-				if ( target != null )
-				{
-					IsForcedObserverMode = false;
-					SetObserverMode( LastObserverMode );
-					SetObserverTarget( target );
+					var target = FindNextObserverTarget( false );
+					if ( target != null )
+					{
+						IsForcedObserverMode = false;
+						SetObserverMode( LastObserverMode );
+						SetObserverTarget( target );
+					}
 				}
 
 				return;
 			}
 
-			if ( LastObserverMode < ObserverMode.Fixed )
+			// safe point, we don't want to have anything below "InEye" to be
+			// our last observer mode.
+			if ( LastObserverMode < ObserverMode.InEye )
+			{
 				LastObserverMode = ObserverMode.Roaming;
+			}
 
-			if ( ObserverMode >= ObserverMode.InEye )
-				CheckObserverTarget();
+			// if we're spectating make sure our observer target
+			// is one we can spectate.
+			if ( IsSpectating )
+			{
+				ValidateObserverTarget();
+			}
 		}
 
-		public void CheckObserverTarget()
+		public void ValidateObserverTarget()
 		{
-			if ( !IsValidObserverTarget( ObserverTarget ) )
+			if ( !CanObserveTarget( ObserverTarget ) )
 			{
 				var target = FindNextObserverTarget( false );
-				if ( target != null )
-				{
-					SetObserverTarget( target );
-				} else
-				{
-					ForceObserverMode( ObserverMode.Fixed );
-					ObserverTarget = null;
-				}
+				SetObserverTarget( target );
 			}
 		}
 
@@ -160,34 +157,18 @@ namespace Source1
 
 				var target = ents[index];
 
-				if ( !IsValidObserverTarget( target ) ) 
+				if ( !CanObserveTarget( target ) ) 
 					continue;
 
-				Log.Info( $"target: {target}" );
 				return target;
 			}
 
 			return null;
 		}
 
-		public void ForceObserverMode( ObserverMode mode )
-		{
-			var tempMode = ObserverMode.Roaming;
-
-			if ( ObserverMode == mode )
-				return;
-
-			if ( IsForcedObserverMode ) 
-				tempMode = LastObserverMode;
-
-			SetObserverMode( mode );
-
-			if ( IsForcedObserverMode )
-				LastObserverMode = tempMode;
-
-			IsForcedObserverMode = true;
-		}
-
+		/// <summary>
+		/// stop spectating
+		/// </summary>
 		public void StopObserverMode()
 		{
 			IsForcedObserverMode = false;
@@ -200,41 +181,35 @@ namespace Source1
 			ObserverMode = ObserverMode.None;
 		}
 
-		public bool StartObserverMode( ObserverMode mode )
+		/// <summary>
+		/// Start observing in this mode.
+		/// </summary>
+		public void StartObserverMode( ObserverMode mode )
 		{
 			UsePhysicsCollision = false;
-
-			SetObserverMode( mode );
 			EnableDrawing = false;
 
 			Health = 1;
 			LifeState = LifeState.Dead;
 
-			return true;
+			SetObserverMode( mode );
 		}
 
 		public void SetObserverMode( ObserverMode mode )
 		{
-			if ( ObserverMode > ObserverMode.Deathcam )
+			// if we were spectating before, remember our last observer mode
+			if ( IsSpectating )
 				LastObserverMode = ObserverMode;
 
+			// set the new one
 			ObserverMode = mode;
 
-			switch ( mode )
-			{
-				case ObserverMode.None:
-				case ObserverMode.Fixed:
-				case ObserverMode.Deathcam:	
-					MoveType = MoveType.None;
-					break;
-
-				case ObserverMode.Chase:
-				case ObserverMode.InEye:
-				case ObserverMode.Roaming:
-					MoveType = MoveType.MOVETYPE_OBSERVER;
-					break;
-
-			}
+			// update the movetype, depending on whether we are or are not
+			// in observer mode
+			if ( ObserverMode == ObserverMode.None )
+				MoveType = MoveType.None;
+			else
+				MoveType = MoveType.MOVETYPE_OBSERVER;
 		}
 
 		public virtual float DeathAnimationTime => 3;
@@ -244,7 +219,7 @@ namespace Source1
 			return All.OfType<Source1Player>().Where( x => x.IsAlive );
 		}
 
-		public virtual bool IsValidObserverTarget( Entity target )
+		public virtual bool CanObserveTarget( Entity target )
 		{
 			if ( target == null ) 
 				return false;
@@ -266,15 +241,19 @@ namespace Source1
 						return false;
 				}
 
+				// we can't observe other players, unless we're in deathcam
 				if ( TeamManager.IsPlayable( TeamNumber ) )
 				{
-					if ( player.TeamNumber != TeamNumber )
+					if ( !IsInDeathcam && player.TeamNumber != TeamNumber )
 						return false;
 				}
 			}
 
 			return true;
 		}
+
+		[ConVar.Replicated] public static float spectator_freeze_traveltime { get; set; } = 0.4f;
+		[ConVar.Replicated] public static float spectator_freeze_time { get; set; } = 4;
 	}
 
 	public enum ObserverMode
@@ -287,14 +266,6 @@ namespace Source1
 		/// Special mode for death cam animation
 		/// </summary>
 		Deathcam,
-		/// <summary>
-		/// Zooms to a target, and freeze-frames on them
-		/// </summary>
-		Freezecam,
-		/// <summary>
-		/// View from a fixed camera position
-		/// </summary>
-		Fixed,
 		/// <summary>
 		/// Follow a player in first person view
 		/// </summary>

@@ -46,7 +46,7 @@ namespace Source1
 			// Life State
 			//
 			LifeState = LifeState.Alive;
-			Health = 100;
+			Health = GetMaxHealth();
 			MaxHealth = Health;
 			TimeSinceRespawned = 0;
 
@@ -137,10 +137,13 @@ namespace Source1
 		{
 			SimulateVisuals();
 
-			if ( IsObserver ) 
-				SimulateObserver();
+			//
+			// Simulate life states
+			//
+			if ( IsObserver ) SimulateObserver();
 
 			if ( cl.IsBot ) SimulateBot( cl );
+
 			GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
 
 			SimulateActiveChild( cl, ActiveChild );
@@ -164,21 +167,8 @@ namespace Source1
 			}
 		}
 
-		[ClientRpc]
-		public virtual void RespawnEffects()
-		{
-			CreateHull();
-		}
-
-		public virtual float GetMaxSpeed()
-		{
-			return Source1GameMovement.sv_maxspeed;
-		}
-
-		public virtual float GetSensitivityMultiplier()
-		{
-			return 1f;
-		}
+		public virtual float GetMaxSpeed() { return Source1GameMovement.sv_maxspeed; }
+		public virtual float GetSensitivityMultiplier() { return 1f; }
 
 		public void Kill()
 		{
@@ -191,9 +181,7 @@ namespace Source1
 			TakeDamage( dmg );
 		}
 
-
-		[Event.BuildInput]
-		protected new virtual void BuildInput( InputBuilder builder )
+		public override void BuildInput( InputBuilder builder )
 		{
 			builder.AnalogLook *= GetSensitivityMultiplier();
 
@@ -206,8 +194,6 @@ namespace Source1
 
 		public override void OnKilled()
 		{
-			Log.Info( "Source1Player.OnKilled()" );
-
 			DeleteChildren();
 			UseAnimGraph = false;
 
@@ -220,9 +206,15 @@ namespace Source1
 			LifeState = LifeState.Respawning;
 			StopUsing();
 
-			GameRules.Current.PlayerDeath( this, LastDamageInfo );
+			WillPlayFreezeCameraSound = true;
+			StartObserverMode( ObserverMode.Deathcam );
 
-			StartObserverMode( ObserverMode.Chase );
+			if ( LastAttacker != null )
+			{
+				SetObserverTarget( LastAttacker );
+			}
+
+			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 		}
 
 		public override void TakeDamage( DamageInfo info )
@@ -230,13 +222,11 @@ namespace Source1
 			TimeSinceTakeDamage = 0;
 
 			LastDamageInfo = info;
-			GameRules.Event_OnPlayerHurt( this, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
 
 			// flinch the model.
-			Animator?.SetAnimParameter( "b_flinch", true );
+			SetAnimParameter( "b_flinch", true );
 
 			// moved this up from entity class to not call procedural hit react from base
-
 			LastAttacker = info.Attacker;
 			LastAttackerWeapon = info.Weapon;
 
@@ -249,6 +239,9 @@ namespace Source1
 					OnKilled();
 				}
 			}
+
+			// Let gamerules know about this.
+			GameRules.Current.PlayerHurt( this, info );
 		}
 
 		public virtual bool IsReadyToPlay()
@@ -268,6 +261,11 @@ namespace Source1
 
 			var noMovement = inPreRound && preRoundFreeze;
 			return !noMovement;
+		}
+
+		public virtual float GetMaxHealth()
+		{
+			return 100;
 		}
 	}
 

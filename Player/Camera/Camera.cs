@@ -49,9 +49,7 @@ namespace Source1
 			switch( player.ObserverMode )
 			{
 				case ObserverMode.Deathcam:
-				case ObserverMode.Freezecam:
 				case ObserverMode.Roaming:
-				case ObserverMode.Fixed:
 					CalculateUnimplementedCamView( player, ref eyepos, ref eyerot, ref fov );
 					break;
 
