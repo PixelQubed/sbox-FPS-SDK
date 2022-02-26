@@ -227,6 +227,7 @@ namespace Source1
 
 			var tr = Trace.Ray( killerPos, targetPos )
 				.HitLayer( CollisionLayer.Solid, true )
+				.Ignore( killer )
 				.Run();
 
 			targetPos = tr.EndPosition;
