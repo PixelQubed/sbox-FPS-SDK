@@ -46,10 +46,7 @@ namespace Source1
 
 		public virtual Vector3 GetPlayerViewOffset( bool ducked )
 		{
-			if ( IsObserver )
-				return ViewVectors.ObserverViewPosition;
-			else
-				return ducked ? ViewVectors.DuckViewOffset : ViewVectors.ViewOffset;
+			return ducked ? ViewVectors.DuckViewOffset : ViewVectors.ViewOffset;
 		}
 
 		public Vector3 GetPlayerViewOffsetScaled( bool ducked )
@@ -71,7 +68,7 @@ namespace Source1
 			ObserverHullMin = new( -10, -10, -10 ),
 			ObserverHullMax = new( 10, 10, 10 ),
 
-			ObserverViewPosition = new( 0, 0, 14 )
+			DeadViewOffset = new( 0, 0, 14 )
 		};
 	}
 
@@ -89,6 +86,6 @@ namespace Source1
 		public Vector3 ObserverHullMax { get; set; }
 		public Vector3 ObserverHullMin { get; set; }
 
-		public Vector3 ObserverViewPosition { get; set; }
+		public Vector3 DeadViewOffset { get; set; }
 	}
 }

@@ -24,8 +24,6 @@ namespace Source1
 		public bool IsChasing => ObserverMode == ObserverMode.Chase;
 		public bool IsRoaming => ObserverMode == ObserverMode.Roaming;
 
-		public bool WillPlayFreezeCameraSound { get; set; }
-
 		public virtual void SimulateObserver()
 		{
 			if ( IsServer )
