@@ -118,6 +118,15 @@ namespace Source1
 				LastObserverMode = ObserverMode.Roaming;
 			}
 
+			if ( IsInDeathcam )
+			{
+				var deathCamTime = DeathAnimationTime + sv_spectator_freeze_traveltime + sv_spectator_freeze_time;
+				if ( TimeSinceDeath > deathCamTime )
+				{
+					StartObserverMode( LastObserverMode );
+				}
+			}
+
 			// if we're spectating make sure our observer target
 			// is one we can spectate.
 			if ( IsSpectating )
@@ -250,8 +259,8 @@ namespace Source1
 			return true;
 		}
 
-		[ConVar.Replicated] public static float spectator_freeze_traveltime { get; set; } = 0.4f;
-		[ConVar.Replicated] public static float spectator_freeze_time { get; set; } = 4;
+		[ConVar.Replicated] public static float sv_spectator_freeze_traveltime { get; set; } = 0.4f;
+		[ConVar.Replicated] public static float sv_spectator_freeze_time { get; set; } = 4f;
 	}
 
 	public enum ObserverMode
