@@ -121,7 +121,7 @@ namespace Source1
 				.HitLayer( CollisionLayer.Solid, true )
 				.Run();
 
-			Position = specPos;
+			Position = tr.EndPosition;
 		}
 
 		public virtual float ChaseDistanceMin => 16;
@@ -135,7 +135,7 @@ namespace Source1
 			var killer = player.LastAttacker;
 
 			// if we dont have a killer use chase cam
-			if ( killer == null ) 
+			if ( killer == null || player == killer ) 
 				return;
 
 			var deathAnimTime = player.DeathAnimationTime;
