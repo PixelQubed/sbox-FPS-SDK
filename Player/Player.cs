@@ -206,13 +206,9 @@ namespace Source1
 			LifeState = LifeState.Respawning;
 			StopUsing();
 
-			WillPlayFreezeCameraSound = true;
 			StartObserverMode( ObserverMode.Deathcam );
 
-			if ( LastAttacker != null )
-			{
-				SetObserverTarget( LastAttacker );
-			}
+			if ( LastAttacker != null ) SetObserverTarget( LastAttacker );
 
 			GameRules.Current.PlayerDeath( this, LastDamageInfo );
 		}
@@ -266,6 +262,24 @@ namespace Source1
 		public virtual float GetMaxHealth()
 		{
 			return 100;
+		}
+
+		public virtual void CommitSuicide( bool explode = false, bool force = false )
+		{
+			if ( !IsAlive )
+				return;
+
+			Health = 1;
+			var damage = DamageFlags.Generic;
+
+			if ( explode ) damage |= DamageFlags.Blast | DamageFlags.AlwaysGib;
+			else damage |= DamageFlags.DoNotGib;
+
+			var info = DamageInfo.Generic( 1 )
+				.WithAttacker( this )
+				.WithFlag( damage );
+
+			TakeDamage( info );
 		}
 	}
 

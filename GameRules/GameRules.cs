@@ -245,5 +245,13 @@ namespace Source1
 			player.MoveType = MoveType.MOVETYPE_WALK;
 			Log.Info( $"noclip OFF for {client}" );
 		}
+
+		public override void DoPlayerSuicide( Client cl )
+		{
+			var player = cl.Pawn as Source1Player;
+			if ( player == null ) return;
+
+			player.CommitSuicide( false, false );
+		}
 	}
 }
