@@ -48,8 +48,6 @@ namespace Source1
 			TimeSinceWaitingForPlayersStart = 0;
 			WaitingForPlayersTime = mp_waiting_for_players_time;
 
-			Log.Info( $"{WaitingForPlayersTime}" );
-
 			OnWaitingForPlayersStarted();
 		}
 
