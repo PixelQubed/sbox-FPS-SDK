@@ -17,7 +17,7 @@ namespace Source1
 		[ClientRpc]
 		public virtual void PunchView( float pitch, float yaw, float roll )
 		{
-			WishViewPunch = Rotation.From( pitch, yaw, roll );
+			WishViewPunch = WishViewPunch * Rotation.From( pitch, yaw, roll );
 		}
 
 		public virtual void SimulateVisuals()

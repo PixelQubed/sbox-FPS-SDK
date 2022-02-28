@@ -230,8 +230,8 @@ namespace Source1
 			// We need to punch our view a little bit.
 			//
 
-			var maxPunch = 6;
-			var maxDamage = 60;
+			var maxPunch = 5;
+			var maxDamage = 100;
 			var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
 			PunchView( -punchAngle, 0, 0 );
 
