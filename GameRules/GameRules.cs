@@ -39,7 +39,7 @@ namespace Source1
 		[Event.Tick]
 		public virtual void Tick()
 		{
-			TickStates();
+			SimulateStates();
 
 			if ( IsServer )
 			{

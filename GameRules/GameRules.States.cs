@@ -10,15 +10,21 @@ namespace Source1
 	partial class GameRules
 	{
 		[Net] public GameState State { get; private set; }
-		GameState NextState { get; set; }
+		GameState LastState { get; set; }
 
 		public void TransitionToState( GameState state )
 		{
-			NextState = state;
+			TimeSinceStateChange = 0;
+			LastState = State;
+
+			OnStateEnded( State );
+			State = state;
+			OnStateStarted( state );
+
+			Log.Info( $"[STATE] {LastState} → {State}" );
 		}
 
 		[Net] public TimeSince TimeSinceStateChange { get; set; }
-		GameState LastState { get; set; }
 
 		//
 		// Initialized
@@ -126,14 +132,8 @@ namespace Source1
 		public virtual void EndedGameOver() { }
 
 
-		public virtual void TickStates()
+		public virtual void SimulateStates()
 		{
-			if ( State != NextState )
-			{
-				OnStateChanged( State, NextState );
-				State = NextState;
-			}
-
 			switch ( State )
 			{
 				case GameState.Initialized: SimulateInitialized(); break;
@@ -153,11 +153,6 @@ namespace Source1
 		/// <param name="current"></param>
 		public virtual void OnStateChanged( GameState previous, GameState current )
 		{
-			TimeSinceStateChange = 0;
-
-			OnStateEnded( previous );
-			OnStateStarted( current );
-			// Log.Info( $"Game State Changed: {previous} → {current}" );
 		}
 
 		/// <summary>
