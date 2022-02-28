@@ -10,8 +10,9 @@ namespace Source1
 	partial class GameRules
 	{
 		[Net] public bool IsWaitingForPlayers { get; set; }
-		[Net] public TimeSince TimeSinceWaitingForPlayersStart { get; set; }
+		public TimeSince TimeSinceWaitingForPlayersStart { get; set; }
 		public float TimeUntilWaitingForPlayersEnds => MathF.Max( 0, mp_waiting_for_players_time - TimeSinceWaitingForPlayersStart );
+		public float WaitingForPlayersTime { get; set; }
 
 		public virtual void CheckWaitingForPlayers()
 		{
@@ -22,10 +23,12 @@ namespace Source1
 
 			if ( IsWaitingForPlayers )
 			{
-				if ( TimeSinceWaitingForPlayersStart > mp_waiting_for_players_time )
+				if ( TimeSinceWaitingForPlayersStart > WaitingForPlayersTime )
 				{
 					if ( IsEnoughPlayersToStartRound() )
 					{
+						StopWaitingForPlayers();
+
 						// Restart round immediately.
 						RestartRound();
 					}
@@ -35,19 +38,35 @@ namespace Source1
 
 		public void StartWaitingForPlayers()
 		{
-			if ( IsWaitingForPlayers ) return;
-			Log.Info( "Started waiting for players." );
+			if ( !IsServer ) 
+				return;
+
+			if ( IsWaitingForPlayers ) 
+				return;
 
 			IsWaitingForPlayers = true;
 			TimeSinceWaitingForPlayersStart = 0;
+			WaitingForPlayersTime = mp_waiting_for_players_time;
+
+			Log.Info( $"{WaitingForPlayersTime}" );
+
+			OnWaitingForPlayersStarted();
 		}
 
 		public void StopWaitingForPlayers()
 		{
-			if ( !IsWaitingForPlayers ) return;
-			Log.Info( "Ended waiting for players." );
+			if ( !IsServer )
+				return;
+
+			if ( !IsWaitingForPlayers )
+				return;
+
 			IsWaitingForPlayers = false;
+			OnWaitingForPlayersEnded();
 		}
+
+		public virtual void OnWaitingForPlayersStarted() { }
+		public virtual void OnWaitingForPlayersEnded() { }
 
 		[ConVar.Replicated] public static bool mp_waiting_for_players_cancel { get; set; }
 		[ConVar.Replicated] public static bool mp_waiting_for_players_restart { get; set; }
