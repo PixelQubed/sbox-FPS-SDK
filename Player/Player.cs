@@ -226,6 +226,17 @@ namespace Source1
 
 			LastDamageInfo = info;
 
+			//
+			// We need to punch our view a little bit.
+			//
+
+			var maxPunch = 6;
+			var maxDamage = 60;
+			var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
+			PunchView( -punchAngle, 0, 0 );
+
+			// TODO: Punch player's view in position of damage?
+
 			// flinch the model.
 			SetAnimParameter( "b_flinch", true );
 

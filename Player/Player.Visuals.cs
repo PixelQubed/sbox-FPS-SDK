@@ -9,6 +9,12 @@ namespace Source1
 		private Rotation WishViewPunch { get; set; }
 		public Rotation ViewPunch { get; private set; }
 
+		public void PunchView( Vector3 dir )
+		{
+			PunchView( dir.x, dir.y, dir.z );
+		}
+
+		[ClientRpc]
 		public virtual void PunchView( float pitch, float yaw, float roll )
 		{
 			WishViewPunch = Rotation.From( pitch, yaw, roll );

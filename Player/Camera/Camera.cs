@@ -46,6 +46,7 @@ namespace Source1
 
 		public virtual void CalculatePlayerView( Source1Player player )
 		{
+			Rotation = Rotation * player.ViewPunch;
 		}
 
 		public virtual void CalculateObserverView( Source1Player player)
