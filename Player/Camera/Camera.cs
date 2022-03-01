@@ -14,7 +14,7 @@ namespace Source1
 
 		public override void Update()
 		{
-			var player = Source1Player.Local;
+			var player = Source1Player.LocalPlayer;
 			if ( player == null ) return;
 
 			Viewer = player;

@@ -26,7 +26,7 @@ namespace Source1
 			ent.RenderColor = RenderColor;
 			ent.PhysicsGroup.Velocity = velocity;
 
-			if ( Local == this )
+			if ( LocalPlayer == this )
 			{
 				//ent.EnableDrawing = false; wtf
 			}
