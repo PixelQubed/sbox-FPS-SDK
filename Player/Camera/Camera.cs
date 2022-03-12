@@ -38,10 +38,10 @@ namespace Source1
 		{
 			if ( Position.Distance( LastPosition ) < 15 ) 
 			{
-				Position = LastPosition.LerpTo( Position, 40 * Time.Delta );
+				Position = LastPosition.LerpTo( Position, 60 * Time.Delta );
 			}
 
-			Rotation = Rotation.Lerp( LastRotation, Rotation, 80 * Time.Delta );
+			Rotation = Rotation.Lerp( LastRotation, Rotation, 100 * Time.Delta );
 		}
 
 		public virtual void CalculatePlayerView( Source1Player player )
