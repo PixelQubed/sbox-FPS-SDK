@@ -146,17 +146,38 @@ namespace Source1
 		{
 			SimulateVisuals();
 
-			//
-			// Simulate life states
-			//
-			if ( IsObserver ) SimulateObserver();
+			if ( IsObserver ) 
+				SimulateObserver();
 
-			if ( cl.IsBot ) SimulateBot( cl );
+			if ( cl.IsBot ) 
+				SimulateBot( cl );
 
 			GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
 
 			SimulateActiveChild( cl, ActiveChild );
 			SimulatePassiveChildren( cl );
+
+			if ( !IsAlive )
+				return;
+
+			SimulateHover();
+			SimulateActiveWeapon();
+		}
+
+		public virtual void SimulateActiveWeapon()
+		{
+			//
+			// Input requested a weapon switch
+			//
+
+			if ( Input.ActiveChild != null )
+			{
+				var newWeapon = Input.ActiveChild as Source1Weapon;
+				if ( newWeapon != null )
+				{
+					ActiveChild = Input.ActiveChild;
+				}
+			}
 		}
 
 		public void RemoveAllTags()
