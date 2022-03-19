@@ -1,184 +1,183 @@
 ﻿using Sandbox;
 
-namespace Source1
+namespace Source1;
+
+public abstract class Source1Event
 {
-	public abstract class Source1Event
+	public abstract class Round
 	{
-		public abstract class Round
+		/// <summary>
+		/// Round restart
+		/// </summary>
+		public class RestartAttribute : EventAttribute
 		{
-			/// <summary>
-			/// Round restart
-			/// </summary>
-			public class RestartAttribute : EventAttribute
-			{
-				public RestartAttribute() : base( "Round_Restart" ) { }
-			}
-
-			/// <summary>
-			/// Called when round is active, players can move
-			/// </summary>
-			public class ActiveAttribute : EventAttribute
-			{
-				public ActiveAttribute() : base( "Round_Active" ) { }
-			}
-
-			/// <summary>
-			/// When a team wins a round
-			/// </summary>
-			public class EndAttribute : EventAttribute
-			{
-				public EndAttribute() : base( "Round_End" ) { }
-			}
+			public RestartAttribute() : base( "Round_Restart" ) { }
 		}
 
-		public abstract class Game
+		/// <summary>
+		/// Called when round is active, players can move
+		/// </summary>
+		public class ActiveAttribute : EventAttribute
 		{
-			public class RestartAttribute : EventAttribute
-			{
-				public RestartAttribute() : base( "Game_Restart" ) { }
-			}
-
-			public class OverAttribute : EventAttribute
-			{
-				public OverAttribute() : base( "Game_Over" ) { }
-			}
+			public ActiveAttribute() : base( "Round_Active" ) { }
 		}
 
-		public abstract class Client
+		/// <summary>
+		/// When a team wins a round
+		/// </summary>
+		public class EndAttribute : EventAttribute
 		{
-			#region Connect
-			public class ConnectAttribute : EventAttribute
-			{
-				public ConnectAttribute() : base( "Client_Connect" ) { }
-			}
+			public EndAttribute() : base( "Round_End" ) { }
+		}
+	}
 
-			public struct ConnectArgs
-			{
-				public Sandbox.Client Client;
-
-				public ConnectArgs( Sandbox.Client client )
-				{
-					Client = client;
-				}
-			}
-			#endregion
-
-			#region Disconnect
-			public class DisconnectAttribute : EventAttribute
-			{
-				public DisconnectAttribute() : base( "Client_Disconnect" ) { }
-			}
-
-			public struct DisconnectArgs
-			{
-				public Sandbox.Client Client;
-				public NetworkDisconnectionReason Reason;
-
-				public DisconnectArgs( Sandbox.Client client, NetworkDisconnectionReason reason )
-				{
-					Client = client;
-					Reason = reason;
-				}
-			}
-			#endregion
+	public abstract class Game
+	{
+		public class RestartAttribute : EventAttribute
+		{
+			public RestartAttribute() : base( "Game_Restart" ) { }
 		}
 
-		public abstract class Player
+		public class OverAttribute : EventAttribute
 		{
-			#region Hurt
-			public class HurtAttribute : EventAttribute
-			{
-				public HurtAttribute() : base( "Player_Hurt" ) { }
-			}
-
-			public struct HurtArgs
-			{
-				public Source1Player Victim;
-				public Entity Attacker;
-				public Entity Inflictor;
-				public Entity Assister;
-				public Entity Weapon;
-				public DamageFlags Flags;
-				public Vector3 Position;
-				public float Damage;
-
-				public HurtArgs( Source1Player victim, Entity attacker, Entity inflictor, Entity assister, Entity weapon, DamageFlags flags, Vector3 position, float damage )
-				{
-					Victim = victim;
-					Attacker = attacker;
-					Inflictor = inflictor;
-					Assister = assister;
-					Weapon = weapon;
-					Flags = flags;
-					Position = position;
-					Damage = damage;
-				}
-			}
-			#endregion
-
-			#region Death
-			public class DeathAttribute : EventAttribute
-			{
-				public DeathAttribute() : base( "Player_Death" ) { }
-			}
-
-			public struct DeathArgs
-			{
-				public Source1Player Victim;
-				public Entity Attacker;
-				public Entity Inflictor;
-				public Entity Assister;
-				public Entity Weapon;
-				public DamageFlags Flags;
-
-				public DeathArgs( Source1Player victim, Entity attacker, Entity inflictor, Entity assister, Entity weapon, DamageFlags flags )
-				{
-					Victim = victim;
-					Attacker = attacker;
-					Inflictor = inflictor;
-					Assister = assister;
-					Weapon = weapon;
-					Flags = flags;
-				}
-			}
-			#endregion
-
-			#region Spawn
-			public class SpawnAttribute : EventAttribute
-			{
-				public SpawnAttribute() : base( "Player_Spawn" ) { }
-			}
-
-			public struct SpawnArgs
-			{
-				public Source1Player Player;
-
-				public SpawnArgs( Source1Player player )
-				{
-					Player = player;
-				}
-			}
-			#endregion
-
-			#region Change Team
-			public class ChangeTeamAttribute : EventAttribute
-			{
-				public ChangeTeamAttribute() : base( "Player_ChangeTeam" ) { }
-			}
-
-			public struct ChangeTeamArgs
-			{
-				public Source1Player Player;
-				public int Team;
-
-				public ChangeTeamArgs( Source1Player player, int team )
-				{
-					Player = player;
-					Team = team;
-				}
-
-			}
-			#endregion
+			public OverAttribute() : base( "Game_Over" ) { }
 		}
+	}
+
+	public abstract class Client
+	{
+		#region Connect
+		public class ConnectAttribute : EventAttribute
+		{
+			public ConnectAttribute() : base( "Client_Connect" ) { }
+		}
+
+		public struct ConnectArgs
+		{
+			public Sandbox.Client Client;
+
+			public ConnectArgs( Sandbox.Client client )
+			{
+				Client = client;
+			}
+		}
+		#endregion
+
+		#region Disconnect
+		public class DisconnectAttribute : EventAttribute
+		{
+			public DisconnectAttribute() : base( "Client_Disconnect" ) { }
+		}
+
+		public struct DisconnectArgs
+		{
+			public Sandbox.Client Client;
+			public NetworkDisconnectionReason Reason;
+
+			public DisconnectArgs( Sandbox.Client client, NetworkDisconnectionReason reason )
+			{
+				Client = client;
+				Reason = reason;
+			}
+		}
+		#endregion
+	}
+
+	public abstract class Player
+	{
+		#region Hurt
+		public class HurtAttribute : EventAttribute
+		{
+			public HurtAttribute() : base( "Player_Hurt" ) { }
+		}
+
+		public struct HurtArgs
+		{
+			public Source1Player Victim;
+			public Entity Attacker;
+			public Entity Inflictor;
+			public Entity Assister;
+			public Entity Weapon;
+			public DamageFlags Flags;
+			public Vector3 Position;
+			public float Damage;
+
+			public HurtArgs( Source1Player victim, Entity attacker, Entity inflictor, Entity assister, Entity weapon, DamageFlags flags, Vector3 position, float damage )
+			{
+				Victim = victim;
+				Attacker = attacker;
+				Inflictor = inflictor;
+				Assister = assister;
+				Weapon = weapon;
+				Flags = flags;
+				Position = position;
+				Damage = damage;
+			}
+		}
+		#endregion
+
+		#region Death
+		public class DeathAttribute : EventAttribute
+		{
+			public DeathAttribute() : base( "Player_Death" ) { }
+		}
+
+		public struct DeathArgs
+		{
+			public Source1Player Victim;
+			public Entity Attacker;
+			public Entity Inflictor;
+			public Entity Assister;
+			public Entity Weapon;
+			public DamageFlags Flags;
+
+			public DeathArgs( Source1Player victim, Entity attacker, Entity inflictor, Entity assister, Entity weapon, DamageFlags flags )
+			{
+				Victim = victim;
+				Attacker = attacker;
+				Inflictor = inflictor;
+				Assister = assister;
+				Weapon = weapon;
+				Flags = flags;
+			}
+		}
+		#endregion
+
+		#region Spawn
+		public class SpawnAttribute : EventAttribute
+		{
+			public SpawnAttribute() : base( "Player_Spawn" ) { }
+		}
+
+		public struct SpawnArgs
+		{
+			public Source1Player Player;
+
+			public SpawnArgs( Source1Player player )
+			{
+				Player = player;
+			}
+		}
+		#endregion
+
+		#region Change Team
+		public class ChangeTeamAttribute : EventAttribute
+		{
+			public ChangeTeamAttribute() : base( "Player_ChangeTeam" ) { }
+		}
+
+		public struct ChangeTeamArgs
+		{
+			public Source1Player Player;
+			public int Team;
+
+			public ChangeTeamArgs( Source1Player player, int team )
+			{
+				Player = player;
+				Team = team;
+			}
+
+		}
+		#endregion
 	}
 }

@@ -5,18 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Source1
+namespace Source1;
+
+public partial class SpawnPoint : Entity
 {
-	public partial class SpawnPoint : Entity
+	/// <summary>
+	/// Can this player spawn on this spawn point.
+	/// </summary>
+	/// <param name="player"></param>
+	/// <returns></returns>
+	public virtual bool CanSpawn( Source1Player player )
 	{
-		/// <summary>
-		/// Can this player spawn on this spawn point.
-		/// </summary>
-		/// <param name="player"></param>
-		/// <returns></returns>
-		public virtual bool CanSpawn( Source1Player player )
-		{
-			return true;
-		}
+		return true;
 	}
 }

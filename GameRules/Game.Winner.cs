@@ -1,53 +1,52 @@
 using Sandbox;
 
-namespace Source1
+namespace Source1;
+
+partial class GameRules
 {
-	partial class GameRules
+	/// <summary>
+	/// This team has won the round! This will be Unassigned any other time.
+	/// </summary>
+	[Net] public int Winner { get; set; }
+	[Net] public int WinReason { get; set; }
+
+	/// <summary>
+	/// This declares the winner and enters the round in humiliation mode?
+	/// </summary>
+	public void DeclareWinner( int winner, int reason )
 	{
-		/// <summary>
-		/// This team has won the round! This will be Unassigned any other time.
-		/// </summary>
-		[Net] public int Winner { get; set; }
-		[Net] public int WinReason { get; set; }
+		// If we're already in humiliation, don't do anything.
+		if ( State == GameState.RoundEnd ) return;
+		TransitionToState( GameState.RoundEnd );
 
-		/// <summary>
-		/// This declares the winner and enters the round in humiliation mode?
-		/// </summary>
-		public void DeclareWinner( int winner, int reason )
+		Winner = winner;
+		WinReason = reason;
+
+		if ( !Score.ContainsKey( winner ) ) Score[winner] = 0;
+		Score[winner]++;
+
+		PlayTeamWinSong( winner );
+		// play lose song for all opponents
+		foreach ( var index in TeamManager.Teams.Keys )
 		{
-			// If we're already in humiliation, don't do anything.
-			if ( State == GameState.RoundEnd ) return;
-			TransitionToState( GameState.RoundEnd );
-
-			Winner = winner;
-			WinReason = reason;
-
-			if ( !Score.ContainsKey( winner ) ) Score[winner] = 0;
-			Score[winner]++;
-
-			PlayTeamWinSong( winner );
-			// play lose song for all opponents
-			foreach ( var index in TeamManager.Teams.Keys )
+			if ( index == winner ) continue;
+			if ( TeamManager.IsPlayable( index ) )
 			{
-				if ( index == winner ) continue;
-				if ( TeamManager.IsPlayable( index ) )
-				{
-					PlayTeamLoseSong( index );
-				}
+				PlayTeamLoseSong( index );
 			}
-
-			// TODO: For spectators the sound depends on who the user last spectated.
 		}
 
-		public virtual void PlayTeamWinSong( int team ) { }
-		public virtual void PlayTeamLoseSong( int team ) { }
-
-		[ServerCmd("mp_forceteamwin")]
-		public static void Command_ForceTeamWin( int team )
-		{
-			Current.DeclareWinner( team, 0 );
-		}
-
-		[ConVar.Replicated] public static float mp_chattime { get; set; } = 15f;
+		// TODO: For spectators the sound depends on who the user last spectated.
 	}
+
+	public virtual void PlayTeamWinSong( int team ) { }
+	public virtual void PlayTeamLoseSong( int team ) { }
+
+	[ServerCmd("mp_forceteamwin")]
+	public static void Command_ForceTeamWin( int team )
+	{
+		Current.DeclareWinner( team, 0 );
+	}
+
+	[ConVar.Replicated] public static float mp_chattime { get; set; } = 15f;
 }

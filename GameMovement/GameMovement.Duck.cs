@@ -1,416 +1,187 @@
 ﻿using Sandbox;
 using System;
 
-namespace Source1
+namespace Source1;
+
+partial class Source1GameMovement
 {
-	partial class Source1GameMovement
+	[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
+
+	/// <summary>
+	/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
+	/// </summary>
+	public bool IsDucked => Player.Tags.Has( PlayerTags.Ducked );
+
+	public float TimeToDuck => .2f;
+	public float DuckTime { get; set; }
+
+	public float DuckProgress => DuckTime / TimeToDuck;
+
+	public virtual float GetDuckSpeed()
 	{
-		[ConVar.Replicated] public static bool sv_debug_duck { get; set; }
+		return 90;
+	}
 
-		/// <summary>
-		/// Is the player currently in the process of duck transition (ducking or unducking)
-		/// </summary>
-		public bool IsDucking { get; set; }
-		/// <summary>
-		/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
-		/// </summary>
-		public bool IsDucked { get; set; }
-		public float DuckTime { get; set; }
-		public float DuckJumpTime { get; set; }
-		public bool InDuckJump { get; set; }
+	public virtual bool WishDuck()
+	{
+		return Input.Down( InputButton.Duck );
+	}
 
-		public virtual float GetDuckSpeed()
+	public virtual void SimulateDucking()
+	{
+		if ( WishDuck() )
 		{
-			return 90;
+			OnDucking();
+		}
+		else
+		{
+			OnUnducking();
 		}
 
-		public virtual void Duck()
+		if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
+			SetTag( PlayerTags.Ducked );
+	}
+
+	public virtual void OnDucking()
+	{
+		if ( !CanDuck() )
+			return;
+
+		if ( !IsDucked && DuckTime >= TimeToDuck || IsInAir ) 
 		{
-			// Check to see if we are in the air.
-			bool bInAir = !IsGrounded();
-			bool bInDuck = Pawn.Tags.Has( PlayerTags.Ducked );
-			bool bDuckJump = JumpTime > 0.0f;
-			bool bDuckJumpTime = DuckJumpTime > 0.0f;
-
-			// Handle death.
-			if ( IsDead() )
-				return;
-
-			// If the player is holding down the duck button, the player is in duck transition, ducking, or duck-jumping.
-			if ( Input.Down( InputButton.Duck ) || IsDucking || bInDuck || bDuckJump )
-			{
-				// DUCK
-				if ( Input.Down( InputButton.Duck ) || bDuckJump )
-				{
-					// Have the duck button pressed, but the player currently isn't in the duck position.
-					if ( Input.Pressed( InputButton.Duck ) && !bInDuck && !bDuckJump && !bDuckJumpTime )
-					{
-						DuckTime = GameMovementDuckTime;
-						IsDucking = true;
-					}
-
-					// The player is in duck transition and not duck-jumping.
-					if ( IsDucking && !bDuckJump && !bDuckJumpTime )
-					{
-						float flDuckMilliseconds = MathF.Max( 0.0f, GameMovementDuckTime - DuckTime );
-						float flDuckSeconds = flDuckMilliseconds * 0.001f;
-
-						// Finish in duck transition when transition time is over, in "duck", in air.
-						if ( (flDuckSeconds > TimeToDuck) || bInDuck || bInAir )
-						{
-							FinishDuck();
-						}
-						else
-						{
-							// Calc parametric time
-							float flDuckFraction = Easing.QuadraticInOut( flDuckSeconds / TimeToDuck );
-							SetDuckedEyeOffset( flDuckFraction );
-						}
-					}
-
-					if ( bDuckJump )
-					{
-						// Make the bounding box small immediately.
-						if ( !bInDuck )
-						{
-							StartUnDuckJump();
-						}
-						else
-						{
-							// Check for a crouch override.
-							if ( !Input.Down( InputButton.Duck ) )
-							{
-								TraceResult trace;
-								if ( CanUnDuckJump( out trace ) )
-								{
-									FinishUnDuckJump( trace );
-									DuckJumpTime = (GameMovementTimeToUnduck * (1.0f - trace.Fraction)) + GameMovementTickToUnduckInverse;
-								}
-							}
-						}
-					}
-				}
-
-				// UNDUCK (or attempt to...)
-				else
-				{
-					if ( InDuckJump )
-					{
-						// Check for a crouch override.
-						if ( !Input.Down( InputButton.Duck ) )
-						{
-							TraceResult trace;
-							if ( CanUnDuckJump( out trace ) )
-							{
-								FinishUnDuckJump( trace );
-
-								if ( trace.Fraction < 1.0f )
-								{
-									DuckJumpTime = (GameMovementTimeToUnduck * (1.0f - trace.Fraction)) + GameMovementTickToUnduckInverse;
-								}
-							}
-						}
-						else
-						{
-							InDuckJump = false;
-						}
-					}
-
-					if ( bDuckJumpTime )
-						return;
-
-					// Try to unduck unless automovement is not allowed
-					// NOTE: When not onground, you can always unduck
-					if ( Player.AllowAutoMovement || bInAir || IsDucking )
-					{
-						// We released the duck button, we aren't in "duck" and we are not in the air - start unduck transition.
-						if ( Input.Released( InputButton.Duck ) )
-						{
-							if ( bInDuck && !bDuckJump )
-							{
-								DuckTime = GameMovementDuckTime;
-							}
-							else if ( IsDucking && !IsDucked )
-							{
-								// Invert time if release before fully ducked!!!
-								float unduckMilliseconds = 1000.0f * TimeToUnduck;
-								float duckMilliseconds = 1000.0f * TimeToDuck;
-								float elapsedMilliseconds = GameMovementDuckTime - DuckTime;
-
-								float fracDucked = elapsedMilliseconds / duckMilliseconds;
-								float remainingUnduckMilliseconds = fracDucked * unduckMilliseconds;
-
-								DuckTime = GameMovementDuckTime - unduckMilliseconds + remainingUnduckMilliseconds;
-							}
-						}
-
-						// Check to see if we are capable of unducking.
-						if ( CanUnduck() )
-						{
-							// or unducking
-							if ( (IsDucking || IsDucked) )
-							{
-								float flDuckMilliseconds = Math.Max( 0.0f, GameMovementDuckTime - DuckTime );
-								float flDuckSeconds = flDuckMilliseconds * 0.001f;
-
-								// Finish ducking immediately if duck time is over or not on ground
-								if ( flDuckSeconds > TimeToUnduck || (bInAir && !bDuckJump) )
-								{
-									FinishUnDuck();
-								}
-								else
-								{
-									// Calc parametric time
-									float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TimeToUnduck) );
-									SetDuckedEyeOffset( flDuckFraction );
-									IsDucking = true;
-								}
-							}
-						}
-						else
-						{
-							// Still under something where we can't unduck, so make sure we reset this timer so
-							// that we'll unduck once we exit the tunnel, etc.
-							if ( DuckTime != GameMovementDuckTime )
-							{
-								SetDuckedEyeOffset( 1.0f );
-								DuckTime = GameMovementDuckTime;
-								IsDucked = true;
-								IsDucking = false;
-								Pawn.Tags.Add( PlayerTags.Ducked );
-							}
-						}
-					}
-				}
-			}
-			else if ( !IsDead() && !Player.IsObserver )
-			{
-				// If the player is still alive and not an observer, check to make sure that
-				// his view height is at the standing height.
-
-				if ( DuckJumpTime == 0 && MathF.Abs( EyeLocalPosition.z - GetPlayerViewOffset( false ).z ) > 0.1f ) 
-				{
-					// set the eye height to the non-ducked height
-					SetDuckedEyeOffset( 0.0f );
-				}
-			}
-
-			if ( Pawn.Tags.Has( PlayerTags.Ducked ) ) 
-				SetTag( PlayerTags.Ducked );
+			OnFinishedDucking();
 		}
 
-		public virtual float TimeToDuck => 0.2f;
-		public virtual float TimeToUnduck => 0.2f;
-		public virtual float GameMovementDuckTime => 1000;
-		public virtual float GameMovementTimeToUnduck => TimeToUnduck * 1000;
-		public virtual float GameMovementTickToUnduckInverse => GameMovementDuckTime - GameMovementTimeToUnduck;
-
-
-		//-----------------------------------------------------------------------------
-		// Purpose:
-		//-----------------------------------------------------------------------------
-		public void StartUnDuckJump()
+		if ( DuckTime < TimeToDuck )
 		{
-			Pawn.Tags.Add( PlayerTags.Ducked );
-			IsDucked = true;
-			IsDucking = false;
+			DuckTime += Time.Delta;
 
-			EyeLocalPosition = GetPlayerViewOffset( true );
+			if ( DuckTime > TimeToDuck ) 
+				DuckTime = TimeToDuck;
+		}
+	}
 
+	public virtual void OnUnducking()
+	{
+		if ( !CanUnduck() )
+			return;
+
+		if ( IsDucked && DuckTime == 0 || IsInAir )
+		{
+			OnFinishedUnducking();
+		}
+
+		if ( DuckTime > 0 )
+		{
+			DuckTime -= Time.Delta;
+
+			if ( DuckTime < 0 )
+				DuckTime = 0;
+		}
+	}
+
+	public virtual void OnFinishedDucking()
+	{
+		if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
+			return;
+
+		Pawn.Tags.Add( PlayerTags.Ducked );
+		DuckTime = TimeToDuck;
+
+		if ( IsGrounded )
+		{
+			Position -= GetPlayerMins( true ) - GetPlayerMins( false );
+		}
+		else
+		{
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 			var viewDelta = hullSizeNormal - hullSizeCrouch;
 			Position += viewDelta;
-
-			// See if we are stuck?
-			FixPlayerCrouchStuck( true );
-
-			// Recategorize position since ducking can change origin
-			CategorizePosition();
 		}
 
-		public void FixPlayerCrouchStuck( bool upward )
+		// See if we are stuck?
+		FixPlayerCrouchStuck( true );
+		CategorizePosition();
+	}
+
+	public virtual void OnFinishedUnducking()
+	{
+		if ( !Pawn.Tags.Has( PlayerTags.Ducked ) )
+			return;
+
+		Player.Tags.Remove( PlayerTags.Ducked );
+		DuckTime = 0;
+
+		if ( IsGrounded )
 		{
-			int direction = upward ? 1 : 0;
-
-			var trace = TraceBBox( Position, Position );
-			if ( trace.Entity == null )
-				return;
-
-			var test = Position;
-			for ( int i = 0; i < 36; i++ )
-			{
-				var org = Position;
-				org.z += direction;
-
-				Position = org;
-				trace = TraceBBox( Position, Position );
-				if ( trace.Entity == null )
-					return;
-			}
-
-			Position = test;
+			Position += GetPlayerMins( true ) - GetPlayerMins( false );
 		}
-
-		public bool CanUnDuckJump( out TraceResult trace )
+		else
 		{
-			var vecEnd = Position;
-
-			// Trace down to the stand position and see if we can stand.
-			vecEnd.z -= 36.0f;
-
-			trace = TraceBBox( Position, vecEnd );
-			if ( trace.Fraction < 1.0f )
-			{
-				// Find the endpoint.
-				vecEnd.z = Position.z + (-36.0f * trace.Fraction);
-
-				// Test a normal hull.
-				bool bWasDucked = IsDucked;
-				IsDucked = false;
-
-				var traceUp = TraceBBox( vecEnd, vecEnd );
-				IsDucked = bWasDucked;
-				if ( !traceUp.StartedSolid )
-					return true;
-			}
-
-			return false;
-		}
-
-		public void FinishUnDuckJump( TraceResult trace )
-		{
-			//  Up for uncrouching.
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 			var viewDelta = hullSizeNormal - hullSizeCrouch;
-
-			float flDeltaZ = viewDelta.z;
-			viewDelta.z *= trace.Fraction;
-			flDeltaZ -= viewDelta.z;
-
-			Pawn.Tags.Remove( PlayerTags.Ducked );
-			IsDucked = false;
-			IsDucking = false;
-			InDuckJump = false;
-			DuckTime = 0.0f;
-			DuckJumpTime = 0.0f;
-			JumpTime = 0.0f;
-
-			var vecViewOffset = GetPlayerViewOffset( false );
-			vecViewOffset.z -= flDeltaZ;
-			EyeLocalPosition = vecViewOffset;
-
 			Position -= viewDelta;
-
-			// Recategorize position since ducking can change origin
-			CategorizePosition();
 		}
 
-		public bool CanUnduck()
+		// Recategorize position since ducking can change origin
+		CategorizePosition();
+	}
+
+	public virtual bool CanDuck()
+	{
+		return true;
+	}
+
+	public virtual bool CanUnduck()
+	{
+		var origin = Position;
+
+		if ( IsGrounded )
 		{
-			var newOrigin = Position;
-
-			if ( IsGrounded() ) 
-			{
-				newOrigin += (GetPlayerMins( true ) - GetPlayerMins( false ));
-			}
-			else
-			{
-				// If in air an letting go of crouch, make sure we can offset origin to make
-				//  up for uncrouching
-				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
-				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
-				var viewDelta = hullSizeNormal - hullSizeCrouch;
-				newOrigin -= viewDelta;
-			}
-
-			bool saveducked = IsDucked;
-			IsDucked = false;
-
-			var trace = TraceBBox( Position, newOrigin );
-			IsDucked = saveducked;
-			if ( trace.StartedSolid || (trace.Fraction != 1.0f) ) 
-				return false;
-
-			return true;
+			origin += GetPlayerMins( true ) - GetPlayerMins( false );
+		}
+		else
+		{
+			var normalHull = GetPlayerMaxs( false ) - GetPlayerMins( false );
+			var duckedHull = GetPlayerMaxs( true ) - GetPlayerMins( true );
+			var viewDelta = normalHull - duckedHull;
+			origin -= viewDelta;
 		}
 
-		public void FinishDuck()
+		bool wasDucked = Player.Tags.Has( PlayerTags.Ducked );
+
+		if ( wasDucked ) Player.Tags.Remove( PlayerTags.Ducked );
+		var trace = TraceBBox( Position, origin );
+		if ( wasDucked ) Player.Tags.Add( PlayerTags.Ducked );
+
+		if ( trace.StartedSolid || trace.Fraction != 1 )
+			return false;
+
+		return true;
+	}
+
+	public virtual void FixPlayerCrouchStuck( bool upward )
+	{
+		int direction = upward ? 1 : 0;
+
+		var trace = TraceBBox( Position, Position );
+		if ( trace.Entity == null )
+			return;
+
+		var test = Position;
+		for ( int i = 0; i < 36; i++ )
 		{
-			if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
+			var org = Position;
+			org.z += direction;
+
+			Position = org;
+			trace = TraceBBox( Position, Position );
+			if ( trace.Entity == null )
 				return;
-
-			Pawn.Tags.Add( PlayerTags.Ducked );
-			IsDucked = true;
-			IsDucking = false;
-
-			EyeLocalPosition = GetPlayerViewOffset( true );
-
-			// HACKHACK - Fudge for collision bug - no time to fix this properly
-			if ( IsGrounded() )
-			{
-				Position -= GetPlayerMins( true ) - GetPlayerMins( false );
-			}
-			else
-			{
-				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
-				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
-				var viewDelta = hullSizeNormal - hullSizeCrouch;
-				Position += viewDelta;
-			}
-
-			// See if we are stuck?
-			FixPlayerCrouchStuck( true );
-
-			// Recategorize position since ducking can change origin
-			CategorizePosition();
 		}
 
-		public void FinishUnDuck()
-		{
-			Pawn.Tags.Remove( PlayerTags.Ducked );
-
-			IsDucked = false;
-			IsDucking = false;
-			InDuckJump = false;
-			DuckTime = 0;
-
-			EyeLocalPosition = GetPlayerViewOffset( false );
-
-			if ( IsGrounded() )
-			{
-				Position += GetPlayerMins( true ) - GetPlayerMins( false );
-			}
-			else
-			{
-				var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
-				var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
-				var viewDelta = hullSizeNormal - hullSizeCrouch;
-				Position -= viewDelta;
-			}
-
-			// Recategorize position since ducking can change origin
-			CategorizePosition();
-		}
-
-		void UpdateDuckJumpEyeOffset()
-		{
-			if ( DuckJumpTime != 0.0f )
-			{
-				float flDuckMilliseconds = MathF.Max( 0.0f, DuckTime - DuckJumpTime );
-				float flDuckSeconds = flDuckMilliseconds / GameMovementDuckTime;
-				if ( flDuckSeconds > TimeToUnduck )
-				{
-					DuckJumpTime = 0.0f;
-					SetDuckedEyeOffset( 0.0f );
-				}
-				else
-				{
-					float flDuckFraction = Easing.QuadraticInOut( 1.0f - (flDuckSeconds / TimeToUnduck) );
-					SetDuckedEyeOffset( flDuckFraction );
-				}
-			}
-		}
+		Position = test;
 	}
 }

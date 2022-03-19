@@ -1,12 +1,11 @@
 ﻿using Sandbox;
 using System;
 
-namespace Source1
+namespace Source1;
+
+partial class Source1Player
 {
-	partial class Source1Player
+	public virtual void SimulateBot( Client cl )
 	{
-		public virtual void SimulateBot( Client cl )
-		{
-		}
 	}
 }

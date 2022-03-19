@@ -2,40 +2,39 @@ using Sandbox;
 using System;
 using System.Linq;
 
-namespace Source1
+namespace Source1;
+
+partial class Source1Player
 {
-	partial class Source1Player
+	private Rotation WishViewPunch { get; set; }
+	public Rotation ViewPunch { get; private set; }
+
+	public void PunchView( Vector3 dir )
 	{
-		private Rotation WishViewPunch { get; set; }
-		public Rotation ViewPunch { get; private set; }
+		PunchView( dir.x, dir.y, dir.z );
+	}
 
-		public void PunchView( Vector3 dir )
+	[ClientRpc]
+	public virtual void PunchView( float pitch, float yaw, float roll )
+	{
+		WishViewPunch = WishViewPunch * Rotation.From( pitch, yaw, roll );
+	}
+
+	public virtual void SimulateVisuals()
+	{
+		if ( IsClient )
 		{
-			PunchView( dir.x, dir.y, dir.z );
+			DecayViewPunch();
 		}
+	}
 
-		[ClientRpc]
-		public virtual void PunchView( float pitch, float yaw, float roll )
-		{
-			WishViewPunch = WishViewPunch * Rotation.From( pitch, yaw, roll );
-		}
+	public void DecayViewPunch()
+	{
+		//
+		// View Punch Angle
+		//
 
-		public virtual void SimulateVisuals()
-		{
-			if ( IsClient )
-			{
-				DecayViewPunch();
-			}
-		}
-
-		public void DecayViewPunch()
-		{
-			//
-			// View Punch Angle
-			//
-
-			WishViewPunch = Rotation.Lerp( WishViewPunch, Rotation.Identity, Time.Delta * 5f );
-			ViewPunch = Rotation.Lerp( ViewPunch, WishViewPunch, Time.Delta * 10f );
-		}
+		WishViewPunch = Rotation.Lerp( WishViewPunch, Rotation.Identity, Time.Delta * 5f );
+		ViewPunch = Rotation.Lerp( ViewPunch, WishViewPunch, Time.Delta * 10f );
 	}
 }

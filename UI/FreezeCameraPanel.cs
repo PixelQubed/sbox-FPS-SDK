@@ -1,92 +1,86 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
+﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Source1
+namespace Source1;
+
+[UseTemplate]
+public class FreezeCameraPanel : Panel
 {
-	[UseTemplate]
-	public class FreezeCameraPanel : Panel
+	public static FreezeCameraPanel Instance { get; set; }
+	public float FreezeTime { get; set; }
+	public TimeSince TimeSinceFrozen { get; set; }
+	public bool IsFrozen => TimeSinceFrozen < FreezeTime;
+
+	public bool WillFreeze { get; set; }
+
+	Texture ColorTexture { get; set; }
+	Texture DepthTexture { get; set; }
+
+	Vector3 Position { get; set; }
+	Rotation Rotation { get; set; }
+	float FieldOfView { get; set; }
+
+	Vector2 Size { get; set; }
+
+	public FreezeCameraPanel()
 	{
-		public static FreezeCameraPanel Instance { get; set; }
-		public float FreezeTime { get; set; }
-		public TimeSince TimeSinceFrozen { get; set; }
-		public bool IsFrozen => TimeSinceFrozen < FreezeTime;
+		Instance = this;
+	}
 
-		public bool WillFreeze { get; set; }
+	public override void Tick()
+	{
+		SetClass( "visible", ShouldDraw() );
+	}
 
-		Texture ColorTexture { get; set; }
-		Texture DepthTexture { get; set; }
+	public static void Freeze( float time, Vector3 position, Rotation rotation, float fov )
+	{
+		Instance?.SetupFreeze( time, position, rotation, fov );
+	}
 
-		Vector3 Position { get; set; }
-		Rotation Rotation { get; set; }
-		float FieldOfView { get; set; }
+	public void SetupFreeze( float time, Vector3 position, Rotation rotation, float fov )
+	{
+		Size = new Vector2( Screen.Width, Screen.Height );
 
-		Vector2 Size { get; set; }
+		ColorTexture?.Dispose();
+		DepthTexture?.Dispose();
 
-		public FreezeCameraPanel()
+		ColorTexture = Texture.CreateRenderTarget()
+			.WithSize( Size )
+			.WithFormat( ImageFormat.RGBA32323232F )
+			.WithScreenMultiSample()
+			.Create();
+
+		DepthTexture = Texture.CreateRenderTarget()
+			.WithSize( Size )
+			.WithDepthFormat()
+			.WithScreenMultiSample()
+			.Create();
+
+
+		TimeSinceFrozen = 0;
+		FreezeTime = time;
+
+		Position = position;
+		Rotation = rotation;
+		FieldOfView = fov;
+
+		Style.SetBackgroundImage( ColorTexture );
+		WillFreeze = true;
+	}
+
+	public bool ShouldDraw()
+	{
+		return IsFrozen;
+	}
+
+	public override void DrawBackground( ref RenderState state )
+	{
+		base.DrawBackground( ref state );
+		if ( WillFreeze )
 		{
-			Instance = this;
-		}
-
-		public override void Tick()
-		{
-			SetClass( "visible", ShouldDraw() );
-		}
-
-		public static void Freeze( float time, Vector3 position, Rotation rotation, float fov )
-		{
-			Instance?.SetupFreeze( time, position, rotation, fov );
-		}
-
-		public void SetupFreeze( float time, Vector3 position, Rotation rotation, float fov )
-		{
-			Size = new Vector2( Screen.Width, Screen.Height );
-
-			ColorTexture?.Dispose();
-			DepthTexture?.Dispose();
-
-			ColorTexture = Texture.CreateRenderTarget()
-				.WithSize( Size )
-				.WithFormat( ImageFormat.RGBA32323232F )
-				.WithScreenMultiSample()
-				.Create();
-
-			DepthTexture = Texture.CreateRenderTarget()
-				.WithSize( Size )
-				.WithDepthFormat()
-				.WithScreenMultiSample()
-				.Create();
-
-
-			TimeSinceFrozen = 0;
-			FreezeTime = time;
-
-			Position = position;
-			Rotation = rotation;
-			FieldOfView = fov;
-
-			Style.SetBackgroundImage( ColorTexture );
-			WillFreeze = true;
-		}
-
-		public bool ShouldDraw()
-		{
-			return IsFrozen;
-		}
-
-		public override void DrawBackground( ref RenderState state )
-		{
-			base.DrawBackground( ref state );
-			if ( WillFreeze )
-			{
-				// Fill the texture with background 
-				Render.Draw.DrawScene( ColorTexture, DepthTexture, Map.Scene, Render.Attributes, new Rect( 0, 0, Size.x, Size.y), Position, Rotation, FieldOfView, 0.1f, 9999, false);
-				WillFreeze = false;
-			}
+			// Fill the texture with background 
+			Render.Draw.DrawScene( ColorTexture, DepthTexture, Map.Scene, Render.Attributes, new Rect( 0, 0, Size.x, Size.y), Position, Rotation, FieldOfView, 0.1f, 9999, false);
+			WillFreeze = false;
 		}
 	}
 }

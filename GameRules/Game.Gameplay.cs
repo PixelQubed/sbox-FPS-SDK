@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Source1
+namespace Source1;
+
+partial class GameRules
 {
-	partial class GameRules
+	public virtual bool ShouldShowTeamGoal()
 	{
-		public virtual bool ShouldShowTeamGoal()
-		{
-			return State == GameState.PreRound;
-		}
+		return State == GameState.PreRound;
 	}
 }

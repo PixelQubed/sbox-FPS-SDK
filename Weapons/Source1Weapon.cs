@@ -5,18 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Source1
+namespace Source1;
+
+public partial class Source1Weapon : BaseWeapon
 {
-	public partial class Source1Weapon : BaseWeapon
+	public virtual bool CanEquip( Source1Player player )
 	{
-		public virtual bool CanEquip( Source1Player player )
-		{
-			return true;
-		}
+		return true;
+	}
 
-		public virtual void Holster()
-		{
+	public virtual void Holster()
+	{
 
-		}
 	}
 }

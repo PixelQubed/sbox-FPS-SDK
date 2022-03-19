@@ -3,28 +3,27 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Source1
+namespace Source1;
+
+partial class GameRules
 {
-	partial class GameRules
+	[Net] public IDictionary<int, int> Score { get; set; }
+	[Net] public int TotalRoundsPlayed { get; protected set; }
+
+	public void RestartGame()
 	{
-		[Net] public IDictionary<int, int> Score { get; set; }
-		[Net] public int TotalRoundsPlayed { get; protected set; }
+		StopWaitingForPlayers();
+		Score.Clear();
+		TotalRoundsPlayed = 0;
 
-		public void RestartGame()
-		{
-			StopWaitingForPlayers();
-			Score.Clear();
-			TotalRoundsPlayed = 0;
-
-			RestartRound();
-		}
-
-		[AdminCmd( "mp_restartgame" )]
-		public static void Command_RestartGame()
-		{
-			Current?.RestartGame();
-		}
-
-		[ConVar.Replicated] public static int mp_maxrounds { get; set; } = 0;
+		RestartRound();
 	}
+
+	[AdminCmd( "mp_restartgame" )]
+	public static void Command_RestartGame()
+	{
+		Current?.RestartGame();
+	}
+
+	[ConVar.Replicated] public static int mp_maxrounds { get; set; } = 0;
 }

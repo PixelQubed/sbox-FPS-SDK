@@ -1,63 +1,60 @@
 ﻿using Sandbox;
 using System;
 
-namespace Source1
+namespace Source1;
+
+public partial class Source1GameMovement
 {
-	public partial class Source1GameMovement
+	public float JumpTime { get; set; }
+
+	public virtual bool WishJump()
 	{
-		public float JumpTime { get; set; }
+		return Input.Pressed( InputButton.Jump );
+	}
 
-		public virtual bool WishJump()
-		{
-			return Input.Pressed( InputButton.Jump );
-		}
+	public virtual bool CanJump()
+	{
+		if ( IsInAir )
+			return false;
 
-		public virtual bool CanJump()
-		{
-			// Yeah why not.
-			return true;
-		}
+		if ( IsDucked )
+			return false;
 
-		/// <summary>
-		/// Returns true if we succesfully made a jump.
-		/// </summary>
-		/// <returns></returns>
-		public virtual bool CheckJumpButton()
-		{
-			if ( !CanJump() )
-				return false;
+		// Yeah why not.
+		return true;
+	}
 
-			if ( !CheckWaterJumpButton() )
-				return false;
+	/// <summary>
+	/// Returns true if we succesfully made a jump.
+	/// </summary>
+	/// <returns></returns>
+	public virtual bool CheckJumpButton()
+	{
+		if ( !CanJump() )
+			return false;
 
-			// Can't just if we're not grounded
-			if ( GroundEntity == null )
-				return false;
+		if ( !CheckWaterJumpButton() )
+			return false;
 
-			if ( IsDucking && IsDucked ) 
-                return false;
+		ClearGroundEntity();
 
-			ClearGroundEntity();
+		Player.DoJumpSound( Position, Player.SurfaceData, 1 );
 
-			Player.DoJumpSound( Position, Player.SurfaceData, 1 );
+		AddEvent( "jump" );
 
-			AddEvent( "jump" );
+		float flGroundFactor = 1.0f;
+		float startz = Velocity.z;
 
-			float flGroundFactor = 1.0f;
-			float flMul = 268.3281572999747f * 1.2f;
-			float startz = Velocity.z;
+		Velocity = Velocity.WithZ( startz + JumpImpulse * flGroundFactor );
+		Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
 
-			if ( IsDucked ) flMul *= 0.8f;
+		return true;
+	}
 
-			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
-			Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
+	public virtual float JumpImpulse => 321;
 
-			return true;
-		}
+	public virtual void OnJump( float velocity )
+	{
 
-		public virtual void OnJump( float velocity )
-		{
-
-		}
 	}
 }
