@@ -40,6 +40,7 @@ partial class Source1GameMovement
 			.HitLayer( CollisionLayer.GRATE, true )
 			.HitLayer( CollisionLayer.PLAYER_CLIP, true )
 			.HitLayer( CollisionLayer.WINDOW, true )
+			.HitLayer( CollisionLayer.SKY, true )
 			.Ignore( Pawn );
 	}
 }
