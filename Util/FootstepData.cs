@@ -1,6 +1,7 @@
 using Sandbox;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Source1;
 
@@ -10,35 +11,33 @@ namespace Source1;
 [Library( "footstep" ), AutoGenerate]
 public class FootstepData : Asset
 {
-	public static FootstepData Instance { get; set; }
+	public static List<FootstepData> All { get; set; } = new();
 
 	protected override void PostLoad()
 	{
 		base.PostLoad();
-		Instance = this;
+		All.Add( this );
 	}
 
-	public FootstepEntry[] Entries { get; set; }
-
-	public struct FootstepEntry
-	{
-		[ResourceType( "surface" )]
-		public string SurfacePath { get; set; }
-		public FootstepSounds Sounds { get; set; }
-	}
+	[ResourceType( "surface" )]
+	public string SurfacePath { get; set; }
+	public FootstepSounds Sounds { get; set; }
 
 	public static bool GetSoundsForSurface( Surface surface, out FootstepSounds sounds )
 	{
 		sounds = default;
 
-		if ( Instance == null )
+		if ( surface == null )
 			return false;
 
-		var results = Instance.Entries.Where( x => x.SurfacePath == surface.Path ).Take( 1 ).ToList();
-		if ( !results.Any() )
-			return false;
+		var result = All.FirstOrDefault( x => x.SurfacePath == surface.Path );
+		if ( result == null )
+		{
+			sounds = FootstepSounds.FromSurface( surface );
+			return true;
+		}
 
-		sounds = results[0].Sounds;
+		sounds = result.Sounds;
 		return true;
 	}
 
@@ -52,5 +51,16 @@ public class FootstepData : Asset
 		public string FootLaunch { get; set; }
 		[FGDType( "sound" )]
 		public string FootLand { get; set; }
+
+		public static FootstepSounds FromSurface( Surface surface )
+		{
+			return new FootstepSounds
+			{
+				FootLand = surface.Sounds.FootLand,
+				FootLaunch = surface.Sounds.FootLaunch,
+				FootLeft = surface.Sounds.FootLeft,
+				FootRight = surface.Sounds.FootRight,
+			};
+		}
 	}
 }
