@@ -11,6 +11,7 @@ partial class Source1GameMovement
 	/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
 	/// </summary>
 	public bool IsDucked => Player.Tags.Has( PlayerTags.Ducked );
+	public bool IsDucking => DuckTime > 0;
 
 	public float TimeToDuck => .2f;
 	public float DuckTime { get; set; }
