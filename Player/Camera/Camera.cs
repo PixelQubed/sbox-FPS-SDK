@@ -35,13 +35,18 @@ partial class Source1Camera : CameraMode
 
 	public void CalculateLerp()
 	{
+		if ( cl_camera_lerp_amount <= 0 )
+			return;
+
 		if ( Position.Distance( LastPosition ) < 15 ) 
 		{
-			Position = LastPosition.LerpTo( Position, 60 * Time.Delta );
+			Position = LastPosition.LerpTo( Position, cl_camera_lerp_amount * Time.Delta );
 		}
 
-		Rotation = Rotation.Lerp( LastRotation, Rotation, 100 * Time.Delta );
+		Rotation = Rotation.Lerp( LastRotation, Rotation, cl_camera_lerp_amount * Time.Delta );
 	}
+
+	[ClientVar] public static float cl_camera_lerp_amount { get; set; } = 0;
 
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
