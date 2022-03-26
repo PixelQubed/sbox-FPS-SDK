@@ -22,10 +22,10 @@ partial class Source1Player
 
 	public virtual void SimulateVisuals()
 	{
-		if ( IsClient )
-		{
-			DecayViewPunch();
-		}
+		if ( !IsClient )
+			return;
+
+		DecayViewPunch();
 	}
 
 	public void DecayViewPunch()

@@ -72,23 +72,23 @@ public partial class GameRules : Game
 		CreateStandardEntities();
 	}
 
-
-	public virtual float GetGravityMultiplier() { return 1; }
-	public virtual float GetDamageMultiplier() { return 1; }
-	public virtual bool AllowThirdPersonCamera() { return false; }
+	public virtual float GetPlayerFallDamage( Source1Player player, float velocity ) => 0;
+	public virtual float GetGravityMultiplier() => 1;
+	public virtual float GetDamageMultiplier() => 1;
+	public virtual bool AllowThirdPersonCamera() => false;
 	public virtual void RadiusDamage( DamageInfo info, Vector3 src, float radius, Entity ignore ) { }
 
 	/// <summary>
 	/// Can this player respawn right now?
 	/// </summary>
 	/// <param name="player"></param>
-	public virtual bool CanPlayerRespawn( Source1Player player ) { return true; }
+	public virtual bool CanPlayerRespawn( Source1Player player ) => true;
 
 	/// <summary>
 	/// Amount of seconds until this player is able to respawn.
 	/// </summary>
 	/// <param name="player"></param>
-	public virtual float GetPlayerRespawnTime( Source1Player player ) { return 0; }
+	public virtual float GetPlayerRespawnTime( Source1Player player ) => 0;
 
 	/// <summary>
 	/// This player was just killed.
@@ -97,7 +97,9 @@ public partial class GameRules : Game
 	/// <param name="info"></param>
 	public virtual void PlayerDeath( Source1Player player, DamageInfo info )
 	{
-		if ( !IsServer ) return;
+		if ( !IsServer )
+			return;
+
 		Event_OnPlayerDeath( player, info.Attacker, null, null, info.Weapon, info.Flags );
 	}
 
@@ -108,7 +110,9 @@ public partial class GameRules : Game
 	/// <param name="info"></param>
 	public virtual void PlayerHurt( Source1Player player, DamageInfo info )
 	{
-		if ( !IsServer ) return;
+		if ( !IsServer )
+			return;
+
 		Event_OnPlayerHurt( player, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
 	}
 
@@ -118,7 +122,9 @@ public partial class GameRules : Game
 	/// <param name="player"></param>
 	public virtual void PlayerRespawn( Source1Player player )
 	{
-		if ( !IsServer ) return;
+		if ( !IsServer )
+			return;
+
 		Event_OnPlayerSpawn( player );
 	}
 
@@ -127,39 +133,16 @@ public partial class GameRules : Game
 	/// </summary>
 	public virtual void PlayerChangeTeam( Source1Player player, int team )
 	{
-		if ( !IsServer ) return;
+		if ( !IsServer ) 
+			return;
+
 		Event_OnPlayerChangeTeam( player, team );
-	}
-
-	/// <summary>
-	/// Is this a valid spawn point for this player?
-	/// </summary>
-	/// <param name="point"></param>
-	/// <param name="player"></param>
-	public virtual void IsSpawnPointValid( Entity point, Source1Player player )
-	{
-
 	}
 
 	/// <summary>
 	/// Create standard game entities.
 	/// </summary>
-	public virtual void CreateStandardEntities()
-	{
-
-	}
-
-	// States
-	public virtual bool IsPlayerTeammate( Source1Player player, Source1Player other ) { return false; }
-
-	// Winning
-	public virtual void DeclareWinner( int team, int winreason, bool forceMapReset = true, bool switchTeams = false, bool dontAddScore = false, bool final = false ) { }
-	public virtual void SetStalemate( int reason, bool forceMapReset = true, bool switchTeams = false ) { }
-
-	// Switch Teams
-	[Net] public bool ShouldSwitchTeams { get; set; }
-	public virtual void SwitchTeams() { return; }
-
+	public virtual void CreateStandardEntities() { }
 
 	/// <summary>
 	/// Respawn all players.
@@ -196,32 +179,8 @@ public partial class GameRules : Game
 	/// </summary>
 	/// <param name="player"></param>
 	/// <returns></returns>
-	public virtual bool AreRespawnConditionsMet( Source1Player player )
-	{
-		return true;
-	}
-
-	public bool HasPlayers()
-	{
-		return All.OfType<Source1Player>().Where( x => x.IsReadyToPlay() ).Any();
-	}
-
-	//
-	// Game Events
-	//
-
-	public static void BroadcastEvent( string name )
-	{
-		Log.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {name}" );
-		Event.Run( name );
-		if ( Host.IsServer ) BroadcastEventClient( name );
-	}
-
-	[ClientRpc]
-	public static void BroadcastEventClient( string name )
-	{
-		BroadcastEvent( name );
-	}
+	public virtual bool AreRespawnConditionsMet( Source1Player player ) => true;
+	public bool HasPlayers() => All.OfType<Source1Player>().Any( x => x.IsReadyToPlay() );
 
 	public override void DoPlayerNoclip( Client client )
 	{

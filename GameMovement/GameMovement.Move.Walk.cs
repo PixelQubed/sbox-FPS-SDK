@@ -70,65 +70,10 @@ public partial class Source1GameMovement
 		CheckVelocity();
 	}
 
-	public virtual float PlayerFatalFallSpeed => 1024;
-	public virtual float PlayerMaxSafeFallSpeed => 580;
-	public virtual float PLAYER_LAND_ON_FLOATING_OBJECT => 200;
-	public virtual float PLAYER_MIN_BOUNCE_SPEED => 200;
-	public virtual float PLAYER_FALL_PUNCH_THRESHOLD => 350;
-	public virtual float DAMAGE_FOR_FALL_SPEED => 100.0f / (PlayerFatalFallSpeed - PlayerMaxSafeFallSpeed);
-
 	public void CheckFalling()
 	{
-		// this function really deals with landing, not falling, so early out otherwise
-		if ( IsInAir || FallVelocity <= 0 )
+		if ( IsInAir || FallVelocity <= 0 || IsDead )
 			return;
-
-		if ( !IsDead  )
-		{
-			float fvol = 0.5f;
-
-			if ( Pawn.WaterLevel > 0 ) 
-			{
-				// They landed in water.
-			}
-			else
-			{
-				// Scale it down if we landed on something that's floating...
-				/*if ( player->GetGroundEntity()->IsFloating() )
-				{
-					player->m_Local.m_flFallVelocity -= PLAYER_LAND_ON_FLOATING_OBJECT;
-				}*/
-
-				//
-				// They hit the ground.
-				//
-				if ( GroundEntity.Velocity.z < 0.0f )
-				{
-					// Player landed on a descending object. Subtract the velocity of the ground entity.
-					FallVelocity += GroundEntity.Velocity.z;
-					FallVelocity = MathF.Max( 0.1f, FallVelocity );
-				}
-
-				if ( FallVelocity > PlayerMaxSafeFallSpeed )
-				{
-					//
-					// If they hit the ground going this fast they may take damage (and die).
-					//
-					// bAlive = MoveHelper()->PlayerFallingDamage();
-					fvol = 1f;
-				}
-				else if ( FallVelocity > PlayerMaxSafeFallSpeed / 2 )
-				{
-					fvol = 0.85f;
-				}
-				else if ( FallVelocity < PLAYER_MIN_BOUNCE_SPEED )
-				{
-					fvol = 0;
-				}
-			}
-
-			PlayerRoughLandingEffects( fvol );
-		}
 
 		// let any subclasses know that the player has landed and how hard
 		OnLand( FallVelocity );
@@ -139,40 +84,10 @@ public partial class Source1GameMovement
 		FallVelocity = 0;
 	}
 
-	public virtual void PlayerRoughLandingEffects( float fvol )
+	public virtual void OnLand( float velocity ) 
 	{
-		Log.Info( $"landing effects vol: {fvol}" );
-
-		Player.DoLandSound( Position, Player.SurfaceData, fvol );
-
-		if ( fvol > 0.0 )
-		{
-			//
-			// Play landing sound right away.
-			// player->m_flStepSoundTime = 400;
-
-			// Play step sound for current texture.
-			// player->PlayStepSound( (Vector &)mv->GetAbsOrigin(), player->m_pSurfaceData, fvol, true );
-
-			//
-			// Knock the screen around a little bit, temporary effect.
-			//
-			/*player->m_Local.m_vecPunchAngle.Set( ROLL, player->m_Local.m_flFallVelocity * 0.013 );
-
-			if ( player->m_Local.m_vecPunchAngle[PITCH] > 8 )
-			{
-				player->m_Local.m_vecPunchAngle.Set( PITCH, 8 );
-			}
-
-#if !defined( CLIENT_DLL )
-			player->RumbleEffect( (fvol > 0.85f) ? (RUMBLE_FALL_LONG) : (RUMBLE_FALL_SHORT), 0, RUMBLE_FLAGS_NONE );
-#endif*/
-		}
-	}
-
-	public virtual void OnLand( float velocity )
-	{
-
+		// Take specified amount of fall damage when landed.
+		Player.OnLanded( velocity );
 	}
 
 	public virtual void WalkMove()

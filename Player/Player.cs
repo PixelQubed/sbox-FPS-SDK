@@ -241,7 +241,6 @@ public partial class Source1Player : Player
 	public override void TakeDamage( DamageInfo info )
 	{
 		TimeSinceTakeDamage = 0;
-
 		LastDamageInfo = info;
 
 		//
@@ -316,6 +315,54 @@ public partial class Source1Player : Player
 			.WithFlag( damage );
 
 		TakeDamage( info );
+	}
+
+	public virtual void OnLanded( float velocity )
+	{
+		TakeFallDamage( velocity );
+		RoughLandingEffects( velocity );
+	}
+
+	public virtual void TakeFallDamage( float velocity )
+	{
+		var fallDamage = GameRules.Current.GetPlayerFallDamage( this, velocity );
+		if ( fallDamage <= 0 )
+			return;
+
+		Sound.FromWorld( "player.fallpain", Position );
+
+		var fallDmgInfo = DamageInfo.Generic( fallDamage )
+							.WithFlag( DamageFlags.Fall )
+							.WithAttacker( this )
+							.WithPosition( Position );
+
+		TakeDamage( fallDmgInfo );
+	}
+
+	public virtual float FallMinSpeedToPunch => 350;
+	public virtual float MaxSafeFallSpeed => 580;
+
+	public virtual void RoughLandingEffects( float velocity )
+	{
+		if ( velocity <= 0 )
+			return;
+
+		var volume = .5f;
+		if ( velocity > MaxSafeFallSpeed / 2 )
+		{
+			volume = velocity.RemapClamped( MaxSafeFallSpeed / 2, MaxSafeFallSpeed, .85f, 1 );
+		}
+
+		DoLandSound( Position, SurfaceData, volume );
+
+		//
+		// Knock the screen around a little bit, temporary effect.
+		//
+		if ( velocity >= FallMinSpeedToPunch )
+		{
+			var punch = new Vector3( 0, 0, velocity * 0.013f );
+			PunchView( punch );
+		}
 	}
 }
 
