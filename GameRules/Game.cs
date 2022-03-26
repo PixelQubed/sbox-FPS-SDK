@@ -72,7 +72,12 @@ public partial class GameRules : Game
 		CreateStandardEntities();
 	}
 
-	public virtual float GetPlayerFallDamage( Source1Player player, float velocity ) => 0;
+	public virtual float GetPlayerFallDamage( Source1Player player, float velocity )
+	{
+		var damage = velocity - player.MaxSafeFallSpeed;
+		return damage * player.DamageForFallSpeed;
+	}
+
 	public virtual float GetGravityMultiplier() => 1;
 	public virtual float GetDamageMultiplier() => 1;
 	public virtual bool AllowThirdPersonCamera() => false;

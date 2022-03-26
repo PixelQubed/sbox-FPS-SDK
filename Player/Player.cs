@@ -339,8 +339,11 @@ public partial class Source1Player : Player
 		TakeDamage( fallDmgInfo );
 	}
 
-	public virtual float FallMinSpeedToPunch => 350;
+	public virtual float FatalFallSpeed => 1024;
 	public virtual float MaxSafeFallSpeed => 580;
+	public virtual float FallPunchThreshold => 350;
+
+	public virtual float DamageForFallSpeed => 100 / (FatalFallSpeed - MaxSafeFallSpeed);
 
 	public virtual void RoughLandingEffects( float velocity )
 	{
@@ -358,7 +361,7 @@ public partial class Source1Player : Player
 		//
 		// Knock the screen around a little bit, temporary effect.
 		//
-		if ( velocity >= FallMinSpeedToPunch )
+		if ( velocity >= FallPunchThreshold )
 		{
 			var punch = new Vector3( 0, 0, velocity * 0.013f );
 			PunchView( punch );
