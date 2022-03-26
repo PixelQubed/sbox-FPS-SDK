@@ -8,14 +8,9 @@ public partial class Source1GameMovement
 	{
 		float maxspeed = sv_maxspeed * factor;
 
-		if ( Input.Down( InputButton.Run ) ) factor /= 2.0f;
-
-		// Copy movement amounts
-		float fmove = ForwardMove * factor;
-		float smove = RightMove * factor;
-
-		WishVelocity = Forward * fmove + Right * smove;
+		WishVelocity = Forward * ForwardMove + Right * RightMove;
 		WishVelocity = WishVelocity.WithZ( WishVelocity.z + UpMove * factor );
+		WishVelocity *= factor;
 
 		var wishdir = WishVelocity.Normal;
 		var wishspeed = WishVelocity.Length;

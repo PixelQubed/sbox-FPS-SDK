@@ -185,9 +185,6 @@ public partial class Source1GameMovement : PawnController
 
 	public virtual bool CanAccelerate()
 	{
-		if ( IsDead )
-			return false;
-
 		if ( IsJumpingFromWater )
 			return false;
 
