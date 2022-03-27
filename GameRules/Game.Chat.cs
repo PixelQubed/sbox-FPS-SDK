@@ -1,0 +1,43 @@
+﻿using Sandbox;
+using System.Collections.Generic;
+
+namespace Source1;
+
+public enum ChatType
+{
+	Global,
+	Team
+}
+
+partial class GameRules
+{
+	[ServerCmd( "say" )]
+	public static void Command_SendMessage( string message )
+	{
+		Current.OnChatMessageSent( ConsoleSystem.Caller, message, ChatType.Global );
+	}
+
+	[ServerCmd( "say_team" )]
+	public static void Command_SendTeamMessage( string message )
+	{
+		Current.OnChatMessageSent( ConsoleSystem.Caller, message, ChatType.Team );
+	}
+
+	public virtual void OnChatMessageSent( Client sender, string message, ChatType type )
+	{
+		var userName = "Server";
+		if ( sender != null )
+			userName = sender.Name;
+
+		switch( type )
+		{
+			case ChatType.Global:
+				Log.Info( $"{userName}: {message}" );
+				break;
+
+			case ChatType.Team:
+				Log.Info( $"(TEAM) {userName}: {message}" );
+				break;
+		}
+	}
+}
