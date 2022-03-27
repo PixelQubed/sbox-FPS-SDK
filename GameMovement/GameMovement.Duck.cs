@@ -10,18 +10,12 @@ partial class Source1GameMovement
 	/// <summary>
 	/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
 	/// </summary>
-	public bool IsDucked => Player.Tags.Has( PlayerTags.Ducked );
-	public bool IsDucking => DuckTime > 0;
+	public virtual bool IsDucked => Player.Tags.Has( PlayerTags.Ducked );
+	public virtual bool IsDucking => DuckAmount > 0;
+	public virtual float TimeToDuck => .2f;
+	public virtual float DuckProgress => DuckAmount / TimeToDuck;
 
-	public float TimeToDuck => .2f;
-	public float DuckTime { get; set; }
-
-	public float DuckProgress => DuckTime / TimeToDuck;
-
-	public virtual float GetDuckSpeed()
-	{
-		return 90;
-	}
+	public float DuckAmount { get; set; }
 
 	public virtual bool WishDuck()
 	{
@@ -39,8 +33,10 @@ partial class Source1GameMovement
 			OnUnducking();
 		}
 
-		if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
+		if ( IsDucked )
 			SetTag( PlayerTags.Ducked );
+
+		HandleDuckingSpeedCrop();
 	}
 
 	public virtual void OnDucking()
@@ -48,17 +44,17 @@ partial class Source1GameMovement
 		if ( !CanDuck() )
 			return;
 
-		if ( !IsDucked && DuckTime >= TimeToDuck || IsInAir ) 
+		if ( !IsDucked && DuckAmount >= TimeToDuck || IsInAir ) 
 		{
-			OnFinishedDucking();
+			FinishDuck();
 		}
 
-		if ( DuckTime < TimeToDuck )
+		if ( DuckAmount < TimeToDuck )
 		{
-			DuckTime += Time.Delta;
+			DuckAmount += Time.Delta;
 
-			if ( DuckTime > TimeToDuck ) 
-				DuckTime = TimeToDuck;
+			if ( DuckAmount > TimeToDuck ) 
+				DuckAmount = TimeToDuck;
 		}
 	}
 
@@ -67,27 +63,27 @@ partial class Source1GameMovement
 		if ( !CanUnduck() )
 			return;
 
-		if ( IsDucked && DuckTime == 0 || IsInAir )
+		if ( IsDucked && DuckAmount == 0 || IsInAir )
 		{
-			OnFinishedUnducking();
+			FinishUnDuck();
 		}
 
-		if ( DuckTime > 0 )
+		if ( DuckAmount > 0 )
 		{
-			DuckTime -= Time.Delta;
+			DuckAmount -= Time.Delta;
 
-			if ( DuckTime < 0 )
-				DuckTime = 0;
+			if ( DuckAmount < 0 )
+				DuckAmount = 0;
 		}
 	}
 
-	public virtual void OnFinishedDucking()
+	public virtual void FinishDuck()
 	{
 		if ( Pawn.Tags.Has( PlayerTags.Ducked ) )
 			return;
 
 		Pawn.Tags.Add( PlayerTags.Ducked );
-		DuckTime = TimeToDuck;
+		DuckAmount = TimeToDuck;
 
 		if ( IsGrounded )
 		{
@@ -106,13 +102,13 @@ partial class Source1GameMovement
 		CategorizePosition();
 	}
 
-	public virtual void OnFinishedUnducking()
+	public virtual void FinishUnDuck()
 	{
 		if ( !Pawn.Tags.Has( PlayerTags.Ducked ) )
 			return;
 
 		Player.Tags.Remove( PlayerTags.Ducked );
-		DuckTime = 0;
+		DuckAmount = 0;
 
 		if ( IsGrounded )
 		{
@@ -184,5 +180,16 @@ partial class Source1GameMovement
 		}
 
 		Position = test;
+	}
+
+	public virtual void HandleDuckingSpeedCrop()
+	{
+		if ( IsDucked && IsGrounded )
+		{
+			var frac = .33f;
+			ForwardMove *= frac;
+			RightMove *= frac;
+			UpMove *= frac;
+		}
 	}
 }

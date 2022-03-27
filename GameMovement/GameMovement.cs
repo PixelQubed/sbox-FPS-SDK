@@ -503,7 +503,7 @@ public partial class Source1GameMovement : PawnController
 	public bool IsGrounded => GroundEntity != null;
 	public bool IsInAir => !IsGrounded;
 
-	protected void ShowDebugOverlay()
+	protected virtual void ShowDebugOverlay()
 	{
 		if ( sv_debug_movement && Player.Client.IsListenServerHost && Host.IsServer ) 
 		{

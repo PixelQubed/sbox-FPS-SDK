@@ -51,7 +51,17 @@ partial class Source1Camera : CameraMode
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
 		Rotation = Rotation * player.ViewPunch;
+
+		if( cl_thirdperson )
+		{
+			Viewer = null;
+
+			LerpEnabled = false;
+			Position -= Rotation.Forward * 64;
+		}
 	}
+
+	[ClientVar] public static bool cl_thirdperson { get; set; }
 
 	public virtual void CalculateObserverView( Source1Player player)
 	{

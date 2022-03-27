@@ -54,7 +54,6 @@ public partial class Source1GameMovement
 
 	public virtual float GetWishSpeed()
 	{
-		if ( IsDucked ) return GetDuckSpeed();
 		if ( CanSprint() && WishSprint() ) return GetSprintSpeed();
 		if ( CanWalk() && WishWalk() ) return GetWalkSpeed();
 
