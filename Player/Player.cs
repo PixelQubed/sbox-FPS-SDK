@@ -188,7 +188,9 @@ public partial class Source1Player : Player
 
 	public virtual void SimulatePassiveChildren( Client client )
 	{
-		foreach ( var child in Children.OfType<IPassiveChild>() )
+		var children = Children.OfType<IPassiveChild>().ToArray();
+
+		foreach ( var child in children )
 		{
 			child.PassiveSimulate( client );
 		}
