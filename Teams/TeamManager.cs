@@ -19,7 +19,7 @@ public static class TeamManager
 		/// <summary>
 		/// Color of the team.
 		/// </summary>
-		public Color32 Color { get; set; }
+		public Color Color { get; set; }
 		/// <summary>
 		/// Is this team playable? Do they participate in action?
 		/// </summary>
@@ -32,7 +32,7 @@ public static class TeamManager
 
 	public static Dictionary<int, TeamProperties> Teams { get; set; } = new();
 
-	public static void DeclareTeam( int number, string name, string title, Color32 color, bool playable = true, bool joinable = true )
+	public static void DeclareTeam( int number, string name, string title, Color color, bool playable = true, bool joinable = true )
 	{
 		DeleteTeam( number );
 
@@ -59,5 +59,5 @@ public static class TeamManager
 	public static string GetTitle( int team ) => GetProperties( team ).Title;
 	public static bool IsJoinable( int team ) => GetProperties( team ).IsJoinable;
 	public static bool IsPlayable( int team ) => GetProperties( team ).IsPlayable;
-	public static Color32 GetColor( int team ) => GetProperties( team ).Color;
+	public static Color GetColor( int team ) => GetProperties( team ).Color;
 }
