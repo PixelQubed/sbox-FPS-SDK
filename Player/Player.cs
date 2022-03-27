@@ -252,7 +252,7 @@ public partial class Source1Player : Player
 		var maxPunch = 5;
 		var maxDamage = 100;
 		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		PunchView( -punchAngle, 0, 0 );
+		PunchViewOffset( -punchAngle, 0, 0 );
 
 		// TODO: Punch player's view in position of damage?
 
@@ -366,7 +366,7 @@ public partial class Source1Player : Player
 		if ( velocity >= FallPunchThreshold )
 		{
 			var punch = new Vector3( 0, 0, velocity * 0.013f );
-			PunchView( punch );
+			PunchViewAngles( punch );
 		}
 	}
 }
