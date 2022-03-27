@@ -30,10 +30,10 @@ public partial class Source1GameMovement
 	/// <returns></returns>
 	public virtual bool CheckJumpButton()
 	{
-		if ( !CanJump() )
+		if ( !CheckWaterJumpButton() )
 			return false;
 
-		if ( !CheckWaterJumpButton() )
+		if ( !CanJump() )
 			return false;
 
 		ClearGroundEntity();
@@ -45,8 +45,13 @@ public partial class Source1GameMovement
 		float flGroundFactor = 1.0f;
 		float startz = Velocity.z;
 
-		Velocity = Velocity.WithZ( startz + JumpImpulse * flGroundFactor );
-		Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
+		if ( IsDucking )
+			Velocity = Velocity.WithZ( JumpImpulse * flGroundFactor );
+		else
+			Velocity = Velocity.WithZ( startz + JumpImpulse * flGroundFactor );
+
+		FinishGravity();
+		OnJump( Velocity.z - startz );
 
 		return true;
 	}

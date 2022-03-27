@@ -74,6 +74,8 @@ public partial class Source1GameMovement : PawnController
 
 	public virtual void PlayerMove()
 	{
+		CheckParameters();
+
 		ReduceTimers();
 
 		EyeRotation = Input.Rotation;
@@ -157,6 +159,11 @@ public partial class Source1GameMovement : PawnController
 	{
 		if ( JumpTime > 0 )
 			JumpTime = Math.Max( JumpTime - Time.Delta, 0 );
+	}
+
+	public virtual void CheckParameters()
+	{
+
 	}
 
 	public virtual void StepMove( Vector3 dest )
