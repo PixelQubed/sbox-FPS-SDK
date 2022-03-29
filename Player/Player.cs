@@ -197,7 +197,6 @@ public partial class Source1Player : Player
 	}
 
 	public virtual float GetMaxSpeed() { return Source1GameMovement.sv_maxspeed; }
-	public virtual float GetSensitivityMultiplier() { return 1f; }
 
 	public void Kill()
 	{
@@ -212,8 +211,7 @@ public partial class Source1Player : Player
 
 	public override void BuildInput( InputBuilder builder )
 	{
-		builder.AnalogLook *= GetSensitivityMultiplier();
-
+		base.BuildInput( builder );
 		if ( ForcedWeapon != null )
 		{
 			builder.ActiveChild = ForcedWeapon;
