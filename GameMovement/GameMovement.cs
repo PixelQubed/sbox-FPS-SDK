@@ -514,15 +514,13 @@ public partial class Source1GameMovement : PawnController
 	{
 		if ( sv_debug_movement && Player.Client.IsListenServerHost && Host.IsServer ) 
 		{
-			DebugOverlay.ScreenText( new Vector2( 60, 400 ),
+			DebugOverlay.ScreenText( new Vector2( 60, 250 ),
 				$"[PLAYER]\n" +
 				$"LifeState             {Player.LifeState}\n" +
 				$"TeamNumber            {Player.TeamNumber}\n" +
 				$"LastAttacker          {Player.LastAttacker}\n" +
 				$"LastAttackerWeapon    {Player.LastAttackerWeapon}\n" +
 				$"GroundEntity          {Player.GroundEntity}\n" +
-				$"TargetFOV             {Player.TargetFOV}\n" +
-				$"FOVSpeed              {Player.FOVSpeed}\n" +
 				$"\n" +
 
 				$"[MOVEMENT]\n" +
