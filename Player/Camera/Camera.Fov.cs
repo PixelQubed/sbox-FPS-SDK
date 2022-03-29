@@ -77,11 +77,11 @@ partial class Source1Camera
 			FieldOfView = FieldOfViewAnimateStart.LerpTo( DesiredFieldOfView, lerp );
 		}
 		else
+		{
+			// just set instantly, there shouldn't be any transition.
 			FieldOfView = DesiredFieldOfView;
-
-		//
-		// If we reached default FOV value, reset fov data.
-		//
+		}
+		
 
 		LastDesiredFieldOfView = DesiredFieldOfView;
 	}
