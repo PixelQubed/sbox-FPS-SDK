@@ -9,7 +9,6 @@ partial class Source1Player
 	public Entity ForcedFieldOfViewRequester { get; private set; }
 	public float ForcedFieldOfViewChangeTime { get; set; }
 	public float? ForcedFieldOfViewStartWith { get; set; }
-	public TimeSince TimeSinceFieldOfViewChange { get; set; }
 
 	[ClientRpc]
 	public void SetFieldOfView( Entity requester, float fov, float speed = 0, float startWith = -1 )
@@ -24,7 +23,6 @@ partial class Source1Player
 		ForcedFieldOfViewChangeTime = speed;
 		ForcedFieldOfViewRequester = requester;
 		ForcedFieldOfViewStartWith = startWith > 0 ? startWith : null;
-		TimeSinceFieldOfViewChange = 0;
 	}
 
 	public void ResetFieldOfView( float speed = 0, float startWith = -1 )

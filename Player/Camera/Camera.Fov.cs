@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System;
+using TFS2;
 
 namespace Source1;
 
@@ -13,6 +14,7 @@ partial class Source1Camera
 	protected float FieldOfViewChangeTime { get; private set; }
 
 	protected float FieldOfViewAnimateStart { get; private set; }
+	protected TimeSince TimeSinceFieldOfViewAnimateStart { get; private set; }
 
 	public void RetrieveFieldOfViewFromPlayer( Source1Player player )
 	{
@@ -60,7 +62,10 @@ partial class Source1Camera
 		RetrieveFieldOfViewFromPlayer( player );
 
 		if ( LastDesiredFieldOfView != DesiredFieldOfView )
+		{
 			FieldOfViewAnimateStart = LastFieldOfView;
+			TimeSinceFieldOfViewAnimateStart = 0;
+		}
 
 		//
 		// Animating FOV here
@@ -68,9 +73,7 @@ partial class Source1Camera
 
 		if ( FieldOfViewChangeTime > 0 )
 		{
-			float lerp = Math.Clamp( player.TimeSinceFieldOfViewChange / FieldOfViewChangeTime, 0f, 1f );
-			lerp = Easing.QuadraticInOut( lerp );
-
+			float lerp = Math.Clamp( TimeSinceFieldOfViewAnimateStart / FieldOfViewChangeTime, 0f, 1f );
 			FieldOfView = FieldOfViewAnimateStart.LerpTo( DesiredFieldOfView, lerp );
 		}
 		else
