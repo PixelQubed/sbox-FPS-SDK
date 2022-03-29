@@ -8,7 +8,8 @@ partial class Source1Player
 
 	public float TargetFOV { get; set; }
 	public float FOVSpeed { get; set; } = 1;
-
+	
+	[ClientRpc]
 	public void SetFOV( float fov, float speed )
 	{
 		TargetFOV = fov;
