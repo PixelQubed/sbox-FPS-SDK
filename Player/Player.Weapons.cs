@@ -74,19 +74,12 @@ partial class Source1Player
 		// At this point even if entities are deleted next tick, we still own them on this one.
 		// Manually go through every children and set their parent to null.
 
-		// Bandage code to fix s&box's Inventory.DeleteContents().
 		int count = Children.Count;
 		for ( int i = count - 1; i >= 0; i-- )
 		{
 			var child = Children[i];
-			if ( child == null || !child.IsValid ) continue;
-
-			if ( child is BaseCarriable carriable )
-			{
-				carriable.OnCarryDrop( this );
-				carriable.ActiveEnd( this, true );
-			}
-
+			if ( child == null || !child.IsValid ) 
+				continue;
 
 			child.Parent = null;
 			child.SetParent( null );
