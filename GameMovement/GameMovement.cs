@@ -521,6 +521,8 @@ public partial class Source1GameMovement : PawnController
 				$"LastAttacker          {Player.LastAttacker}\n" +
 				$"LastAttackerWeapon    {Player.LastAttackerWeapon}\n" +
 				$"GroundEntity          {Player.GroundEntity}\n" +
+				$"TargetFOV             {Player.TargetFOV}\n" +
+				$"FOVSpeed              {Player.FOVSpeed}\n" +
 				$"\n" +
 
 				$"[MOVEMENT]\n" +

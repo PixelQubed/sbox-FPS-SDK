@@ -1,4 +1,4 @@
-using Sandbox;
+﻿using Sandbox;
 using System;
 
 namespace Source1;
@@ -15,14 +15,52 @@ partial class Source1Camera : CameraMode
 
 	public override void Build( ref CameraSetup camSetup )
 	{
-		var defaultFieldOfView = camSetup.FieldOfView;
-		FieldOfView = camSetup.FieldOfView;
+		var player = Source1Player.LocalPlayer;
+		if ( player == null )
+			return;
+
+		//
+		// Field Of View
+		//
+
+		var desiredFov = GetDesiredFOV( camSetup, player );
+		var speed = GetFOVChangeSpeed( desiredFov, camSetup, player );
+
+		var actualFov = LastFieldOfView;
+		if ( speed > 0 )
+			actualFov = actualFov.Approach( desiredFov, Time.Delta * 200 * (1 / speed) );
+		else
+			actualFov = desiredFov;
+
+		FieldOfView = actualFov;
 
 		base.Build( ref camSetup );
 
-		DefaultFieldOfView = FieldOfView;
-		LastFieldOfView = FieldOfView;
+		// Update viewmodel FOV
 		camSetup.ViewModel.FieldOfView = cl_viewmodel_fov;
+		LastFieldOfView = FieldOfView;
+	}
+
+	public virtual float GetDesiredFOV( CameraSetup camSetup, Source1Player player )
+	{
+		var overrideFov = player.TargetFOV;
+		if ( overrideFov >= 0 )
+			return overrideFov;
+
+		// default FOV
+		return camSetup.FieldOfView;
+	}
+
+	public virtual float GetFOVChangeSpeed( float desiredFov, CameraSetup camSetup, Source1Player player )
+	{
+		var targetSpeed = player.FOVSpeed;
+		if ( targetSpeed <= 0 )
+			return 0;
+
+		if ( LastFieldOfView == desiredFov && player.FOVSpeed > 0 )
+			player.FOVSpeed = 0;
+
+		return player.FOVSpeed;
 	}
 
 	[ClientVar] public static float cl_viewmodel_fov { get; set; } = 75;
