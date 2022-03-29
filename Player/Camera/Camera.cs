@@ -7,8 +7,25 @@ partial class Source1Camera : CameraMode
 {
 	Vector3 LastPosition { get; set; }
 	Rotation LastRotation { get; set; }
+	float LastFieldOfView { get; set; }
 
 	bool LerpEnabled { get; set; }
+
+	float DefaultFieldOfView { get; set; }
+
+	public override void Build( ref CameraSetup camSetup )
+	{
+		var defaultFieldOfView = camSetup.FieldOfView;
+		FieldOfView = camSetup.FieldOfView;
+
+		base.Build( ref camSetup );
+
+		DefaultFieldOfView = FieldOfView;
+		LastFieldOfView = FieldOfView;
+		camSetup.ViewModel.FieldOfView = cl_viewmodel_fov;
+	}
+
+	[ClientVar] public static float cl_viewmodel_fov { get; set; } = 75;
 
 	public override void Update()
 	{
@@ -19,12 +36,14 @@ partial class Source1Camera : CameraMode
 		Viewer = player;
 		Position = player.EyePosition;
 		Rotation = player.EyeRotation;
-		FieldOfView = 90f;
+		ZNear = 1;
 
 		LerpEnabled = true;
 
-		if ( player.IsObserver ) CalculateObserverView( player );
-		else CalculatePlayerView( player );
+		if ( player.IsObserver ) 
+			CalculateObserverView( player );
+		else 
+			CalculatePlayerView( player );
 
 		if ( LerpEnabled )
 			CalculateLerp();
