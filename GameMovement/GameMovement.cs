@@ -213,10 +213,8 @@ public partial class Source1GameMovement : PawnController
 		if ( addspeed <= 0 )
 			return;
 
-		var accelerationScale = Math.Max( 250, wishspeed );
-
 		// Determine amount of acceleration.
-		var accelspeed = acceleration * Time.Delta * accelerationScale * Player.SurfaceFriction;
+		var accelspeed = acceleration * Time.Delta * wishspeed * Player.SurfaceFriction;
 
 		// Cap at addspeed
 		if ( accelspeed > addspeed )
@@ -228,33 +226,38 @@ public partial class Source1GameMovement : PawnController
 	/// <summary>
 	/// Add our wish direction and speed onto our velocity
 	/// </summary>
-	public virtual void AirAccelerate( Vector3 wishdir, float wishspeed, float acceleration )
+	public virtual void AirAccelerate( Vector3 wishdir, float wishSpeed, float acceleration )
 	{
 		if ( !CanAccelerate() )
 			return;
 
-		if ( wishspeed > 30 ) 
-			wishspeed = 30;
+		var speedCap = GetAirSpeedCap();
+
+		var wishSpeedCapped = wishSpeed;
+		if ( wishSpeedCapped > speedCap )
+			wishSpeedCapped = speedCap;
 
 		// See if we are changing direction a bit
 		var currentspeed = Velocity.Dot( wishdir );
 
 		// Reduce wishspeed by the amount of veer.
-		var addspeed = wishspeed - currentspeed;
+		var addspeed = wishSpeedCapped - currentspeed;
 
 		// If not going to add any speed, done.
 		if ( addspeed <= 0 )
 			return;
 
 		// Determine amount of acceleration.
-		var accelspeed = acceleration * wishspeed * Time.Delta * Player.SurfaceFriction;
+		var accelspeed = acceleration * wishSpeed * Time.Delta * Player.SurfaceFriction;
 
 		// Cap at addspeed
 		if ( accelspeed > addspeed )
 			accelspeed = addspeed;
 
-		Velocity += wishdir * accelspeed;
+		Velocity += accelspeed * wishdir;
 	}
+
+	public virtual float GetAirSpeedCap() => 30;
 
 	/// <summary>
 	/// Remove ground friction from velocity
