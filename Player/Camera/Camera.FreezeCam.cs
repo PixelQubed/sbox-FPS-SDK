@@ -77,10 +77,13 @@ partial class Source1Camera
 		// Freezing screen when we reach lerp 1.
 		//
 
+		float fov = FieldOfView;
+		if ( fov <= 0 ) fov = DefaultFieldOfView;
+
 		if ( WillFreezeGameScene && travelLerp >= 1 )
 		{
 			WillFreezeGameScene = false;
-			FreezeCameraPanel.Freeze( Source1Player.sv_spectator_freeze_time, Position, Rotation, FieldOfView );
+			FreezeCameraPanel.Freeze( Source1Player.sv_spectator_freeze_time, Position, Rotation, fov );
 		}
 	}
 

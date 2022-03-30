@@ -62,8 +62,8 @@ public class FreezeCameraPanel : Panel
 
 		Position = position;
 		Rotation = rotation;
-		FieldOfView = fov;
-
+		FieldOfView = fov; 
+		
 		Style.SetBackgroundImage( ColorTexture );
 		WillFreeze = true;
 	}
@@ -76,6 +76,7 @@ public class FreezeCameraPanel : Panel
 	public override void DrawBackground( ref RenderState state )
 	{
 		base.DrawBackground( ref state );
+
 		if ( WillFreeze )
 		{
 			// Fill the texture with background 
