@@ -143,10 +143,10 @@ public partial class Source1Player : Player
 	{
 		SimulateVisuals();
 
-		if ( IsObserver ) 
+		if ( IsObserver )
 			SimulateObserver();
 
-		if ( cl.IsBot ) 
+		if ( cl.IsBot )
 			SimulateBot( cl );
 
 		GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
@@ -323,8 +323,13 @@ public partial class Source1Player : Player
 		RoughLandingEffects( velocity );
 	}
 
+	[ConVar.Replicated] public static bool sv_falldamage { get; set; } = true;
+
 	public virtual void TakeFallDamage( float velocity )
 	{
+		if ( !sv_falldamage )
+			return;
+
 		var fallDamage = GameRules.Current.GetPlayerFallDamage( this, velocity );
 		if ( fallDamage <= 0 )
 			return;
