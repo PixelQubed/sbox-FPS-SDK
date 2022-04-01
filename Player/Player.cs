@@ -327,21 +327,22 @@ public partial class Source1Player : Player
 
 	public virtual void TakeFallDamage( float velocity )
 	{
-		if ( !sv_falldamage )
-			return;
 
 		var fallDamage = GameRules.Current.GetPlayerFallDamage( this, velocity );
 		if ( fallDamage <= 0 )
 			return;
-
+		
 		Sound.FromWorld( "player.fallpain", Position );
 
-		var fallDmgInfo = DamageInfo.Generic( fallDamage )
-							.WithFlag( DamageFlags.Fall )
-							.WithAttacker( this )
-							.WithPosition( Position );
+		if ( sv_falldamage )
+		{
+			var fallDmgInfo = DamageInfo.Generic( fallDamage )
+								.WithFlag( DamageFlags.Fall )
+								.WithAttacker( this )
+								.WithPosition( Position );
 
-		TakeDamage( fallDmgInfo );
+			TakeDamage( fallDmgInfo );
+		}
 	}
 
 	public virtual float FatalFallSpeed => 1024;
