@@ -148,6 +148,9 @@ public partial class Source1GameMovement : PawnController
 				FullObserverMove();
 				break;
 		}
+
+		EyeRotation *= Rotation.From( Player.ViewPunchAngle.x, Player.ViewPunchAngle.y, Player.ViewPunchAngle.z );
+		EyeLocalPosition += Player.ViewPunchOffset;
 	}
 
 	public virtual void UpdateViewOffset()
