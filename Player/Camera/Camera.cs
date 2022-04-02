@@ -68,11 +68,12 @@ partial class Source1Camera : CameraMode
 		if ( cl_camera_lerp_amount <= 0 )
 			return;
 
-		if ( Position.Distance( LastPosition ) < 15 ) 
+		if ( Position.Distance( LastPosition ) < cl_camera_lerp_max_distance ) 
 			Position = LastPosition.LerpTo( Position, cl_camera_lerp_amount * Time.Delta );
 	}
 
 	[ClientVar] public static float cl_camera_lerp_amount { get; set; } = 100;
+	[ClientVar] public static float cl_camera_lerp_max_distance { get; set; } = 100;
 
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
