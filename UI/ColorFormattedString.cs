@@ -29,7 +29,6 @@ public class ColorFormattedString : Panel
 
 	public ColorFormattedString AddColoredText( string text, string color )
 	{
-		// add whitespaces
 		var label = Add.Label( text );
 		label.Style.Set( "color", color );
 		return this;
@@ -37,7 +36,6 @@ public class ColorFormattedString : Panel
 
 	public ColorFormattedString AddTextWithClasses( string text, string classes )
 	{
-		// add whitespaces
 		var label = Add.Label( text );
 		label.Classes = classes;
 		return this;
