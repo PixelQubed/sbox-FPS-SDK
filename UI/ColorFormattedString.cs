@@ -2,6 +2,7 @@
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System.Linq;
+using System;
 
 namespace Source1;
 
@@ -20,20 +21,25 @@ public class ColorFormattedString : Panel
 		return this;
 	}
 
-	public ColorFormattedString AddText( string text, Color color )
+	[Obsolete( "Use .AddColoredText" )]
+	public ColorFormattedString AddText( string text, string color )
 	{
-		color = color.WithAlpha( 1 );
-
-		var label = Add.Label( text );
-		label.Style.FontColor = color;
-		return this;
+		return AddColoredText( text, color );
 	}
 
-	public ColorFormattedString AddText( string text, string color )
+	public ColorFormattedString AddColoredText( string text, string color )
 	{
 		// add whitespaces
 		var label = Add.Label( text );
 		label.Style.Set( "color", color );
+		return this;
+	}
+
+	public ColorFormattedString AddTextWithClasses( string text, string classes )
+	{
+		// add whitespaces
+		var label = Add.Label( text );
+		label.Classes = classes;
 		return this;
 	}
 }
