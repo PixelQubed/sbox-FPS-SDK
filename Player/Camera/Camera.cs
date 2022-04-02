@@ -6,7 +6,6 @@ namespace Source1;
 partial class Source1Camera : CameraMode
 {
 	Vector3 LastPosition { get; set; }
-	Rotation LastRotation { get; set; }
 
 	bool LerpEnabled { get; set; }
 
@@ -44,7 +43,6 @@ partial class Source1Camera : CameraMode
 		CalculateView( player );
 
 		LastPosition = Position;
-		LastRotation = Rotation;
 		LastFieldOfView = FieldOfView;
 	}
 
@@ -62,9 +60,7 @@ partial class Source1Camera : CameraMode
 		CalculateFieldOfView( player );
 
 		if ( LerpEnabled )
-		{
 			CalculateLerp();
-		}
 	}
 
 	public void CalculateLerp()
@@ -73,14 +69,10 @@ partial class Source1Camera : CameraMode
 			return;
 
 		if ( Position.Distance( LastPosition ) < 15 ) 
-		{
 			Position = LastPosition.LerpTo( Position, cl_camera_lerp_amount * Time.Delta );
-		}
-
-		Rotation = Rotation.Lerp( LastRotation, Rotation, cl_camera_lerp_amount * Time.Delta );
 	}
 
-	[ClientVar] public static float cl_camera_lerp_amount { get; set; } = 0;
+	[ClientVar] public static float cl_camera_lerp_amount { get; set; } = 100;
 
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
