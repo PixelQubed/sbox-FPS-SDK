@@ -13,22 +13,17 @@ partial class Source1Player
 	public void PunchViewAngles( Vector3 dir ) => PunchViewAngles( dir.x, dir.y, dir.z );
 	public void PunchViewOffset( Vector3 dir ) => PunchViewOffset( dir.x, dir.y, dir.z );
 
+	[ClientRpc]
 	public virtual void PunchViewAngles( float x, float y, float z )
 	{
 		WishViewPunchAngle += new Vector3( x, y, z );
-		if ( IsServer ) PunchViewAnglesClient( x, y, z );
 	}
+
 
 	[ClientRpc]
-	public void PunchViewAnglesClient( float x, float y, float z )
-	{
-		PunchViewAngles( x, y, z ); 
-	}
-
 	public virtual void PunchViewOffset( float x, float y, float z )
 	{
 		WishViewPunchOffset += new Vector3( x, y, z );
-		if ( IsServer ) PunchViewOffsetClient( x, y, z );
 	}
 
 	[ClientRpc]
@@ -39,7 +34,8 @@ partial class Source1Player
 
 	public virtual void SimulateVisuals()
 	{
-		DecayViewPunch();
+		if ( IsClient ) 
+			DecayViewPunch();
 	}
 
 	public void DecayViewPunch()
