@@ -23,34 +23,12 @@ partial class PlayerResource : Entity
 		Transmit = TransmitType.Always;
 	}
 
-	[Net] IDictionary<Source1Player, bool> Alive { get; set; }
-	[Net] new IDictionary<Source1Player, float> Health { get; set; }
-
-	public virtual void OnPlayerDisconnect( Source1Player player )
-	{
-		Players.Remove( player );
-
-		Alive.Remove( player );
-		Health.Remove( player );
-	}
-
-	public virtual void PlayerUpdate( Source1Player player )
-	{
-		if ( !Players.Contains( player ) )
-			Players.Add( player );
-
-		Alive[player] = player.IsAlive;
-		Health[player] = player.Health;
-	}
-
 	public float NextThinkTime { get; set; }
 	public int UpdateCounter { get; set; }
 
 	[Event.Tick.Server]
 	public void Think()
 	{
-		Debug();
-
 		if ( NextThinkTime > Time.Now )
 			return;
 
@@ -60,10 +38,6 @@ partial class PlayerResource : Entity
 		NextThinkTime = Time.Now + 0.1f;
 	}
 
-	public virtual void Debug()
-	{
-
-	}
 
 	public virtual void UpdateAllPlayers()
 	{
