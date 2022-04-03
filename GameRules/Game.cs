@@ -44,6 +44,8 @@ public partial class GameRules : Game
 		if ( Time.Now < NextTickTime )
 			return;
 
+		Tick();
+
 		NextTickTime = Time.Now + 0.1f;
 	}
 
