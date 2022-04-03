@@ -10,7 +10,7 @@ namespace Source1;
 partial class PlayerResource : Entity
 {
 	public static PlayerResource Instance { get; set; }
-	protected List<Source1Player> Players { get; set; } = new();
+	[Net] public IList<Client> Clients { get; set; }
 
 	public PlayerResource()
 	{
@@ -38,18 +38,18 @@ partial class PlayerResource : Entity
 		NextThinkTime = Time.Now + 0.1f;
 	}
 
-
 	public virtual void UpdateAllPlayers()
 	{
-		var players = All.OfType<Source1Player>();
+		var clients = Client.All;
 
 		// Cleanup data for disconnected players.
-		foreach ( var player in Players.Except( players ) ) 
-			OnPlayerDisconnect( player );
+		foreach ( var client in Clients.Except( clients ) ) 
+			OnClientDisconnect( client );
 
-		foreach ( var player in players )
+		foreach ( var client in clients )
 		{
-			PlayerUpdate( player );
+			var player = client.Pawn as Source1Player;
+			PlayerUpdate( client, player );
 		}
 	}
 }

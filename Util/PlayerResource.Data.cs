@@ -9,37 +9,37 @@ namespace Source1;
 
 partial class PlayerResource
 {
-	[Net] IDictionary<Source1Player, bool> Alive { get; set; }
-	[Net] new IDictionary<Source1Player, float> Health { get; set; }
+	[Net] IDictionary<Client, bool> Alive { get; set; }
+	[Net] new IDictionary<Client, float> Health { get; set; }
 
-	public virtual void OnPlayerDisconnect( Source1Player player )
+	public virtual void OnClientDisconnect( Client client )
 	{
-		Players.Remove( player );
+		Clients.Remove( client );
 
-		Alive.Remove( player );
-		Health.Remove( player );
+		Alive.Remove( client );
+		Health.Remove( client );
 	}
 
-	public virtual void PlayerUpdate( Source1Player player )
+	public virtual void PlayerUpdate( Client client, Source1Player player )
 	{
-		if ( !Players.Contains( player ) )
-			Players.Add( player );
+		if ( !Clients.Contains( client ) )
+			Clients.Add( client );
 
-		Alive[player] = player.IsAlive;
-		Health[player] = player.Health;
+		Alive[client] = player.IsAlive;
+		Health[client] = player.Health;
 	}
 
-	public float GetHealth( Source1Player player )
+	public float GetHealth( Client client )
 	{
 		float health = 0;
-		Health.TryGetValue( player, out health );
+		Health.TryGetValue( client, out health );
 		return health;
 	}
 
-	public bool IsAlive( Source1Player player )
+	public bool IsAlive( Client client )
 	{
 		var value = false;
-		Alive.TryGetValue( player, out value );
+		Alive.TryGetValue( client, out value );
 		return value;
 	}
 }
