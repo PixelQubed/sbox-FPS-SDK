@@ -250,7 +250,7 @@ public partial class Source1Player : Player
 		var maxPunch = 5;
 		var maxDamage = 100;
 		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		PunchViewOffset( -punchAngle, 0, 0 );
+		PunchViewAngles( -punchAngle, 0, 0 );
 
 		// TODO: Punch player's view in position of damage?
 

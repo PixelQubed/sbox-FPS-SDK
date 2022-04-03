@@ -34,6 +34,10 @@ public partial class Source1GameMovement : PawnController
 	/// How much should we move up?
 	/// </summary>
 	protected float UpMove { get; set; }
+	/// <summary>
+	/// Local eye position that is not modified by any of view punches.
+	/// </summary>
+	protected Vector3 PureLocalEyePosition { get; set; }
 
 	public override void FrameSimulate()
 	{
@@ -148,14 +152,34 @@ public partial class Source1GameMovement : PawnController
 				FullObserverMove();
 				break;
 		}
+	}
+
+	public virtual void UpdateViewOffset()
+	{
+		// reset x,y
+		EyeLocalPosition = GetPlayerViewOffset( false );
+
+		// this updates z offset.
+		SetDuckedEyeOffset( Easing.QuadraticInOut( DuckProgress ) );
 
 		EyeRotation *= Rotation.From( Player.ViewPunchAngle.x, Player.ViewPunchAngle.y, Player.ViewPunchAngle.z );
 		EyeLocalPosition += Player.ViewPunchOffset;
 	}
 
-	public virtual void UpdateViewOffset()
+	public virtual void SetDuckedEyeOffset( float duckFraction )
 	{
-		SetDuckedEyeOffset( Easing.QuadraticInOut( DuckProgress ) );
+		Vector3 vDuckHullMin = GetPlayerMins( true );
+		Vector3 vStandHullMin = GetPlayerMins( false );
+
+		float fMore = vDuckHullMin.z - vStandHullMin.z;
+
+		Vector3 vecDuckViewOffset = GetPlayerViewOffset( true );
+		Vector3 vecStandViewOffset = GetPlayerViewOffset( false );
+		Vector3 temp = EyeLocalPosition;
+
+		temp.z = (vecDuckViewOffset.z - fMore) * duckFraction + vecStandViewOffset.z * (1 - duckFraction);
+
+		EyeLocalPosition = temp;
 	}
 
 	public virtual void ReduceTimers()
