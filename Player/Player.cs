@@ -257,6 +257,9 @@ public partial class Source1Player : Player
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
 
+		// Let gamerules know about this.
+		GameRules.Current.PlayerHurt( this, info );
+
 		// moved this up from entity class to not call procedural hit react from base
 		LastAttacker = info.Attacker;
 		LastAttackerWeapon = info.Weapon;
@@ -270,9 +273,6 @@ public partial class Source1Player : Player
 				OnKilled();
 			}
 		}
-
-		// Let gamerules know about this.
-		GameRules.Current.PlayerHurt( this, info );
 	}
 
 	public virtual bool IsReadyToPlay()
