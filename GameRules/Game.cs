@@ -36,7 +36,17 @@ public partial class GameRules : Game
 		TeamManager.DeclareTeam( 1, "spectator", "Spectator", Color.White, false, true );
 	}
 
+	float NextTickTime { get; set; }
+
 	[Event.Tick]
+	public void TickInternal()
+	{
+		if ( Time.Now < NextTickTime )
+			return;
+
+		NextTickTime = Time.Now + 0.1f;
+	}
+
 	public virtual void Tick()
 	{
 		SimulateStates();
