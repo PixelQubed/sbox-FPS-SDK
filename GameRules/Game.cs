@@ -60,18 +60,8 @@ public partial class GameRules : Game
 		}
 	}
 
-	/// <summary>
-	/// Called when a new client joins.
-	/// </summary>
-	public override void ClientJoined( Client client )
-	{
-		Event.Run( "Client_Connect", new Source1Event.Client.ConnectArgs( client ) );
-	}
-
 	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
 	{
-		Event.Run( "Client_Disconnect", new Source1Event.Client.DisconnectArgs( client, reason ) );
-
 		if ( client.Pawn.IsValid() )
 		{
 			client.Pawn.Delete();
@@ -113,49 +103,25 @@ public partial class GameRules : Game
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerDeath( Source1Player player, DamageInfo info )
-	{
-		if ( !IsServer )
-			return;
-
-		Event_OnPlayerDeath( player, info.Attacker, null, null, info.Weapon, info.Flags );
-	}
+	public virtual void PlayerDeath( Source1Player player, DamageInfo info ) { }
 
 	/// <summary>
 	/// This player was just hurt.
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerHurt( Source1Player player, DamageInfo info )
-	{
-		if ( !IsServer )
-			return;
-
-		Event_OnPlayerHurt( player, info.Attacker, null, null, info.Weapon, info.Flags, info.Position, info.Damage );
-	}
+	public virtual void PlayerHurt( Source1Player player, DamageInfo info ) { }
 
 	/// <summary>
 	/// On player respawned
 	/// </summary>
 	/// <param name="player"></param>
-	public virtual void PlayerRespawn( Source1Player player )
-	{
-		if ( !IsServer )
-			return;
-
-		Event_OnPlayerSpawn( player );
-	}
+	public virtual void PlayerRespawn( Source1Player player ) { }
 
 	/// <summary>
 	/// On player respawned
 	/// </summary>
-	public virtual void PlayerChangeTeam( Source1Player player, int team )
-	{
-		if ( !IsServer ) 
-			return;
-
-		Event_OnPlayerChangeTeam( player, team );
-	}
+	public virtual void PlayerChangeTeam( Source1Player player, int team ) { }
 
 	/// <summary>
 	/// Create standard game entities.

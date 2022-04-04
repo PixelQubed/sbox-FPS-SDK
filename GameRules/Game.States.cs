@@ -21,7 +21,7 @@ partial class GameRules
 		State = state;
 		OnStateStarted( state );
 
-		Log.Info( $"[STATE] {LastState} → {State}" );
+		// Log.Info( $"[STATE] {LastState} → {State}" );
 	}
 
 	[Net] public TimeSince TimeSinceStateChange { get; set; }
