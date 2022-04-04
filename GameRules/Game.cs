@@ -56,6 +56,7 @@ public partial class GameRules : Game
 		if ( IsServer )
 		{
 			CheckWaitingForPlayers();
+			UpdateAllClientsData();
 		}
 	}
 
