@@ -1,16 +1,13 @@
-﻿using System;
+﻿using Sandbox;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
 
 namespace Source1;
 
 partial class PlayerResource
 {
-	[Net] IDictionary<Client, bool> Alive { get; set; }
-	[Net] new IDictionary<Client, float> Health { get; set; }
+	[Net] protected IDictionary<Client, int> TeamNumber { get; set; }
+	[Net] protected IDictionary<Client, bool> Alive { get; set; }
+	[Net] protected new IDictionary<Client, float> Health { get; set; }
 
 	public virtual void OnClientDisconnect( Client client )
 	{
@@ -18,6 +15,7 @@ partial class PlayerResource
 
 		Alive.Remove( client );
 		Health.Remove( client );
+		TeamNumber.Remove( client );
 	}
 
 	public virtual void PlayerUpdate( Client client, Source1Player player )
@@ -27,19 +25,26 @@ partial class PlayerResource
 
 		Alive[client] = player.IsAlive;
 		Health[client] = player.Health;
+		TeamNumber[client] = player.TeamNumber;
 	}
 
-	public float GetHealth( Client client )
+	public static float GetHealth( Client client )
 	{
 		float health = 0;
-		Health.TryGetValue( client, out health );
+		Instance.Health.TryGetValue( client, out health );
 		return health;
 	}
 
-	public bool IsAlive( Client client )
+	public static bool IsAlive( Client client )
 	{
 		var value = false;
-		Alive.TryGetValue( client, out value );
+		Instance.Alive.TryGetValue( client, out value );
+		return value;
+	}
+	public static int GetTeamNumber( Client client )
+	{
+		var value = -1;
+		Instance.TeamNumber.TryGetValue( client, out value );
 		return value;
 	}
 }

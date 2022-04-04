@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Sandbox;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
 
 namespace Source1;
 
@@ -37,6 +34,8 @@ partial class PlayerResource : Entity
 
 		NextThinkTime = Time.Now + 0.1f;
 	}
+
+	public void IsAvailable( Client client ) => Clients.Contains( client );
 
 	public virtual void UpdateAllPlayers()
 	{
