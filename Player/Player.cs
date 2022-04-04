@@ -102,8 +102,11 @@ public partial class Source1Player : Player
 		GameRules.Current.MoveToSpawnpoint( this );
 		ResetInterpolation();
 
-		// let gamerules know that we have respawned.
-		GameRules.Current.PlayerRespawn( this );
+		if ( !IsObserver )
+		{
+			// let gamerules know that we have respawned.
+			GameRules.Current.PlayerRespawn( this );
+		}
 	}
 
 	public override void OnNewModel( Model model )
