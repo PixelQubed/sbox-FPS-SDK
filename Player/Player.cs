@@ -341,7 +341,6 @@ public partial class Source1Player : Player
 		{
 			var fallDmgInfo = DamageInfo.Generic( fallDamage )
 								.WithFlag( DamageFlags.Fall )
-								.WithAttacker( this )
 								.WithPosition( Position );
 
 			TakeDamage( fallDmgInfo );
