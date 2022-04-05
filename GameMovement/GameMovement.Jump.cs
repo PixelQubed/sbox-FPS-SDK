@@ -42,13 +42,11 @@ public partial class Source1GameMovement
 
 		AddEvent( "jump" );
 
-		float flGroundFactor = 1.0f;
 		float startz = Velocity.z;
+		Velocity = Velocity.WithZ( JumpImpulse );
 
-		if ( IsDucking )
-			Velocity = Velocity.WithZ( JumpImpulse * flGroundFactor );
-		else
-			Velocity = Velocity.WithZ( startz + JumpImpulse * flGroundFactor );
+		if ( IsDucking ) 
+			Velocity = Velocity.WithZ( Velocity.z + startz );
 
 		FinishGravity();
 		OnJump( Velocity.z - startz );

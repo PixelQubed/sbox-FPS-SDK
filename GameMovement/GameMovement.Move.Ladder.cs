@@ -28,7 +28,7 @@ partial class Source1GameMovement
 		if ( Player.MoveType == MoveType.MOVETYPE_NOCLIP ) 
 			return false;
 
-		if ( !GameHasLadders() )
+		if ( !GameHasLadders )
 			return false;
 
 		Vector3 wishdir;
@@ -136,8 +136,5 @@ partial class Source1GameMovement
 		return true;
 	}
 
-	public virtual bool GameHasLadders()
-	{
-		return true;
-	}
+	public virtual bool GameHasLadders => true;
 }

@@ -63,8 +63,6 @@ public partial class Source1GameMovement : PawnController
 
 		ProcessMovement();
 		ShowDebugOverlay();
-
-		// DebugOverlay.Box( Position, GetPlayerMins(), GetPlayerMaxs(), Color.Red );
 	}
 
 	public virtual void ProcessMovement()
@@ -73,17 +71,13 @@ public partial class Source1GameMovement : PawnController
 			return;
 
 		MaxSpeed = Player.MaxSpeed;
+
 		PlayerMove();
 	}
 
 	public virtual void PlayerMove()
 	{
-		CheckParameters();
-
-		ReduceTimers();
-
 		EyeRotation = Input.Rotation;
-
 		Forward = Input.Rotation.Forward;
 		Right = Input.Rotation.Right;
 		Up = Input.Rotation.Up;
@@ -92,6 +86,9 @@ public partial class Source1GameMovement : PawnController
 		ForwardMove = Input.Forward * speed;
 		RightMove = -Input.Left * speed;
 		UpMove = Input.Up * speed;
+
+		ReduceTimers();
+		CheckParameters();
 
 		if ( !Player.CanMove() )
 		{
@@ -187,7 +184,21 @@ public partial class Source1GameMovement : PawnController
 
 	public virtual void CheckParameters()
 	{
+		if ( Player.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
+			Player.MoveType != MoveType.MOVETYPE_NOCLIP &&
+			Player.MoveType != MoveType.MOVETYPE_OBSERVER )
+		{
+			var speed = ForwardMove * ForwardMove + RightMove * RightMove + UpMove * UpMove;
 
+			if ( speed != 0 && speed > MaxSpeed * MaxSpeed )
+			{
+				var ratio = MaxSpeed / MathF.Sqrt( speed );
+
+				ForwardMove *= ratio;
+				RightMove *= ratio;
+				UpMove *= ratio;
+			}
+		}
 	}
 
 	public virtual void StepMove( Vector3 dest )
