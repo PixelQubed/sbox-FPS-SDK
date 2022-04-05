@@ -10,21 +10,16 @@ namespace Source1;
 partial class GameRules
 {
 	[Net] public GameState State { get; private set; }
-	GameState LastState { get; set; }
+	[Net] public TimeSince TimeSinceStateChange { get; set; }
 
 	public void TransitionToState( GameState state )
 	{
 		TimeSinceStateChange = 0;
-		LastState = State;
 
 		OnStateEnded( State );
 		State = state;
-		OnStateStarted( state );
-
-		// Log.Info( $"[STATE] {LastState} → {State}" );
+		OnStateStarted( State );
 	}
-
-	[Net] public TimeSince TimeSinceStateChange { get; set; }
 
 	//
 	// Initialized
@@ -36,8 +31,15 @@ partial class GameRules
 		TransitionToState( GameState.PreGame );
 	}
 
-	public virtual void StartedInitialized() { }
-	public virtual void EndedInitialized() { }
+	public virtual void StartedInitialized() 
+	{
+		return;
+	}
+
+	public virtual void EndedInitialized()
+	{
+		return;
+	}
 
 	//
 	// PreGame
