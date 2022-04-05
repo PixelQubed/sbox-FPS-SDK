@@ -6,7 +6,9 @@ namespace Source1;
 
 partial class GameRules
 {
+	public bool IsRoundStarting => State == GameState.PreRound;
 	public bool IsRoundActive => State == GameState.Gameplay;
+	public bool IsRoundEnded => State == GameState.RoundEnd;
 
 	/// <summary>
 	/// Restart the round.
