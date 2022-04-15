@@ -380,9 +380,26 @@ public partial class Source1Player : Player
 
 public static class PlayerTags
 {
+	/// <summary>
+	/// Is currently ducking.
+	/// </summary>
 	public const string Ducked = "ducked";
+	/// <summary>
+	/// Is currently performing a water jump.
+	/// </summary>
 	public const string WaterJump = "waterjump";
+	/// <summary>
+	/// Is currently in cheat activated noclip mode.
+	/// </summary>
 	public const string Noclipped = "noclipped";
+	/// <summary>
+	/// Does not accept any damage.
+	/// </summary>
+	public const string GodMode = "god";
+	/// <summary>
+	/// Take all the damage, but don't die.
+	/// </summary>
+	public const string Buddha = "buddha";
 }
 
 public static class Source1Team
