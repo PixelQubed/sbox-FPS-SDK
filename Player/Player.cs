@@ -350,7 +350,6 @@ public partial class Source1Player : Player
 	public virtual float FatalFallSpeed => 1024;
 	public virtual float MaxSafeFallSpeed => 580;
 	public virtual float FallPunchThreshold => 350;
-
 	public virtual float DamageForFallSpeed => 100 / (FatalFallSpeed - MaxSafeFallSpeed);
 
 	public virtual void RoughLandingEffects( float velocity )
@@ -375,6 +374,8 @@ public partial class Source1Player : Player
 			PunchViewAngles( punch );
 		}
 	}
+
+	public virtual float DuckingSpeedMultiplier => 0.33f;
 }
 
 public static class PlayerTags

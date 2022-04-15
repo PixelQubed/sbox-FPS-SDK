@@ -96,7 +96,6 @@ public partial class Source1GameMovement
 
 		var forward = Forward.WithZ( 0 ).Normal;
 		var right = Right.WithZ( 0 ).Normal;
-		var up = Up.WithZ( 0 ).Normal;
 
 		WishVelocity = forward * ForwardMove + right * RightMove;
 		WishVelocity = WishVelocity.WithZ( 0 );
@@ -110,8 +109,20 @@ public partial class Source1GameMovement
 			wishspeed = MaxSpeed;
 		}
 
+		var acceleration = sv_accelerate;
+
+		// if our wish speed is too low, we must increase acceleration or we'll never overcome friction
+		// Reverse the basic friction calculation to find our required acceleration
+		var wishspeedThreshold = 100 * sv_friction / sv_accelerate;
+		if ( wishspeed > 0 && wishspeed < wishspeedThreshold )
+		{
+			float speed = Velocity.Length;
+			float flControl = (speed < sv_stopspeed) ? sv_stopspeed : speed;
+			acceleration = (flControl * sv_friction) / wishspeed + 1;
+		}
+
 		Velocity = Velocity.WithZ( 0 );
-		Accelerate( wishdir, wishspeed, sv_accelerate );
+		Accelerate( wishdir, wishspeed, acceleration );
 		Velocity = Velocity.WithZ( 0 );
 
 		Velocity += BaseVelocity;

@@ -185,10 +185,9 @@ partial class Source1GameMovement
 	{
 		if ( IsDucked && IsGrounded )
 		{
-			var frac = .33f;
-			ForwardMove *= frac;
-			RightMove *= frac;
-			UpMove *= frac;
+			ForwardMove *= Player.DuckingSpeedMultiplier;
+			RightMove *= Player.DuckingSpeedMultiplier;
+			UpMove *= Player.DuckingSpeedMultiplier;
 		}
 	}
 }

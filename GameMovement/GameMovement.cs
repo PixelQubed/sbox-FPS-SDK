@@ -82,7 +82,7 @@ public partial class Source1GameMovement : PawnController
 		Right = Input.Rotation.Right;
 		Up = Input.Rotation.Up;
 
-		var speed = GetWishSpeed();
+		var speed = MaxSpeed;
 		ForwardMove = Input.Forward * speed;
 		RightMove = -Input.Left * speed;
 		UpMove = Input.Up * speed;
@@ -112,10 +112,9 @@ public partial class Source1GameMovement : PawnController
 			FallVelocity = -Velocity.z;
 		}
 
-		Player.SimulateFootsteps( Position, Velocity );
-
 		SimulateDucking();
 		UpdateViewOffset();
+		Player.SimulateFootsteps( Position, Velocity );
 
 		if ( IsAlive ) 
 		{
@@ -566,6 +565,8 @@ public partial class Source1GameMovement : PawnController
 				$"WishVelocity          {WishVelocity}\n" +
 				$"SurfaceFriction       {Player.SurfaceFriction}\n" +
 				$"MoveType              {Player.MoveType}\n" +
+				$"Speed                 {Velocity.Length}\n" +
+				$"MaxSpeed              {MaxSpeed}\n" +
 				$"\n" +
 
 				$"[DUCKING]\n" +
