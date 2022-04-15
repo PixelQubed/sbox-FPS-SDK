@@ -165,13 +165,19 @@ public partial class Source1Player : Player
 		SimulateActiveWeapon();
 	}
 
+	public void ModifyMaxSpeed()
+	{
+		MaxSpeed = CalculateMaxSpeed();
+
+		if ( MaxSpeed <= 0 ) 
+			Velocity = 0;
+	}
+
 	/// <summary>
 	/// Called before movement is calculated, we update our max speed values based on current effects.
 	/// I.e. if we're sprinting.
 	/// </summary>
-	public virtual void ModifyMaxSpeed()
-	{
-	}
+	public virtual float CalculateMaxSpeed() => MaxSpeed;
 
 	public virtual void SimulateActiveWeapon()
 	{
