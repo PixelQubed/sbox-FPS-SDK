@@ -152,6 +152,7 @@ public partial class Source1Player : Player
 		if ( cl.IsBot )
 			SimulateBot( cl );
 
+		ModifyMaxSpeed();
 		GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
 
 		SimulateActiveChild( cl, ActiveChild );
@@ -162,6 +163,14 @@ public partial class Source1Player : Player
 
 		SimulateHover();
 		SimulateActiveWeapon();
+	}
+
+	/// <summary>
+	/// Called before movement is calculated, we update our max speed values based on current effects.
+	/// I.e. if we're sprinting.
+	/// </summary>
+	public virtual void ModifyMaxSpeed()
+	{
 	}
 
 	public virtual void SimulateActiveWeapon()
