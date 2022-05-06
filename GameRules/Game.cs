@@ -201,4 +201,14 @@ public partial class GameRules : Game
 	{
 		return true;
 	}
+
+	public virtual float DamageForce( Vector3 size, float damage, float scale )
+	{ 
+		float force = damage * ((48 * 48 * 82) / (size.x * size.y * size.z)) * scale;
+
+		if ( force > 1000 ) 
+			force = 1000;
+
+		return force;
+	}
 }
