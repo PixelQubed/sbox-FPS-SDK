@@ -196,4 +196,9 @@ public partial class GameRules : Game
 
 		player.CommitSuicide( false, false );
 	}
+
+	public virtual bool CanPlayerTakeDamage( Source1Player player, Entity attacker, DamageInfo info )
+	{
+		return true;
+	}
 }

@@ -77,4 +77,15 @@ public static partial class Util
 		}
 		return value;
 	}
+
+	// hermite basis function for smooth interpolation
+	// Similar to Gain() above, but very cheap to call
+	// value should be between 0 & 1 inclusive
+	public static float SimpleSpline( float value )
+	{
+		float valueSquared = value * value;
+
+		// Nice little ease-in, ease-out spline-like curve
+		return (3 * valueSquared - 2 * valueSquared * value);
+	}
 }
