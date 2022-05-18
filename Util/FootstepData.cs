@@ -9,7 +9,7 @@ namespace Source1;
 /// Asset used to override game specific foosteps, needs to be one per game.
 /// </summary>
 [Library( "footstep" ), AutoGenerate]
-public class FootstepData : Asset
+public class FootstepData : GameResource
 {
 	public static List<FootstepData> All { get; set; } = new();
 
