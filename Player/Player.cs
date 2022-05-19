@@ -287,7 +287,6 @@ public partial class Source1Player : Player
 			Health -= info.Damage;
 			if ( Health <= 0f )
 			{
-				Health = 0f;
 				OnKilled();
 			}
 		}

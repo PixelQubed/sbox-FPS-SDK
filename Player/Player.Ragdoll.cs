@@ -7,6 +7,7 @@ partial class Source1Player
 	[ClientRpc]
 	protected void BecomeRagdollOnClient( Vector3 velocity, DamageFlags damageFlags, Vector3 forcePos, Vector3 force, int bone )
 	{
+		return;
 		var ent = new ModelEntity();
 		ent.Position = Position;
 		ent.Rotation = Rotation;
