@@ -551,7 +551,7 @@ public partial class Source1GameMovement : PawnController
 	{
 		if ( sv_debug_movement && Player.Client.IsListenServerHost && Host.IsServer ) 
 		{
-			DebugOverlay.ScreenText( new Vector2( 60, 250 ),
+			DebugOverlay.ScreenText( 
 				$"[PLAYER]\n" +
 				$"LifeState             {Player.LifeState}\n" +
 				$"TeamNumber            {Player.TeamNumber}\n" +
@@ -578,8 +578,8 @@ public partial class Source1GameMovement : PawnController
 				$"ObserverMode          {Player.ObserverMode}\n" +
 				$"LastObserverMode      {Player.LastObserverMode}\n" +
 				$"ForcedObserverMode    {Player.IsForcedObserverMode}\n" +
-				$"ObserverTarget        {Player.ObserverTarget}"
-				);
+				$"ObserverTarget        {Player.ObserverTarget}",
+				new Vector2( 60, 250 ) );
 		}
 	}
 

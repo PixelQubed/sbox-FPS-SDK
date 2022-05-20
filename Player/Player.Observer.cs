@@ -37,14 +37,14 @@ partial class Source1Player
 				}
 
 				// next target
-				if ( Input.Pressed( InputButton.Attack1 ) )
+				if ( Input.Pressed( InputButton.PrimaryAttack ) )
 				{
 					var target = FindNextObserverTarget( false );
 					if ( target != null ) SetObserverTarget( target );
 				}
 
 				// prev target
-				if ( Input.Pressed( InputButton.Attack2 ) )
+				if ( Input.Pressed( InputButton.SecondaryAttack ) )
 				{
 					var target = FindNextObserverTarget( true );
 					if ( target != null ) SetObserverTarget( target );

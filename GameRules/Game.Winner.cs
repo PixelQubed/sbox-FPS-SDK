@@ -42,7 +42,7 @@ partial class GameRules
 	public virtual void PlayTeamWinSong( int team ) { }
 	public virtual void PlayTeamLoseSong( int team ) { }
 
-	[ServerCmd("mp_forceteamwin")]
+	[ConCmd.Server( "mp_forceteamwin" )]
 	public static void Command_ForceTeamWin( int team )
 	{
 		Current.DeclareWinner( team, 0 );

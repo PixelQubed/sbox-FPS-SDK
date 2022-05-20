@@ -72,8 +72,8 @@ partial class Source1Camera : CameraMode
 			Position = LastPosition.LerpTo( Position, cl_camera_lerp_amount * Time.Delta );
 	}
 
-	[ClientVar] public static float cl_camera_lerp_amount { get; set; } = 100;
-	[ClientVar] public static float cl_camera_lerp_max_distance { get; set; } = 100;
+	[ConVar.Client] public static float cl_camera_lerp_amount { get; set; } = 100;
+	[ConVar.Client] public static float cl_camera_lerp_max_distance { get; set; } = 100;
 
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
@@ -89,7 +89,7 @@ partial class Source1Camera : CameraMode
 		}
 	}
 
-	[ClientVar] public static bool cl_thirdperson { get; set; }
+	[ConVar.Client] public static bool cl_thirdperson { get; set; }
 
 	public virtual void CalculateObserverView( Source1Player player )
 	{

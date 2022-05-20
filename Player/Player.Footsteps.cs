@@ -83,7 +83,7 @@ partial class Source1Player
 		Sound.FromWorld( sound, origin ).SetVolume( volume );
 	}
 
-	[ServerVar] public static bool sv_debug_footstep_surfaces { get; set; }
+	[ConVar.Server] public static bool sv_debug_footstep_surfaces { get; set; }
 
 	public virtual void DoFootstep( Vector3 origin, Surface surface, float volume = 1f )
 	{
@@ -92,8 +92,8 @@ partial class Source1Player
 
 		if ( sv_debug_footstep_surfaces )
 		{
-			DebugOverlay.Sphere( origin, 3, Color.Yellow, true, 5 );
-			DebugOverlay.Text( origin, surface.Name, 5 );
+			DebugOverlay.Sphere( origin, 3, Color.Yellow, 5, true );
+			DebugOverlay.Text( surface.Name, origin, 5 );
 		}
 
 		if ( !FootstepData.GetSoundsForSurface( surface, out var sounds ) )

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Sandbox;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using Sandbox;
 
 namespace Source1;
 
@@ -87,5 +87,15 @@ public static partial class Util
 
 		// Nice little ease-in, ease-out spline-like curve
 		return (3 * valueSquared - 2 * valueSquared * value);
+	}
+
+	public static string JPGToPNG( string jpg )
+	{
+		if ( !string.IsNullOrEmpty( jpg ) )
+		{
+			string noExtension = Path.Combine( Path.GetDirectoryName( jpg ), Path.GetFileNameWithoutExtension( jpg ) );
+			return $"/{noExtension}.png";
+		}
+		return "";
 	}
 }

@@ -1,4 +1,4 @@
-using Sandbox;
+﻿using Sandbox;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace Source1;
 /// <summary>
 /// Asset used to override game specific foosteps, needs to be one per game.
 /// </summary>
-[Library( "footstep" ), AutoGenerate]
+[GameResource( "Footstep Override", "footstep", "", Icon = "🦶", IconBgColor = "#7e8ff4", IconFgColor = "#0e0e0e" )]
 public class FootstepData : GameResource
 {
 	public static List<FootstepData> All { get; set; } = new();
