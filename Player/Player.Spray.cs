@@ -6,7 +6,7 @@ partial class Source1Player
 {
 	public TimeSince TimeSinceSprayed { get; set; }
 
-	[ServerCmd( "spray" )]
+	[ConCmd.Server( "spray" )]
 	public static void Command_Spray()
 	{
 		if ( ConsoleSystem.Caller.Pawn is Source1Player player ) 
@@ -20,10 +20,11 @@ partial class Source1Player
 
 			if ( tr.Hit )
 			{
+				/*
 				Sound.FromWorld( "player.sprayer", tr.EndPosition );
-				var decal = DecalDefinition.ByPath["data/decal/spray.default.decal"];
+				var decal = GameResource.D["data/decal/spray.default.decal"];
 				decal.PlaceUsingTrace( tr );
-
+				*/
 				player.TimeSinceSprayed = 0;
 			}
 		}

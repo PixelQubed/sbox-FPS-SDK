@@ -31,7 +31,7 @@ public partial class Source1Player : Player
 		LastObserverMode = ObserverMode.Chase;
 	}
 
-	[AdminCmd( "respawn_me" )]
+	[ConCmd.Admin( "respawn_me" )]
 	public static void Command_Respawn()
 	{
 		((Source1Player)ConsoleSystem.Caller.Pawn).Respawn();

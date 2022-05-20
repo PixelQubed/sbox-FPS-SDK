@@ -1,8 +1,4 @@
-﻿using Sandbox;
-using System.Linq;
-using System.Collections.Generic;
-
-namespace Source1;
+﻿namespace Source1;
 
 partial class GameRules
 {

@@ -1,5 +1,4 @@
 ﻿using Sandbox;
-using System.Collections.Generic;
 
 namespace Source1;
 
@@ -11,13 +10,13 @@ public enum ChatType
 
 partial class GameRules
 {
-	[ServerCmd( "say" )]
+	[ConCmd.Server( "say" )]
 	public static void Command_SendMessage( string message )
 	{
 		Current.OnChatMessageSent( ConsoleSystem.Caller, message, ChatType.Global );
 	}
 
-	[ServerCmd( "say_team" )]
+	[ConCmd.Server( "say_team" )]
 	public static void Command_SendTeamMessage( string message )
 	{
 		Current.OnChatMessageSent( ConsoleSystem.Caller, message, ChatType.Team );

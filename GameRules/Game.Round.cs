@@ -1,6 +1,5 @@
 using Sandbox;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Source1;
 
@@ -57,7 +56,7 @@ partial class GameRules
 
 	public virtual bool IsEnoughPlayersInTeamToStartRound( int team ) { return true; }
 
-	[AdminCmd( "mp_restartround" )]
+	[ConCmd.Admin( "mp_restartround" )]
 	public static void Command_RestartRound()
 	{
 		Current?.RestartRound();

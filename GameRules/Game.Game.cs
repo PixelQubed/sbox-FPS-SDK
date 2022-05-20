@@ -1,6 +1,4 @@
 using Sandbox;
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Source1;
@@ -19,7 +17,7 @@ partial class GameRules
 		RestartRound();
 	}
 
-	[AdminCmd( "mp_restartgame" )]
+	[ConCmd.Admin( "mp_restartgame" )]
 	public static void Command_RestartGame()
 	{
 		Current?.RestartGame();

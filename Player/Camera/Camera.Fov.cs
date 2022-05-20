@@ -85,11 +85,11 @@ partial class Source1Camera
 		LastDesiredFieldOfView = DesiredFieldOfView;
 	}
 
-	[ClientVar] public static float cl_viewmodel_fov { get; set; } = 75;
+	[ConVar.Client] public static float cl_viewmodel_fov { get; set; } = 75;
 
 	public void DebugFieldOfView( Source1Player player )
 	{
-		DebugOverlay.ScreenText( new Vector2( 60, 250 ),
+		DebugOverlay.ScreenText(
 			$"[FOV]\n" +
 			$"Default               {DefaultFieldOfView}\n" +
 			$"Last Value            {LastFieldOfView}\n" +
@@ -99,8 +99,9 @@ partial class Source1Camera
 			$"\n" +
 
 			$"Requester             {player.ForcedFieldOfViewRequester}\n" +
-			$"Force Start           {player.ForcedFieldOfViewStartWith}\n"
-		);
+			$"Force Start           {player.ForcedFieldOfViewStartWith}\n",
+			new Vector2( 60, 250 ) 
+			);
 	}
-	[ClientVar] public static bool cl_debug_fov { get; set; }
+	[ConVar.Client] public static bool cl_debug_fov { get; set; }
 }
