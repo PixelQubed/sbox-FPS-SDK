@@ -149,9 +149,6 @@ public partial class Source1Player : Player
 		if ( IsObserver )
 			SimulateObserver();
 
-		if ( cl.IsBot )
-			SimulateBot( cl );
-
 		ModifyMaxSpeed();
 		GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
 
