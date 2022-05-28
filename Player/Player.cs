@@ -16,7 +16,6 @@ public partial class Source1Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
-	[Net] public float FallVelocity { get; set; }
 	[Net] public float SurfaceFriction { get; set; } = 1;
 
 	[Net] public float MaxSpeed { get; set; }
@@ -40,13 +39,9 @@ public partial class Source1Player : AnimatedEntity
 		LastObserverMode = ObserverMode.Chase;
 	}
 
-	[ConCmd.Admin( "respawn_me" )]
-	public static void Command_Respawn()
-	{
-		((Source1Player)ConsoleSystem.Caller.Pawn).Respawn();
-	}
+	public virtual float GetMaxHealth() => 100;
 
-	public override void Respawn()
+	public virtual void Respawn()
 	{
 		//
 		// Tags
@@ -89,9 +84,10 @@ public partial class Source1Player : AnimatedEntity
 		MoveType = MoveType.MOVETYPE_WALK;
 		FallVelocity = 0;
 		BaseVelocity = 0;
-		MaxSpeed = GetMaxSpeed();
+		UpdateMaxSpeed();
 
 		CollisionGroup = CollisionGroup.Player;
+		AddCollisionLayer( CollisionLayer.Player );
 		SetInteractsAs( CollisionLayer.Player );
 
 		EnableHitboxes = true;
@@ -101,6 +97,7 @@ public partial class Source1Player : AnimatedEntity
 		// Weapons
 		//
 		PreviousWeapon = null;
+		ActiveWeapon = null;
 
 		//
 		// Misc
@@ -116,6 +113,22 @@ public partial class Source1Player : AnimatedEntity
 			// let gamerules know that we have respawned.
 			GameRules.Current.PlayerRespawn( this );
 		}
+	}
+
+	public override void OnKilled()
+	{
+		DeleteChildren();
+
+		UseAnimGraph = false;
+		EnableAllCollisions = false;
+		EnableDrawing = false;
+		TimeSinceDeath = 0;
+		LifeState = LifeState.Dead;
+
+		StopUsing();
+		StartObserverMode( ObserverMode.Deathcam );
+
+		GameRules.Current.PlayerDeath( this, LastDamageInfo );
 	}
 
 	public override void OnNewModel( Model model )
@@ -158,37 +171,27 @@ public partial class Source1Player : AnimatedEntity
 		if ( IsObserver )
 			SimulateObserver();
 
-		ModifyMaxSpeed();
+		UpdateMaxSpeed();
 		Controller?.Simulate( cl, this, Animator );
 
-		SimulateActiveChild( cl, ActiveChild );
+		SimulateWeaponSwitch();
+		SimulateActiveWeapon( cl, ActiveWeapon );
 		SimulatePassiveChildren( cl );
 
 		if ( !IsAlive )
 			return;
 
 		SimulateHover();
-		SimulateActiveWeapon();
 	}
 
-	public virtual void SimulateActiveChild( Client cl, Entity child )
+
+	public override void FrameSimulate( Client cl )
 	{
-		if ( LastActiveChild != child )
-		{
-			OnActiveChildChanged( LastActiveChild, child );
-			LastActiveChild = child;
-		}
-
-		if ( !LastActiveChild.IsValid() )
-			return;
-
-		if ( LastActiveChild.IsAuthority )
-		{
-			LastActiveChild.Simulate( cl );
-		}
+		base.FrameSimulate( cl );
+		Controller?.FrameSimulate( cl, this, Animator );
 	}
 
-	public void ModifyMaxSpeed()
+	public void UpdateMaxSpeed()
 	{
 		MaxSpeed = CalculateMaxSpeed();
 
@@ -200,23 +203,7 @@ public partial class Source1Player : AnimatedEntity
 	/// Called before movement is calculated, we update our max speed values based on current effects.
 	/// I.e. if we're sprinting.
 	/// </summary>
-	public virtual float CalculateMaxSpeed() => MaxSpeed;
-
-	public virtual void SimulateActiveWeapon()
-	{
-		//
-		// Input requested a weapon switch
-		//
-
-		if ( Input.ActiveChild != null )
-		{
-			var newWeapon = Input.ActiveChild as Source1Weapon;
-			if ( newWeapon != null )
-			{
-				ActiveChild = Input.ActiveChild;
-			}
-		}
-	}
+	public virtual float CalculateMaxSpeed() => Source1GameMovement.sv_maxspeed;
 
 	public void RemoveAllTags()
 	{
@@ -237,63 +224,16 @@ public partial class Source1Player : AnimatedEntity
 		}
 	}
 
-	public virtual float GetMaxSpeed() { return Source1GameMovement.sv_maxspeed; }
-
-	public void Kill()
-	{
-		if ( !IsAlive ) return;
-
-		var dmg = DamageInfo.Generic( Health * 2 )
-			.WithAttacker( this )
-			.WithPosition( Position );
-
-		TakeDamage( dmg );
-	}
-
-	public override void BuildInput( InputBuilder builder )
-	{
-		base.BuildInput( builder );
-		if ( ForcedWeapon != null )
-		{
-			builder.ActiveChild = ForcedWeapon;
-			ForcedWeapon = null;
-		}
-	}
-
-	public override void OnKilled()
-	{
-		DeleteChildren();
-		UseAnimGraph = false;
-
-		BecomeRagdollOnClient( Velocity, LastDamageInfo.Flags, LastDamageInfo.Position, LastDamageInfo.Force * 30, GetHitboxBone( LastDamageInfo.HitboxIndex ) );
-
-		EnableAllCollisions = false;
-		EnableDrawing = false;
-
-		TimeSinceDeath = 0;
-		LifeState = LifeState.Respawning;
-		StopUsing();
-
-		StartObserverMode( ObserverMode.Deathcam );
-
-		GameRules.Current.PlayerDeath( this, LastDamageInfo );
-	}
-
 	public override void TakeDamage( DamageInfo info )
 	{
 		TimeSinceTakeDamage = 0;
 		LastDamageInfo = info;
 
-		//
 		// We need to punch our view a little bit.
-		//
-
 		var maxPunch = 5;
 		var maxDamage = 100;
 		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
 		PunchViewAngles( -punchAngle, 0, 0 );
-
-		// TODO: Punch player's view in position of damage?
 
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
@@ -302,6 +242,7 @@ public partial class Source1Player : AnimatedEntity
 		GameRules.Current.PlayerHurt( this, info );
 
 		// moved this up from entity class to not call procedural hit react from base
+		// also we're no longer capped at 0 HP min.
 		LastAttacker = info.Attacker;
 		LastAttackerWeapon = info.Weapon;
 
@@ -315,28 +256,21 @@ public partial class Source1Player : AnimatedEntity
 		}
 	}
 
-	public virtual bool IsReadyToPlay()
-	{
-		return TeamManager.IsPlayable( TeamNumber );
-	}
+	public virtual bool IsReadyToPlay() => TeamManager.IsPlayable( TeamNumber );
 
 	[ConVar.Replicated] public static bool mp_player_freeze_on_round_start { get; set; } = true;
-
 	public virtual bool CanMove()
 	{
-		var inPreRound = GameRules.Current.State == GameState.PreRound;
-		var preRoundFreeze = mp_player_freeze_on_round_start;
+		if ( GameRules.Current.IsWaitingForPlayers )
+			return true;
 
-		// no need to freeze if we're waiting for players.
-		if ( GameRules.Current.IsWaitingForPlayers ) return true;
+		if ( mp_player_freeze_on_round_start )
+		{
+			if ( GameRules.Current.IsRoundStarting )
+				return false;
+		}
 
-		var noMovement = inPreRound && preRoundFreeze;
-		return !noMovement;
-	}
-
-	public virtual float GetMaxHealth()
-	{
-		return 100;
+		return true;
 	}
 
 	public virtual void CommitSuicide( bool explode = false, bool force = false )
@@ -357,61 +291,39 @@ public partial class Source1Player : AnimatedEntity
 		TakeDamage( info );
 	}
 
-	public virtual void OnLanded( float velocity )
-	{
-		TakeFallDamage( velocity );
-		RoughLandingEffects( velocity );
-	}
-
-	[ConVar.Replicated] public static bool sv_falldamage { get; set; } = true;
-
-	public virtual void TakeFallDamage( float velocity )
-	{
-
-		var fallDamage = GameRules.Current.GetPlayerFallDamage( this, velocity );
-		if ( fallDamage <= 0 )
-			return;
-		
-		Sound.FromWorld( "player.fallpain", Position );
-
-		if ( sv_falldamage )
-		{
-			var fallDmgInfo = DamageInfo.Generic( fallDamage )
-								.WithFlag( DamageFlags.Fall )
-								.WithPosition( Position );
-
-			TakeDamage( fallDmgInfo );
-		}
-	}
-
-	public virtual float FatalFallSpeed => 1024;
-	public virtual float MaxSafeFallSpeed => 580;
-	public virtual float DamageForFallSpeed => 100 / (FatalFallSpeed - MaxSafeFallSpeed);
-
-	public virtual void RoughLandingEffects( float velocity )
-	{
-		if ( velocity <= 0 )
-			return;
-
-		var volume = .5f;
-		if ( velocity > MaxSafeFallSpeed / 2 )
-		{
-			volume = velocity.RemapClamped( MaxSafeFallSpeed / 2, MaxSafeFallSpeed, .85f, 1 );
-		}
-
-		DoLandSound( Position, SurfaceData, volume );
-
-		//
-		// Knock the screen around a little bit, temporary effect.
-		//
-		if ( velocity >= MaxSafeFallSpeed )
-		{
-			var punch = new Vector3( 0, 0, velocity * 0.013f );
-			PunchViewAngles( punch );
-		}
-	}
-
 	public virtual float DuckingSpeedMultiplier => 0.33f;
+
+	/// <summary>
+	/// Called after the camera setup logic has run. Allow the player to
+	/// do stuff to the camera, or using the camera. Such as positioning entities
+	/// relative to it, like viewmodels etc.
+	/// </summary>
+	public override void PostCameraSetup( ref CameraSetup setup )
+	{
+		Host.AssertClient();
+
+		if ( ActiveWeapon != null )
+		{
+			ActiveWeapon.PostCameraSetup( ref setup );
+		}
+	}
+
+	/// <summary>
+	/// Called from the gamemode, clientside only.
+	/// </summary>
+	public override void BuildInput( InputBuilder input )
+	{
+		if ( input.StopProcessing )
+			return;
+
+		ActiveWeapon?.BuildInput( input );
+		Controller?.BuildInput( input );
+
+		if ( input.StopProcessing )
+			return;
+
+		Animator?.BuildInput( input );
+	}
 }
 
 public static class PlayerTags

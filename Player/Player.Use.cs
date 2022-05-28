@@ -4,10 +4,8 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	/// <summary>
-	/// Entity that the client is looking at.
-	/// </summary>
 	public Entity HoveredEntity { get; private set; }
+	public Entity Using { get; protected set; }
 
 	protected virtual Entity FindHovered()
 	{
@@ -65,11 +63,26 @@ partial class Source1Player
 		}
 	}
 
-	public bool CanUse( Entity entity )
+	protected virtual void StopUsing()
 	{
-		return entity is IUse use && use.IsUsable( this ) && Vector3.DistanceBetween( entity.Position, Position ) < MaxUseDistance;
+		Using = null;
 	}
 
-	[ConVar.Replicated( "sv_max_use_distance" )]
-	public static float MaxUseDistance { get; set; } = 100;
+	protected virtual void UseFail()
+	{
+		PlaySound( "player_use_fail" );
+	}
+
+	public bool CanUse( Entity entity )
+	{
+		if ( entity is not IUse use )
+			return false;
+
+		if ( !use.IsUsable( this ) )
+			return false;
+
+		return Vector3.DistanceBetween( entity.Position, Position ) < sv_max_use_distance;
+	}
+
+	[ConVar.Replicated] public static float sv_max_use_distance { get; set; } = 100;
 }

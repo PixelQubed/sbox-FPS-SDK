@@ -1,4 +1,4 @@
-using Sandbox;
+﻿using Sandbox;
 using System;
 using System.Linq;
 
@@ -6,14 +6,50 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	public Source1Weapon ActiveWeapon => ActiveChild as Source1Weapon;
-	public Source1Weapon PreviousWeapon { get; set; }
-	private Source1Weapon ForcedWeapon { get; set; }
+	[Net, Predicted] 
+	public Source1Weapon ActiveWeapon { get; set; }
+	[Predicted]
+	Source1Weapon LastWeapon { get; set; }
 
-	public virtual bool CanEquipWeapon( Source1Weapon weapon )
+	public Source1Weapon PreviousWeapon { get; set; }
+
+	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
 	{
-		return true;
+		if ( LastWeapon != weapon )
+		{
+			OnActiveWeaponChanged( LastWeapon, weapon );
+			LastWeapon = weapon;
+		}
+
+		if ( !LastWeapon.IsValid() )
+			return;
+
+		if ( LastWeapon.IsAuthority )
+			LastWeapon.Simulate( cl );
 	}
+
+	public virtual void SimulateWeaponSwitch()
+	{
+		if ( Input.ActiveChild != null )
+		{
+			var newWeapon = Input.ActiveChild as Source1Weapon;
+			if ( newWeapon != null )
+			{
+				ActiveWeapon = newWeapon;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Called when the Active child is detected to have changed
+	/// </summary>
+	public virtual void OnActiveWeaponChanged( Source1Weapon previous, Source1Weapon next )
+	{
+		previous?.ActiveEnd( this, previous.Owner != this );
+		next?.ActiveStart( this );
+	}
+
+	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
 
 	public virtual bool EquipWeapon( Source1Weapon weapon, bool makeActive = false )
 	{
@@ -22,32 +58,19 @@ partial class Source1Player
 		if ( weapon.Owner != null )
 			return false;
 
-		if ( CanEquipWeapon( weapon ) )
+		if ( !CanEquipWeapon( weapon ) )
 			return false;
 
 		if ( !weapon.CanEquip( this ) )
 			return false;
 
 		weapon.Parent = this;
+		weapon.Owner = this;
 		weapon.OnCarryStart( this );
 
 		if ( makeActive )
-		{
-			SetActive( weapon );
-		}
+			ActiveWeapon = weapon;
 
-		return true;
-	}
-
-	/// <summary>
-	/// Make this entity the active one
-	/// </summary>
-	public virtual bool SetActive( Source1Weapon ent )
-	{
-		if ( ActiveChild == ent ) return false;
-		if ( ent.Parent != this ) return false;
-
-		ActiveChild = ent;
 		return true;
 	}
 
@@ -64,7 +87,7 @@ partial class Source1Player
 	public void SwitchToWeapon( Source1Weapon weapon )
 	{
 		Host.AssertClient();
-		ForcedWeapon = weapon;
+		// ForcedWeapon = weapon;
 	}
 
 	public virtual void DeleteChildren()

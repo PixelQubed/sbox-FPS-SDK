@@ -7,7 +7,6 @@ public partial class Source1GameMovement : PawnController
 {
 	Source1Player Player { get; set; }
 	protected float MaxSpeed { get; set; }
-	protected float FallVelocity { get; set; }
 
 	/// <summary>
 	/// Forward direction of the player's movement.
@@ -109,7 +108,7 @@ public partial class Source1GameMovement : PawnController
 		// If we are not on ground, store how fast we are moving down
 		if ( IsInAir )
 		{
-			FallVelocity = -Velocity.z;
+			Player.FallVelocity = -Velocity.z;
 		}
 
 		SimulateDucking();

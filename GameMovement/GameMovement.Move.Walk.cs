@@ -1,5 +1,4 @@
 ﻿using Sandbox;
-using System;
 
 namespace Amper.Source1;
 
@@ -72,16 +71,16 @@ public partial class Source1GameMovement
 
 	public void CheckFalling()
 	{
-		if ( IsInAir || FallVelocity <= 0 || IsDead )
+		if ( IsInAir || Player.FallVelocity <= 0 || IsDead )
 			return;
 
 		// let any subclasses know that the player has landed and how hard
-		OnLand( FallVelocity );
+		OnLand( Player.FallVelocity );
 
 		//
 		// Clear the fall velocity so the impact doesn't happen again.
 		//
-		FallVelocity = 0;
+		Player.FallVelocity = 0;
 	}
 
 	public virtual void OnLand( float velocity ) 
