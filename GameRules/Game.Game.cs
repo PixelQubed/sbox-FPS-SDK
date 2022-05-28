@@ -1,7 +1,7 @@
 using Sandbox;
 using System.Collections.Generic;
 
-namespace Source1;
+namespace Amper.Source1;
 
 partial class GameRules
 {

@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Source1;
+namespace Amper.Source1;
 
 /// <summary>
 /// This entity should be simulated if its a child of a pawn even if its not active

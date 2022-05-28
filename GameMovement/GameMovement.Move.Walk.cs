@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Source1;
+namespace Amper.Source1;
 
 public partial class Source1GameMovement
 {

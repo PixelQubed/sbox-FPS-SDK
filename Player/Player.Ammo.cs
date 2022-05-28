@@ -2,7 +2,7 @@ using Sandbox;
 using System;
 using System.Collections.Generic;
 
-namespace Source1;
+namespace Amper.Source1;
 
 partial class Source1Player
 {

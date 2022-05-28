@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Source1;
+namespace Amper.Source1;
 
 public partial class SpawnPoint : Entity
 {

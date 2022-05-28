@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Source1;
+namespace Amper.Source1;
 
 partial class Source1Player
 {

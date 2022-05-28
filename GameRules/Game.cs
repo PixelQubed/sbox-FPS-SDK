@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 
-namespace Source1;
+namespace Amper.Source1;
 
 public partial class GameRules : Game
 {

@@ -1,11 +1,20 @@
 using Sandbox;
 using System.Linq;
 
-namespace Source1;
+namespace Amper.Source1;
 
-public partial class Source1Player : Player
+[Title( "Player" ), Icon( "emoji_people" )]
+public partial class Source1Player : AnimatedEntity
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
+
+	[Net] public PawnController Controller { get; set; }
+	[Net] public PawnAnimator Animator { get; set; }
+	public CameraMode CameraMode
+	{
+		get => Components.Get<CameraMode>();
+		set => Components.Add( value );
+	}
 
 	[Net] public float FallVelocity { get; set; }
 	[Net] public float SurfaceFriction { get; set; } = 1;
@@ -150,7 +159,7 @@ public partial class Source1Player : Player
 			SimulateObserver();
 
 		ModifyMaxSpeed();
-		GetActiveController()?.Simulate( cl, this, GetActiveAnimator() );
+		Controller?.Simulate( cl, this, Animator );
 
 		SimulateActiveChild( cl, ActiveChild );
 		SimulatePassiveChildren( cl );
@@ -160,6 +169,23 @@ public partial class Source1Player : Player
 
 		SimulateHover();
 		SimulateActiveWeapon();
+	}
+
+	public virtual void SimulateActiveChild( Client cl, Entity child )
+	{
+		if ( LastActiveChild != child )
+		{
+			OnActiveChildChanged( LastActiveChild, child );
+			LastActiveChild = child;
+		}
+
+		if ( !LastActiveChild.IsValid() )
+			return;
+
+		if ( LastActiveChild.IsAuthority )
+		{
+			LastActiveChild.Simulate( cl );
+		}
 	}
 
 	public void ModifyMaxSpeed()

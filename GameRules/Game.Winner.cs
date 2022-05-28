@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace Source1;
+namespace Amper.Source1;
 
 partial class GameRules
 {

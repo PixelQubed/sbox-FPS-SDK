@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Source1;
+namespace Amper.Source1;
 
 /// <summary>
 /// Asset used to override game specific foosteps, needs to be one per game.

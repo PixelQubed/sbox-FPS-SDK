@@ -1,6 +1,6 @@
 using Sandbox;
 
-namespace Source1;
+namespace Amper.Source1;
 
 public partial class Source1ViewModel : BaseViewModel
 {

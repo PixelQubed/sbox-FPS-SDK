@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Source1;
+namespace Amper.Source1;
 
 [UseTemplate]
 public class FreezeCameraPanel : Panel
