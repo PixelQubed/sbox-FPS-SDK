@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Amper.Source1;
 
@@ -45,8 +46,8 @@ partial class Source1Player
 	/// </summary>
 	public virtual void OnActiveWeaponChanged( Source1Weapon previous, Source1Weapon next )
 	{
-		previous?.ActiveEnd( this, previous.Owner != this );
-		next?.ActiveStart( this );
+		previous?.OnHolster( this );
+		next?.OnDeploy( this );
 	}
 
 	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
@@ -66,7 +67,7 @@ partial class Source1Player
 
 		weapon.Parent = this;
 		weapon.Owner = this;
-		weapon.OnCarryStart( this );
+		weapon.OnEquip( this );
 
 		if ( makeActive )
 			ActiveWeapon = weapon;
@@ -109,5 +110,35 @@ partial class Source1Player
 
 			child.Delete();
 		}
+	}
+
+	[Net] IList<Source1ViewModel> ViewModels { get; set; }
+
+	public Source1ViewModel GetViewModel( int index = 0 )
+	{
+		if ( index < ViewModels.Count )
+		{
+			if ( ViewModels[index] != null ) 
+				return ViewModels[index];
+		}
+
+		var i = ViewModels.Count;
+		while ( i <= index )
+		{
+			ViewModels.Add( null );
+			i++;
+		}
+
+		ViewModels[index] = CreateViewModel();
+		return ViewModels[index];
+	}
+
+	public virtual Source1ViewModel CreateViewModel()
+	{
+		return new Source1ViewModel
+		{
+			Position = Position,
+			Owner = Owner
+		};
 	}
 }
