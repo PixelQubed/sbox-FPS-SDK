@@ -38,6 +38,8 @@ partial class Source1Player : ITeam
 			StartObserverMode( LastObserverMode );
 		}
 
+		AttemptRespawn();
+
 		GameRules.Current.PlayerChangeTeam( this, team );
 	}
 }
