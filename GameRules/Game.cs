@@ -71,23 +71,6 @@ public partial class GameRules : Game
 		CreateStandardEntities();
 	}
 
-	public virtual float GetPlayerFallDamage( Source1Player player, float velocity )
-	{
-		var damage = velocity - player.MaxSafeFallSpeed;
-		return damage * player.DamageForFallSpeed;
-	}
-
-	public virtual float GetGravityMultiplier() => 1;
-	public virtual float GetDamageMultiplier() => 1;
-	public virtual bool AllowThirdPersonCamera() => false;
-	public virtual void RadiusDamage( DamageInfo info, Vector3 src, float radius, Entity ignore ) { }
-
-	/// <summary>
-	/// Can this player respawn right now?
-	/// </summary>
-	/// <param name="player"></param>
-	public virtual bool CanPlayerRespawn( Source1Player player ) => true;
-
 	/// <summary>
 	/// Amount of seconds until this player is able to respawn.
 	/// </summary>
@@ -183,19 +166,6 @@ public partial class GameRules : Game
 		player.Tags.Remove( PlayerTags.Noclipped );
 		player.MoveType = MoveType.MOVETYPE_WALK;
 		Log.Info( $"noclip OFF for {client}" );
-	}
-
-	public override void DoPlayerSuicide( Client cl )
-	{
-		var player = cl.Pawn as Source1Player;
-		if ( player == null ) return;
-
-		player.CommitSuicide( false, false );
-	}
-
-	public virtual bool CanPlayerTakeDamage( Source1Player player, Entity attacker, DamageInfo info )
-	{
-		return true;
 	}
 
 	public virtual float DamageForce( Vector3 size, float damage, float scale )

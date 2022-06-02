@@ -1,4 +1,5 @@
 using Sandbox;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Amper.Source1;
@@ -6,6 +7,7 @@ namespace Amper.Source1;
 [Title( "Player" ), Icon( "emoji_people" )]
 public partial class Source1Player : AnimatedEntity
 {
+	public new static List<Source1Player> All { get; set; }
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
 	[Net] public PawnController Controller { get; set; }
@@ -25,6 +27,11 @@ public partial class Source1Player : AnimatedEntity
 	// Client needs to be aware about these things.
 	[Net] public new Entity LastAttacker { get; set; }
 	[Net] public new Entity LastAttackerWeapon { get; set; }
+
+	public Source1Player()
+	{
+		All.Add( this );
+	}
 
 	public override void Spawn()
 	{
@@ -273,20 +280,24 @@ public partial class Source1Player : AnimatedEntity
 		return true;
 	}
 
-	public virtual void CommitSuicide( bool explode = false, bool force = false )
+	public virtual void CommitSuicide( bool explode = false )
 	{
 		if ( !IsAlive )
 			return;
 
 		Health = 1;
-		var damage = DamageFlags.Generic;
+		var flags = DamageFlags.Generic;
 
-		if ( explode ) damage |= DamageFlags.Blast | DamageFlags.AlwaysGib;
-		else damage |= DamageFlags.DoNotGib;
+		if ( explode )
+		{
+			// If we set to explode ourselves, gib!
+			flags |= DamageFlags.Blast;
+		}
 
-		var info = DamageInfo.Generic( 1 )
+		var info = DamageInfo.Generic( 1000 )
 			.WithAttacker( this )
-			.WithFlag( damage );
+			.WithPosition( Position )
+			.WithFlag( flags );
 
 		TakeDamage( info );
 	}
@@ -323,6 +334,28 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		Animator?.BuildInput( input );
+	}
+
+	public virtual void AttemptRespawn()
+	{
+		// See if we're allowed to respawn right now.
+		if ( !GameRules.Current.AreRespawnsAllowed() )
+			return;
+
+		// team is not allowed to respawn right now.
+		if ( !GameRules.Current.CanTeamRespawn( TeamNumber ) )
+			return;
+
+		// can the player respawn right now.
+		if ( !GameRules.Current.CanPlayerRespawn( this ) )
+			return;
+
+		Respawn();
+	}
+
+	~Source1Player()
+	{
+		All.Remove( this );
 	}
 }
 

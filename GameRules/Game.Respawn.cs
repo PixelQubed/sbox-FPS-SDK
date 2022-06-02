@@ -100,7 +100,7 @@ partial class GameRules
 				var point = points[index];
 				if ( point.CanSpawn( player ) )
 				{
-					// this point can spawn us! see if 
+					// this point can spawn us!
 
 					// remember it for the future, if it's the first one we found.
 					if ( firstEligiblePoint == null )
