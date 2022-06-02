@@ -7,7 +7,6 @@ namespace Amper.Source1;
 [Title( "Player" ), Icon( "emoji_people" )]
 public partial class Source1Player : AnimatedEntity
 {
-	public new static List<Source1Player> All { get; set; }
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
 	[Net] public PawnController Controller { get; set; }
@@ -28,15 +27,9 @@ public partial class Source1Player : AnimatedEntity
 	[Net] public new Entity LastAttacker { get; set; }
 	[Net] public new Entity LastAttackerWeapon { get; set; }
 
-	public Source1Player()
-	{
-		All.Add( this );
-	}
-
 	public override void Spawn()
 	{
 		base.Spawn();
-		EnableLagCompensation = true;
 
 		Controller = new Source1GameMovement();
 		Animator = new StandardPlayerAnimator();
@@ -64,6 +57,7 @@ public partial class Source1Player : AnimatedEntity
 		Health = GetMaxHealth();
 		MaxHealth = Health;
 		TimeSinceRespawned = 0;
+		EnableLagCompensation = true;
 
 		LastAttacker = null;
 		LastAttackerWeapon = null;
@@ -351,11 +345,6 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		Respawn();
-	}
-
-	~Source1Player()
-	{
-		All.Remove( this );
 	}
 }
 
