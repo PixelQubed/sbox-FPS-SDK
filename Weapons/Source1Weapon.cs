@@ -9,21 +9,54 @@ public partial class Source1Weapon : AnimatedEntity
 		return true;
 	}
 
-	/// <summary>
-	/// This weapon performs a primary attack.
-	/// </summary>
-	public override void PrimaryAttack()
+	public override void Simulate( Client cl )
 	{
-		TimeSincePrimaryAttack = 0;
-		StopReload();
+		if ( WishSecondaryAttack() && CanSecondaryAttack() )
+		{
+			SecondaryAttack();
+		}
 
-		CalculateIsAttackCritical();
-		PlayShootSound();
+		if ( WishPrimaryAttack() && CanPrimaryAttack() )
+		{
+			PrimaryAttack();
+		}
 
-		DoPlayerModelAnimation();
-		DoViewModelAnimation();
+		if ( WishReload() && CanReload() )
+		{
 
-		// We want to attack, this will make us wait attackdelay time before we perform an attack.
-		WantsToAttack = true;
+		}
+	}
+
+	public virtual void PrimaryAttack()
+	{
+	}
+
+	public virtual void SecondaryAttack()
+	{
+	}
+
+	public virtual bool WishPrimaryAttack() => Input.Down( InputButton.PrimaryAttack );
+	public virtual bool WishSecondaryAttack() => Input.Down( InputButton.SecondaryAttack );
+	public virtual bool WishReload() => Input.Down( InputButton.Reload );
+
+
+	public virtual bool CanPrimaryAttack() => NextPrimaryAttack <= Time.Now;
+	public virtual bool CanSecondaryAttack() => NextSecondaryAttack <= Time.Now;
+
+	public virtual bool CanReload()
+	{
+		return CanPrimaryAttack() && !IsReloading;
+	}
+
+	public int AmmoType { get; set; }
+	public int Clip { get; set; }
+
+	public virtual bool HasAmmo()
+	{
+		// Weapon doesn't use any ammo.
+		if ( AmmoType <= 0 )
+			return true;
+
+		return Clip > 0;
 	}
 }

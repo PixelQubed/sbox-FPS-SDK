@@ -228,41 +228,18 @@ public class WeaponData : GameResource
 	/// Creates an instance of this weapon.
 	/// </summary>
 	/// <returns></returns>
-	public TFWeaponBase CreateInstance()
+	public Source1Weapon CreateInstance()
 	{
 		if ( string.IsNullOrEmpty( ClassName ) )
 			return null;
 
-		var type = TypeLibrary.GetTypeByName<TFWeaponBase>( ClassName );
+		var type = TypeLibrary.GetTypeByName<Source1Weapon>( ClassName );
 		if ( type == null )
 			return null;
 
-		var weapon = TypeLibrary.Create<TFWeaponBase>( ClassName );
+		var weapon = TypeLibrary.Create<Source1Weapon>( ClassName );
 		weapon.Initialize( this );
 
 		return weapon;
 	}
-
-	public bool CanBeOwnedByPlayerClass( PlayerClass pclass )
-	{
-		return Owners.Select( x => x.GetData() ).Contains( pclass );
-	}
-
-	public bool TryGetOwnerDataForPlayerClass( PlayerClass pclass, out OwnerData data )
-	{
-		data = default;
-
-		if ( !CanBeOwnedByPlayerClass( pclass ) )
-			return false;
-
-		data = Owners.FirstOrDefault( x => x.GetData() == pclass );
-		return true;
-	}
-}
-
-public enum ViewModelModeChoices
-{
-	ParentWeaponToHands,
-	ParentHandsToWeapon,
-	WeaponOnly
 }
