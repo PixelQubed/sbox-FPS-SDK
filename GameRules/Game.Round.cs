@@ -14,7 +14,8 @@ partial class GameRules
 	/// </summary>
 	public void RestartRound()
 	{
-		if ( !IsServer ) return;
+		if ( !IsServer ) 
+			return;
 
 		IsWaitingForPlayers = false;
 
@@ -43,18 +44,6 @@ partial class GameRules
 	public virtual void CalculateObjectives() { }
 	public virtual void ResetObjectives() { }
 
-	public virtual bool IsEnoughPlayersToStartRound()
-	{
-		foreach ( var pair in TeamManager.Teams )
-		{
-			// not enough members in one team
-			if ( !IsEnoughPlayersInTeamToStartRound( pair.Key ) )
-				return false;
-		}
-		return true;
-	}
-
-	public virtual bool IsEnoughPlayersInTeamToStartRound( int team ) { return true; }
 
 	[ConCmd.Admin( "mp_restartround" )]
 	public static void Command_RestartRound()
