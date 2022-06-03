@@ -23,6 +23,8 @@ partial class Source1GameMovement
 
 	public virtual void SimulateDucking()
 	{
+		return;
+
 		if ( WishDuck() )
 		{
 			OnDucking();

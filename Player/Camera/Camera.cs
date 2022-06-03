@@ -58,9 +58,6 @@ partial class Source1Camera : CameraMode
 		}
 
 		CalculateFieldOfView( player );
-
-		if ( LerpEnabled )
-			CalculateLerp();
 	}
 
 	public void CalculateLerp()

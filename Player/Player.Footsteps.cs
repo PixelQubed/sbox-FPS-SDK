@@ -80,7 +80,7 @@ partial class Source1Player
 		if ( string.IsNullOrWhiteSpace( sound ) )
 			return;
 
-		Sound.FromWorld( sound, origin ).SetVolume( volume );
+		Sound.FromEntity( sound, this ).SetVolume( volume );
 	}
 
 	[ConVar.Server] public static bool sv_debug_footstep_surfaces { get; set; }

@@ -21,9 +21,23 @@ partial class GameRules
 			return;
 
 		var player = client.Pawn as Source1Player;
-		if ( player == null ) 
+		if ( player == null )
 			return;
 
 		player.CommitSuicide( explode: true );
+	}
+
+	[ConCmd.Admin( "respawn" )]
+	public static void Command_Respawn()
+	{
+		var client = ConsoleSystem.Caller;
+		if ( client == null )
+			return;
+
+		var player = client.Pawn as Source1Player;
+		if ( player == null )
+			return;
+
+		player.Respawn();
 	}
 }

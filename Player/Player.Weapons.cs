@@ -7,10 +7,8 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	[Net, Predicted] 
-	public Source1Weapon ActiveWeapon { get; set; }
-	[Predicted]
-	Source1Weapon LastWeapon { get; set; }
+	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
+	[Predicted] Source1Weapon LastWeapon { get; set; }
 
 	public Source1Weapon PreviousWeapon { get; set; }
 
@@ -91,18 +89,14 @@ partial class Source1Player
 		// ForcedWeapon = weapon;
 	}
 
-	public virtual void DeleteChildren()
+	public virtual void DeleteAllWeapons()
 	{
 		Ammo.Clear();
 
-		// At this point even if entities are deleted next tick, we still own them on this one.
-		// Manually go through every children and set their parent to null.
-
-		int count = Children.Count;
-		for ( int i = count - 1; i >= 0; i-- )
+		var weapons = Children.OfType<Source1Weapon>().ToArray();
+		foreach ( var child in weapons )
 		{
-			var child = Children[i];
-			if ( child == null || !child.IsValid ) 
+			if ( !child.IsValid() ) 
 				continue;
 
 			child.Parent = null;
@@ -112,10 +106,13 @@ partial class Source1Player
 		}
 	}
 
-	[Net] IList<Source1ViewModel> ViewModels { get; set; }
+	public List<ViewModel> ViewModels { get; set; } = new();
 
-	public Source1ViewModel GetViewModel( int index = 0 )
+	public ViewModel GetViewModel( int index = 0 )
 	{
+		if ( !IsClient )
+			return null;
+
 		if ( index < ViewModels.Count )
 		{
 			if ( ViewModels[index] != null ) 
@@ -129,16 +126,19 @@ partial class Source1Player
 			i++;
 		}
 
-		ViewModels[index] = CreateViewModel();
-		return ViewModels[index];
+		var vm = CreateViewModel();
+		vm.Position = Position;
+		vm.Owner = this;
+		vm.Parent = this;
+
+		ViewModels[index] = vm;
+		return vm;
 	}
 
-	public virtual Source1ViewModel CreateViewModel()
-	{
-		return new Source1ViewModel
-		{
-			Position = Position,
-			Owner = Owner
-		};
-	}
+	public virtual ViewModel CreateViewModel() => new ViewModel();
+
+	/// <summary>
+	/// Can this player attack using their weapons?
+	/// </summary>
+	public virtual bool CanAttack() => true;
 }

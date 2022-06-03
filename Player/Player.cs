@@ -17,10 +17,10 @@ public partial class Source1Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
-	[Net] public float SurfaceFriction { get; set; } = 1;
+	public float SurfaceFriction { get; set; } = 1;
 
-	[Net] public float MaxSpeed { get; set; }
-	[Net] public float MaxHealth { get; set; }
+	public float MaxSpeed { get; set; }
+	public float MaxHealth { get; set; }
 
 	// These are from Entity, but they're not networked by default.
 	// Client needs to be aware about these things.
@@ -118,7 +118,7 @@ public partial class Source1Player : AnimatedEntity
 
 	public override void OnKilled()
 	{
-		DeleteChildren();
+		DeleteAllWeapons();
 
 		UseAnimGraph = false;
 		EnableAllCollisions = false;
@@ -345,6 +345,16 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		Respawn();
+	}
+
+	protected override void OnAnimGraphTag( string tag, AnimGraphTagEvent fireMode )
+	{
+		ActiveWeapon?.OnPlayerAnimGraphTag( tag, fireMode );
+	}
+
+	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
+	{
+		ActiveWeapon?.OnPlayerAnimEventGeneric( name, intData, floatData, vectorData, stringData );
 	}
 }
 

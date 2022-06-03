@@ -67,14 +67,19 @@ partial class GameRules
 	/// </summary>
 	public virtual bool CanPlayerTakeDamage( Source1Player player, Entity attacker, DamageInfo info )
 	{
+		return CanTeamEntityDamageOther( attacker, player );
+	}
+
+	public virtual bool CanTeamEntityDamageOther( Entity attacker, Entity victim )
+	{
 		// Attacker can always damage themselves.
-		if ( attacker == player )
+		if ( attacker == victim )
 			return true;
 
 		// If friendly fire is turned off, then we can't damage teammates.
 		if ( !mp_friendly_fire )
 		{
-			if ( ITeam.IsSame( player, attacker ) )
+			if ( ITeam.IsSame( victim, attacker ) )
 				return false;
 		}
 
@@ -176,5 +181,10 @@ partial class GameRules
 
 	public virtual float GetGravityMultiplier() => 1;
 	public virtual bool AllowThirdPersonCamera() => false;
+
+	/// <summary>
+	/// Can all players use weapons?
+	/// </summary>
+	public virtual bool CanWeaponsAttack() => true;
 
 }
