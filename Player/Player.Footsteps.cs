@@ -99,6 +99,7 @@ partial class Source1Player
 		if ( !FootstepData.GetSoundsForSurface( surface, out var sounds ) )
 			return;
 
+
 		var right = NextFootRight;
 		var soundname = right ? sounds.FootRight : sounds.FootLeft;
 		NextFootRight = !NextFootRight;

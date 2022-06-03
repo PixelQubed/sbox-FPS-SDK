@@ -17,7 +17,7 @@ partial class Source1Weapon
 	//
 	public virtual int AmmoPerShot => 1;
 	public virtual int BulletsPerShot => 1;
-	public virtual float Damage => 1;
+	public virtual float GetDamage() => 1;
 	public virtual int TracerFrequency => 1;
 	public virtual int Range => 4096;
 	public virtual float GetBulletSpread() => 0;

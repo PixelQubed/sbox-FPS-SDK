@@ -60,7 +60,7 @@ partial class Source1Weapon
 
 		for ( var i = 0; i < BulletsPerShot; i++ )
 		{
-			FireBullet( Damage, i );
+			FireBullet( GetDamage(), i );
 		}
 
 		DoMuzzleFlash();
@@ -230,7 +230,6 @@ partial class Source1Weapon
 		var target = origin + direction * Range;
 		var tr = SetupFireBulletTrace( origin, target ).Run();
 
-		/*
 		if ( sv_debug_hitscan_hits )
 		{
 			DebugOverlay.Line( tr.StartPosition, tr.EndPosition, IsServer ? Color.Yellow : Color.Green, 5f, true );
@@ -241,10 +240,12 @@ partial class Source1Weapon
 				$"HitBox: {tr.HitboxIndex}",
 				tr.EndPosition,
 				5f );
-		}*/
+		}
 
 		return tr;
 	}
+
+	[ConVar.Replicated] public static bool sv_debug_hitscan_hits { get; set; }
 
 	protected virtual Trace SetupFireBulletTrace( Vector3 Origin, Vector3 Target )
 	{
@@ -289,7 +290,7 @@ partial class Source1Weapon
 		var dir = GetAttackDirection();
 
 		var spread = GetBulletSpread();
-		dir += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * .25f;
+		dir += Vector3.Random * spread * .15f;
 
 		return dir;
 	}
