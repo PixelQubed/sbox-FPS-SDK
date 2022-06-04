@@ -104,7 +104,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 	public virtual void ClearViewModel()
 	{
-		GetViewModelEntity()?.ClearWeapon();
+		GetViewModelEntity()?.ClearWeapon( this );
 	}
 
 	public virtual ViewModel GetViewModelEntity()

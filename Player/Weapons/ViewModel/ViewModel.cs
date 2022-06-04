@@ -29,7 +29,7 @@ public partial class ViewModel : BaseViewModel
 
 	public virtual void SetWeaponModel( string viewmodel, Source1Weapon weapon )
 	{
-		ClearWeapon();
+		ClearWeapon( weapon );
 
 		SetModel( viewmodel );
 		Weapon = weapon;
@@ -40,8 +40,11 @@ public partial class ViewModel : BaseViewModel
 		SetupAttachments();
 	}
 
-	public virtual void ClearWeapon()
+	public virtual void ClearWeapon( Source1Weapon weapon )
 	{
+		if ( Weapon != weapon )
+			return;
+
 		ClearAttachments();
 
 		Model = null;
