@@ -11,6 +11,17 @@ partial class Source1Weapon
 
 	public virtual bool WishReload() => Input.Down( InputButton.Reload );
 
+	public virtual void SimulateReload()
+	{
+		// Player has requested a reload.
+		if ( WishReload() || ShouldAutoReload() )
+			Reload();
+
+		// We're in the process of reloading.
+		if ( IsReloading )
+			ContinueReload();
+	}
+
 	/// <summary>
 	/// Starts reloading.
 	/// </summary>
@@ -37,7 +48,7 @@ partial class Source1Weapon
 		NextReloadCycleTime = Time.Now + GetReloadStartTime();
 	}
 
-	public virtual void SimulateReload()
+	public virtual void ContinueReload()
 	{
 		if ( !CanReload() )
 		{
@@ -53,7 +64,7 @@ partial class Source1Weapon
 		if ( NextReloadCycleTime <= Time.Now )
 		{
 			// If we have made a full reload cycle, then add clip to the magazine
-			if ( FullReloadCycle ) 
+			if ( FullReloadCycle )
 				ReloadRefillClip();
 
 			// If we still can reload, start a new cycle.

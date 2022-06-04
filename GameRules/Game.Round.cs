@@ -45,7 +45,7 @@ partial class GameRules
 	public virtual void ResetObjectives() { }
 
 
-	[ConCmd.Admin( "mp_restartround" )]
+	[ConCmd.Server( "mp_restartround" )]
 	public static void Command_RestartRound()
 	{
 		Current?.RestartRound();

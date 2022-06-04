@@ -82,11 +82,12 @@ partial class Source1Camera : CameraMode
 			Viewer = null;
 
 			LerpEnabled = false;
-			Position -= Rotation.Forward * 64;
+			Position -= Rotation.Forward * cl_thirdperson_distance;
 		}
 	}
 
 	[ConVar.Client] public static bool cl_thirdperson { get; set; }
+	[ConVar.Client] public static float cl_thirdperson_distance { get; set; } = 120;
 
 	public virtual void CalculateObserverView( Source1Player player )
 	{

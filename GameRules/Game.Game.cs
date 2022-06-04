@@ -17,7 +17,7 @@ partial class GameRules
 		RestartRound();
 	}
 
-	[ConCmd.Admin( "mp_restartgame" )]
+	[ConCmd.Server( "mp_restartgame" )]
 	public static void Command_RestartGame()
 	{
 		Current?.RestartGame();

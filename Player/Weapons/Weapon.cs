@@ -27,24 +27,17 @@ public partial class Source1Weapon : AnimatedEntity
 
 	public override void Simulate( Client cl )
 	{
-		//
-		// Reload
-		//
+		SimulateReload();
+		SimulateAttack();
+	}
 
-		// Player has requested a reload.
-		if ( WishReload() || ShouldAutoReload() )
-			Reload();
-
-		// We're in the process of reloading.
-		if ( IsReloading ) 
-			SimulateReload();
-
-		//
-		// Attacks
-		//
-
-		if ( WishPrimaryAttack() )
-			SimulatePrimaryAttack();
+	/// <summary>
+	/// This simulates weapon's attack abilities.
+	/// </summary>
+	public virtual void SimulateAttack()
+	{
+		SimulatePrimaryAttack();
+		SimulateSecondaryAttack();
 	}
 
 	public virtual bool ShouldAutoReload()
