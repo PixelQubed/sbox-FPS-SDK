@@ -8,23 +8,22 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
-	[Predicted] Source1Weapon LastWeapon { get; set; }
-
-	public Source1Weapon PreviousWeapon { get; set; }
+	[Net, Predicted] public Source1Weapon PreviousWeapon { get; set; }
+	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
 
 	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
 	{
-		if ( LastWeapon != weapon )
+		if ( LastActiveWeapon != weapon )
 		{
-			OnActiveWeaponChanged( LastWeapon, weapon );
-			LastWeapon = weapon;
+			OnActiveWeaponChanged( LastActiveWeapon, weapon );
+			LastActiveWeapon = weapon;
 		}
 
-		if ( !LastWeapon.IsValid() )
+		if ( !LastActiveWeapon.IsValid() )
 			return;
 
-		if ( LastWeapon.IsAuthority )
-			LastWeapon.Simulate( cl );
+		if ( LastActiveWeapon.IsAuthority )
+			LastActiveWeapon.Simulate( cl );
 	}
 
 	public virtual void SimulateWeaponSwitch()
@@ -46,6 +45,8 @@ partial class Source1Player
 	{
 		previous?.OnHolster( this );
 		next?.OnDeploy( this );
+
+		PreviousWeapon = previous;
 	}
 
 	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
@@ -76,17 +77,6 @@ partial class Source1Player
 	public virtual bool IsEquipped( Source1Weapon weapon )
 	{
 		return Children.Contains( weapon );
-	}
-
-	/// <summary>
-	/// Force client to switch to a specific weapon.
-	/// </summary>
-	/// <param name="weapon"></param>
-	[ClientRpc]
-	public void SwitchToWeapon( Source1Weapon weapon )
-	{
-		Host.AssertClient();
-		// ForcedWeapon = weapon;
 	}
 
 	public virtual void DeleteAllWeapons()
@@ -141,4 +131,20 @@ partial class Source1Player
 	/// Can this player attack using their weapons?
 	/// </summary>
 	public virtual bool CanAttack() => true;
+
+	Source1Weapon ForcedWeapon { get; set; }
+
+	[ClientRpc]
+	public void SwitchToWeapon( Source1Weapon weapon )
+	{
+		ForcedWeapon = weapon;
+	}
+
+	public virtual void SwitchToPreviousWeapon()
+	{
+		if ( PreviousWeapon == null )
+			return;
+
+		SwitchToWeapon( PreviousWeapon );
+	}
 }

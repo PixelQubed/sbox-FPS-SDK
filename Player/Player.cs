@@ -328,6 +328,13 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		Animator?.BuildInput( input );
+
+		// We were forced to switch to this weapon.
+		if ( ForcedWeapon != null )
+		{
+			input.ActiveChild = ForcedWeapon;
+			ForcedWeapon = null;
+		}
 	}
 
 	public virtual void AttemptRespawn()
