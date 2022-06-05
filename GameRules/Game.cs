@@ -15,13 +15,17 @@ public partial class GameRules : Game
 	public override void Spawn()
 	{
 		base.Spawn();
+
 		DeclareGameTeams();
+		SetupServerVariables();
 	}
 
 	public override void ClientSpawn()
 	{
 		base.ClientSpawn();
+
 		DeclareGameTeams();
+		SetupClientVariables();
 	}
 
 	public virtual void DeclareGameTeams()
@@ -64,6 +68,9 @@ public partial class GameRules : Game
 			client.Pawn = null;
 		}
 	}
+
+	public virtual void SetupServerVariables() { }
+	public virtual void SetupClientVariables() { }
 
 	public override void PostLevelLoaded()
 	{

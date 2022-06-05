@@ -135,6 +135,11 @@ public partial class Timer : Entity
 		return TimeSpan.FromSeconds( GetRemainingTime() ).ToString( @"mm\:ss" );
 	}
 
+	public bool IsElapsed()
+	{
+		return GetRemainingTime() == 0;
+	}
+
 	int lastSecond = -1;
 
 	[Event.Tick.Server]

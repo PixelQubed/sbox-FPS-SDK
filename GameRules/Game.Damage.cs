@@ -89,7 +89,7 @@ public struct RadiusDamageInfo
 		adjustedInfo.Damage = adjustedDamage;
 
 		var dir = (eyePos - dmgPos).Normal;
-		adjustedInfo.Force = GetDamageForceFromDirection( adjustedDamage, dir );
+		adjustedInfo.Force = GameRules.Current.CalculateForceFromDamage( dir, adjustedDamage );
 
 		entity.TakeDamage( adjustedInfo );
 
@@ -103,31 +103,6 @@ public struct RadiusDamageInfo
 				$"{distance / radius * 100}%"
 			, entity.Position, 5 );
 		}
-	}
-
-	/// <summary>
-	/// Damage cannot generate force greater than what we need to push a 75kg object for 400 HU/seconds
-	/// </summary>
-	public const float DamageForceLimit = 75 * 400;
-
-	/// <summary>
-	/// Amount of force per point of damage. Large enough to push a 75kg object for 4 units per point of damage.
-	/// </summary>
-	public const float DamageForcePerPoint = 75 * 4;
-
-	public Vector3 GetDamageForceFromDirection( float damage, Vector3 direction )
-	{
-		var force = Math.Min( damage * DamageForcePerPoint, DamageForceLimit );
-		force *= GameRules.sv_damageforce_scale;
-
-		// Fudge blast forces a little bit, so that each
-		// victim gets a slightly different trajectory. 
-		// This simulates features that usually vary from
-		// person-to-person variables such as bodyweight,
-		// which are all indentical for characters using the same model.
-		force *= Rand.Float( 0.85f, 1.15f );
-
-		return direction.Normal * force;
 	}
 
 	public void DebugDrawRadius()
@@ -178,6 +153,18 @@ partial class GameRules
 				info.ApplyToEntity( entity );
 			}
 		}
+	}
+
+	/// <summary>
+	/// Calculates how much force the attack will inflict, based on the amount of damage.
+	/// </summary>
+	public virtual Vector3 CalculateForceFromDamage( Vector3 direction, float damage, float scale = 1 )
+	{
+		var force = direction.Normal;
+		force *= damage;
+		force *= scale;
+		force *= sv_damageforce_scale;
+		return force;
 	}
 
 	[ConVar.Replicated] public static bool sv_debug_draw_radius_damage { get; set; }

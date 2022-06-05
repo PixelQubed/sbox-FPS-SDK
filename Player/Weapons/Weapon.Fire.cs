@@ -24,7 +24,7 @@ partial class Source1Weapon
 		return DamageInfo.Generic( damage )
 			.UsingTraceResult( tr )
 			.WithFlag( DefaultDamageFlags )
-			.WithForce( CalculateDamageForce( tr.Direction, damage ) )
+			.WithForce( GameRules.Current.CalculateForceFromDamage( tr.Direction, damage ) )
 			.WithAttacker( Owner )
 			.WithPosition( Owner.EyePosition )
 			.WithWeapon( this );
@@ -61,18 +61,6 @@ partial class Source1Weapon
 		entity.TakeDamage( info );
 
 		return tr;
-	}
-
-	/// <summary>
-	/// Calculates how much force the attack will inflict, based on the amount of damage.
-	/// </summary>
-	public virtual Vector3 CalculateDamageForce( Vector3 direction, float damage, float scale = 1 )
-	{
-		var force = direction.Normal;
-		force *= damage;
-		force *= scale;
-		force *= GameRules.sv_damageforce_scale;
-		return force;
 	}
 
 	//
