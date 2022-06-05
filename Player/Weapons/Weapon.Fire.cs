@@ -105,7 +105,7 @@ partial class Source1Weapon
 		Vector3 origin = GetAttackOrigin();
 		Vector3 direction = GetAttackSpreadDirection();
 
-		var target = origin + direction * Range;
+		var target = origin + direction * GetRange();
 
 		using ( LagCompensation() )
 		{
