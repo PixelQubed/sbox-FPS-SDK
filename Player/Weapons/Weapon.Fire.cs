@@ -95,7 +95,13 @@ partial class Source1Weapon
 
 	public virtual void OnHitEntity( Entity entity, TraceResult tr )
 	{
+		// hack to play particle at HitPosition.
+		var endPos = tr.EndPosition;
+		tr.EndPosition = tr.HitPosition;
+
 		tr.Surface.DoBulletImpact( tr );
+
+		tr.EndPosition = endPos;
 	}
 
 	public virtual TraceResult TraceFireBullet( int seedOffset = 0 )

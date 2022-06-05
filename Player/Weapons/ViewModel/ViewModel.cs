@@ -22,6 +22,7 @@ public partial class ViewModel : BaseViewModel
 
 		if ( visible )
 			CalculateView( camSetup );
+
 	}
 
 	public virtual bool ShouldDraw() => true;
@@ -37,7 +38,10 @@ public partial class ViewModel : BaseViewModel
 
 	public override void OnNewModel( Model model )
 	{
-		SetupAttachments();
+		ClearAttachments();
+
+		if ( Model != null )
+			SetupAttachments();
 	}
 
 	public virtual void ClearWeapon( Source1Weapon weapon )

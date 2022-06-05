@@ -54,8 +54,12 @@ partial class Source1Weapon
 		DoViewModelAnimation();
 
 		// Drain ammo.
+
 		if ( NeedsAmmo() )
-			Clip -= AmmoPerShot;
+		{
+			if( !sv_infinite_ammo )
+				Clip -= AmmoPerShot;
+		}
 
 		for ( var i = 0; i < BulletsPerShot; i++ )
 		{
@@ -67,6 +71,8 @@ partial class Source1Weapon
 
 		CalculateNextAttackTime( GetAttackTime() );
 	}
+
+	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
 
 	public virtual void PlayShootSound() { }
 }
