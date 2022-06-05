@@ -21,48 +21,32 @@ partial class GameRules
 		// trying to land the player on the ground
 		var origin = spawnPoint.Position;
 
-		var extents = player.GetPlayerExtentsScaled( false );
-		var offset = Vector3.Up * (extents.z / 2);
-		var center = origin + offset;
+		var up = origin + Vector3.Up * 64;
+		var down = origin + Vector3.Down * 64;
 
-		var up = center + Vector3.Up * 64;
-		var down = center + Vector3.Down * 64;
-
-		// DebugOverlay.Sphere( center, 10, Color.Red, false, 5 );
+		var controller = player.Controller as Source1GameMovement;
+		if ( controller == null )
+			return true;
 
 		// 
 		// Land the player on the ground
 		//
 
 		// Trace down so maybe we can find a spot to land on.
-		var tr = Trace.Ray( up, down )
-			.Size( extents )
-			.HitLayer( CollisionLayer.Solid, true )
-			.WithoutTags( "player", "projectile" )
-			.Run();
-
-		// DebugOverlay.Sphere( tr.EndPosition, 10, Color.Yellow, false, 5 );
+		var tr = controller.SetupBBoxTrace( up, down ).Run();
 
 		// we landed on something, update our transform position.
 		if ( tr.Hit )
 		{
-			transform.Position = tr.EndPosition - offset;
-			center = tr.EndPosition;
+			transform.Position = tr.EndPosition;
+			origin = tr.EndPosition;
 		}
 
 		// 
 		// Check if nothing occupies our spawn space.
 		//
 
-		// TODO:
-		// use gamemovement trace builder?
-
-		tr = Trace.Ray( center, center )
-			.Size( extents )
-			.HitLayer( CollisionLayer.Solid, true )
-			.WithoutTags( "projectile" )
-			.Run();
-
+		tr = controller.SetupBBoxTrace( origin, origin ).Run();
 		return !tr.Hit;
 	}
 
