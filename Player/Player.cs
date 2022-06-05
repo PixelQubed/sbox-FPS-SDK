@@ -225,47 +225,17 @@ public partial class Source1Player : AnimatedEntity
 		}
 	}
 
-	public override void TakeDamage( DamageInfo info )
-	{
-		TimeSinceTakeDamage = 0;
-		LastDamageInfo = info;
-
-		// We need to punch our view a little bit.
-		var maxPunch = 5;
-		var maxDamage = 100;
-		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		PunchViewAngles( -punchAngle, 0, 0 );
-
-		// flinch the model.
-		SetAnimParameter( "b_flinch", true );
-
-		// Let gamerules know about this.
-		GameRules.Current.PlayerHurt( this, info );
-
-		// moved this up from entity class to not call procedural hit react from base
-		// also we're no longer capped at 0 HP min.
-		LastAttacker = info.Attacker;
-		LastAttackerWeapon = info.Weapon;
-
-		if ( IsServer && Health > 0f && LifeState == LifeState.Alive )
-		{
-			Health -= info.Damage;
-			if ( Health <= 0f )
-			{
-				OnKilled();
-			}
-		}
-	}
 
 	public virtual bool IsReadyToPlay() => TeamManager.IsPlayable( TeamNumber );
 
-	[ConVar.Replicated] public static bool mp_player_freeze_on_round_start { get; set; } = true;
+	[ConVar.Replicated] public static bool mp_freeze_on_round_start { get; set; } = true;
+
 	public virtual bool CanMove()
 	{
 		if ( GameRules.Current.IsWaitingForPlayers )
 			return true;
 
-		if ( mp_player_freeze_on_round_start )
+		if ( mp_freeze_on_round_start )
 		{
 			if ( GameRules.Current.IsRoundStarting )
 				return false;

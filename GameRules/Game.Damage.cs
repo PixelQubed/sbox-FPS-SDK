@@ -23,24 +23,7 @@ public struct RadiusDamageInfo
 		Ignore = ignore;
 		AttackerRadius = attackerRadius;
 		Target = target;
-		Falloff = 0;
-
-		CalculateFalloff();
-	}
-
-	public void CalculateFalloff()
-	{
-		Falloff = 0.5f;
-
-		// The code below exists in TF2, but isn't used for anything important.
-		// If we ever need to use it it's here, but for now it's commented.
-
-		/*
-		if ( Radius > 0 )
-			Falloff = Info.Damage / Radius;
-		else
-			Falloff = 1;
-		*/
+		Falloff = GameRules.Current.GetRadiusDamageFalloff();
 	}
 
 	public void ApplyToEntity( Entity entity )
@@ -51,17 +34,6 @@ public struct RadiusDamageInfo
 
 		var player = entity as Source1Player;
 		var victimIsPlayer = player != null;
-
-		//
-		// Check if we can damage this entity.
-		//
-
-		if ( victimIsPlayer )
-		{
-			// Game says we can't damage this player.
-			if ( !GameRules.Current.CanPlayerTakeDamage( player, DamageInfo.Attacker, DamageInfo ) )
-				return;
-		}
 
 		//
 		// Check line of sight between explosion and the entity.
@@ -149,6 +121,7 @@ public struct RadiusDamageInfo
 	public Vector3 GetDamageForceFromDirection( float damage, Vector3 direction )
 	{
 		var force = Math.Min( damage * DamageForcePerPoint, DamageForceLimit );
+		force *= GameRules.sv_damageforce_scale;
 
 		// Fudge blast forces a little bit, so that each
 		// victim gets a slightly different trajectory. 

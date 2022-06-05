@@ -53,6 +53,7 @@ partial class GameRules
 	#endregion
 
 	#region Damage
+
 	/// <summary>
 	/// How much damage we should take for landing with this amount of velocity.
 	/// </summary>
@@ -62,16 +63,16 @@ partial class GameRules
 		return damage * player.DamageForFallSpeed;
 	}
 
-	/// <summary>
-	/// Is player allowed to take this kind of damage from the given attacker?
-	/// </summary>
-	public virtual bool CanPlayerTakeDamage( Source1Player player, Entity attacker, DamageInfo info )
+	public virtual bool CanEntityTakeDamage( Entity victim, Entity attacker, DamageInfo info )
 	{
-		return CanTeamEntityDamageOther( attacker, player );
-	}
+		// Dead things can't take damage.
+		if ( victim.LifeState != LifeState.Alive )
+			return false;
 
-	public virtual bool CanTeamEntityDamageOther( Entity attacker, Entity victim )
-	{
+		// We dealt no damage, ignore it.
+		if ( info.Damage <= 0 )
+			return false;
+
 		// Attacker can always damage themselves.
 		if ( attacker == victim )
 			return true;
@@ -86,7 +87,7 @@ partial class GameRules
 		return true;
 	}
 
-	[ConVar.Replicated] public static bool mp_friendly_fire { get; set; } = false;
+	[ConVar.Replicated] public static bool mp_friendly_fire { get; set; }
 
 	/// <summary>
 	/// Global damage multiplicator.

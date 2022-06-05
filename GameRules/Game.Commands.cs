@@ -40,4 +40,6 @@ partial class GameRules
 
 		player.Respawn();
 	}
+
+	[ConVar.Server] public static float sv_damageforce_scale = 1;
 }

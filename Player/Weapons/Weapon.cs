@@ -135,13 +135,6 @@ public partial class Source1Weapon : AnimatedEntity
 	public virtual bool HasAmmo() => Clip > 0 || !NeedsAmmo();
 	public virtual bool NeedsAmmo() => true;
 
-	public virtual AnimatedEntity GetEffectEntity()
-	{
-		return IsLocalPawn && IsFirstPersonMode
-			? Player?.GetViewModel( ViewModelIndex )
-			: this;
-	}
-
 	protected override void OnDestroy()
 	{
 		ClearViewModel();
