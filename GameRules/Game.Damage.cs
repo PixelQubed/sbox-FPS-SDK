@@ -32,9 +32,6 @@ public struct RadiusDamageInfo
 		if ( entity == Ignore )
 			return;
 
-		var player = entity as Source1Player;
-		var victimIsPlayer = player != null;
-
 		//
 		// Check line of sight between explosion and the entity.
 		//
