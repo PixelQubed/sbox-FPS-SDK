@@ -10,7 +10,7 @@ partial class Source1Player
 	public virtual void OnLanded( float velocity )
 	{
 		TakeFallDamage( velocity );
-		RoughLandingEffects( velocity );
+		LandingEffects( velocity );
 	}
 
 	public virtual void TakeFallDamage( float velocity )
@@ -35,7 +35,7 @@ partial class Source1Player
 	public virtual float MaxSafeFallSpeed => 580;
 	public virtual float DamageForFallSpeed => 100 / (FatalFallSpeed - MaxSafeFallSpeed);
 
-	public virtual void RoughLandingEffects( float velocity )
+	public virtual void LandingEffects( float velocity )
 	{
 		if ( velocity <= 0 )
 			return;
