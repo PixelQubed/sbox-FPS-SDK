@@ -32,8 +32,11 @@ partial class GameRules
 		// Land the player on the ground
 		//
 
+		var mins = player.GetPlayerMinsScaled( false );
+		var maxs = player.GetPlayerMaxsScaled( false );
+
 		// Trace down so maybe we can find a spot to land on.
-		var tr = controller.SetupBBoxTrace( up, down ).Run();
+		var tr = controller.SetupBBoxTrace( up, down, mins, maxs ).Run();
 
 		// we landed on something, update our transform position.
 		if ( tr.Hit )
@@ -46,7 +49,7 @@ partial class GameRules
 		// Check if nothing occupies our spawn space.
 		//
 
-		tr = controller.SetupBBoxTrace( origin, origin ).Run();
+		tr = controller.SetupBBoxTrace( origin, origin, mins, maxs ).Run();
 		return !tr.Hit;
 	}
 

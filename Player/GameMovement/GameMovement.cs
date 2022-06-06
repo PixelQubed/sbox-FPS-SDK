@@ -566,6 +566,7 @@ public partial class Source1GameMovement : PawnController
 				$"MoveType              {Player.MoveType}\n" +
 				$"Speed                 {Velocity.Length}\n" +
 				$"MaxSpeed              {MaxSpeed}\n" +
+				$"Fall Velocity         {Player.FallVelocity}\n" +
 				$"\n" +
 
 				$"[DUCKING]\n" +

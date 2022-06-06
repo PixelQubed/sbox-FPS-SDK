@@ -6,6 +6,8 @@ namespace Amper.Source1;
 public partial class ViewModel : BaseViewModel
 {
 	public Source1Weapon Weapon { get; set; }
+	public Vector3? MuzzleOrigin { get; private set; }
+	public virtual string MuzzleAttachment => "muzzle";
 
 	public override void Spawn()
 	{
@@ -23,6 +25,16 @@ public partial class ViewModel : BaseViewModel
 		if ( visible )
 			CalculateView( camSetup );
 
+		UpdateMuzzleOrigin();
+	}
+
+	public void UpdateMuzzleOrigin()
+	{
+		MuzzleOrigin = null;
+
+		var muzzle = GetAttachment( MuzzleAttachment );
+		if ( muzzle.HasValue )
+			MuzzleOrigin = muzzle.Value.Position;
 	}
 
 	public virtual bool ShouldDraw() => true;

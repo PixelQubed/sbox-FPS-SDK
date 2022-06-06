@@ -39,12 +39,24 @@ partial class Source1Weapon
 		if ( attachEnt == null )
 			return;
 
-		// Find the muzzle attachment on the model.
-		var muzzle = attachEnt.GetAttachment( "muzzle" );
-		if ( !muzzle.HasValue )
-			return;
+		var startPos = Vector3.Zero;
+		if ( attachEnt is ViewModel vm )
+		{
+			if ( !vm.MuzzleOrigin.HasValue )
+				return;
 
-		var startPos = muzzle.Value.Position;
+			startPos = vm.MuzzleOrigin.Value;
+		}
+		else
+		{
+			// Find the muzzle attachment on the model.
+			var muzzle = attachEnt.GetAttachment( "muzzle" );
+			if ( !muzzle.HasValue )
+				return;
+
+			startPos = muzzle.Value.Position;
+		}
+
 		var endPos = tr.EndPosition;
 
 		Vector3 toEnd = endPos - startPos;
@@ -56,6 +68,8 @@ partial class Source1Weapon
 		tracer.SetPosition( 0, startPos );
 		tracer.SetPosition( 1, endPos );
 		tracer.SetForward( 0, forward );
+
+	//	DebugOverlay.Line( startPos, endPos, Color.Cyan, 1, false );
 	}
 
 	public virtual string GetParticleTracerEffect() => "";
