@@ -150,7 +150,8 @@ public partial class Source1GameMovement : PawnController
 	}
 
 	Vector3 LastEyeLocalPosition { get; set; }
-	[ConVar.Client] public static float cl_viewoffset_lerp_speed { get; set; } = 5;
+	[ConVar.Client] public static float cl_viewoffset_lerp_speed { get; set; } = 15;
+
 	public void SmoothLocalViewOffset()
 	{
 		var newEyePos = EyeLocalPosition;

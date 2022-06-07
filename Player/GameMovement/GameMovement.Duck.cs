@@ -1,5 +1,4 @@
 ﻿using Sandbox;
-using System;
 
 namespace Amper.Source1;
 
@@ -31,7 +30,7 @@ partial class Source1GameMovement
 		if ( !CanDuck() )
 			return;
 
-		DuckTime = DuckTime.Approach( TimeToDuck, Time.Delta * GetDuckSpeed() );
+		DuckTime = DuckTime.Approach( TimeToDuck, Time.Delta );
 
 		if ( Player.IsDucked )
 			return;
@@ -45,7 +44,7 @@ partial class Source1GameMovement
 		if ( !CanUnduck() )
 			return;
 
-		DuckTime = DuckTime.Approach( 0, Time.Delta * GetDuckSpeed() );
+		DuckTime = DuckTime.Approach( 0, Time.Delta );
 
 		if ( !Player.IsDucked )
 			return;
@@ -53,8 +52,6 @@ partial class Source1GameMovement
 		if ( DuckTime <= 0 || IsInAir )
 			FinishUnDuck();
 	}
-
-	public virtual float GetDuckSpeed() => 1;
 
 	public virtual void FinishDuck()
 	{
