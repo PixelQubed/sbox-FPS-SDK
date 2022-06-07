@@ -576,7 +576,10 @@ public partial class Source1GameMovement : PawnController
 
 				$"[DUCKING]\n" +
 				$"IsDucked              {IsDucked}\n" +
-				$"DuckTime              {DuckProgress}\n" +
+				$"IsDucking             {IsDucking}\n" +
+				$"DuckStartTime         {DuckStartTime}\n" +
+				$"DuckDuration          {DuckDuration}\n" +
+				$"Duck Time			    {Math.Clamp((Time.Now - DuckStartTime) / TimeToDuck,0,1)}\n" +
 				$"\n" +
 
 				$"[OBSERVER]\n" +

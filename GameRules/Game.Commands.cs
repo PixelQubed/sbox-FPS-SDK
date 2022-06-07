@@ -13,6 +13,32 @@ partial class GameRules
 		player.CommitSuicide( explode: false );
 	}
 
+	[ConCmd.Server( "noclip", Help = "Spontaneous combustion!" )]
+	public static void Command_Noclip()
+	{
+		var client = ConsoleSystem.Caller;
+		if ( client == null )
+			return;
+
+		var player = client.Pawn as Source1Player;
+		if ( player == null ) 
+			return;
+
+		// If player is not in noclip, enable it.
+		if ( player.MoveType != MoveType.MOVETYPE_NOCLIP )
+		{
+			player.SetParent( null );
+			player.MoveType = MoveType.MOVETYPE_NOCLIP;
+			player.Tags.Add( PlayerTags.Noclipped );
+			Log.Info( $"noclip ON for {client.Name}" );
+			return;
+		}
+
+		player.Tags.Remove( PlayerTags.Noclipped );
+		player.MoveType = MoveType.MOVETYPE_WALK;
+		Log.Info( $"noclip OFF for {client.Name}" );
+	}
+
 	[ConCmd.Server( "explode", Help = "Spontaneous combustion!" )]
 	public static void Command_Explode()
 	{

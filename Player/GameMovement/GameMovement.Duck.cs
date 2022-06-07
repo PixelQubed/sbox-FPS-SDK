@@ -10,11 +10,15 @@ partial class Source1GameMovement
 	/// Is the player currently fully ducked? This is what defines whether we apply duck slow down or not.
 	/// </summary>
 	public virtual bool IsDucked => Player.Tags.Has( PlayerTags.Ducked );
-	public virtual bool IsDucking => DuckAmount > 0;
+	// public virtual bool IsDucking => DuckAmount > 0;
 	public virtual float TimeToDuck => .2f;
 	public virtual float DuckProgress => DuckAmount / TimeToDuck;
 
 	public float DuckAmount { get; set; }
+
+	float DuckStartTime { get; set; }
+	float DuckDuration { get; set; }
+	bool IsDucking { get; set; }
 
 	public virtual bool WishDuck()
 	{
@@ -45,18 +49,9 @@ partial class Source1GameMovement
 		if ( !CanDuck() )
 			return;
 
-		if ( !IsDucked && DuckAmount >= TimeToDuck || IsInAir ) 
-		{
-			FinishDuck();
-		}
+		if ( !IsDucking )
+			StartDucking();
 
-		if ( DuckAmount < TimeToDuck )
-		{
-			DuckAmount += Time.Delta;
-
-			if ( DuckAmount > TimeToDuck ) 
-				DuckAmount = TimeToDuck;
-		}
 	}
 
 	public virtual void OnUnducking()
@@ -64,18 +59,25 @@ partial class Source1GameMovement
 		if ( !CanUnduck() )
 			return;
 
-		if ( IsDucked && DuckAmount == 0 || IsInAir )
-		{
-			FinishUnDuck();
-		}
+		if ( IsDucking )
+			FinishDucking();
+	}
 
-		if ( DuckAmount > 0 )
-		{
-			DuckAmount -= Time.Delta;
+	public void GetDuckProgressTime()
+	{
 
-			if ( DuckAmount < 0 )
-				DuckAmount = 0;
-		}
+	}
+
+	public void StartDucking()
+	{
+		DuckStartTime = Time.Now;
+		IsDucking = true;
+		DuckDuration = TimeToDuck;
+	}
+
+	public void FinishDucking()
+	{
+		IsDucking = false;
 	}
 
 	public virtual void FinishDuck()

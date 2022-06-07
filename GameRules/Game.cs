@@ -152,29 +152,6 @@ public partial class GameRules : Game
 	public virtual bool AreRespawnConditionsMet( Source1Player player ) => true;
 	public bool HasPlayers() => All.OfType<Source1Player>().Any( x => x.IsReadyToPlay() );
 
-	public override void DoPlayerNoclip( Client client )
-	{
-		if ( !client.HasPermission( "noclip" ) )
-			return;
-
-		var player = client.Pawn as Source1Player;
-		if ( player == null ) return;
-
-		// If player is not in noclip, enable it.
-		if ( player.MoveType != MoveType.MOVETYPE_NOCLIP )
-		{
-			player.SetParent( null );
-			player.MoveType = MoveType.MOVETYPE_NOCLIP;
-			player.Tags.Add( PlayerTags.Noclipped );
-			Log.Info( $"noclip ON for {client}" );
-			return;
-		}
-
-		player.Tags.Remove( PlayerTags.Noclipped );
-		player.MoveType = MoveType.MOVETYPE_WALK;
-		Log.Info( $"noclip OFF for {client}" );
-	}
-
 	public virtual float DamageForce( Vector3 size, float damage, float scale )
 	{
 		float force = damage * ((48 * 48 * 82) / (size.x * size.y * size.z)) * scale;

@@ -78,9 +78,19 @@ partial class Source1Weapon
 	public virtual void ReloadRefillClip()
 	{
 		var neededClips = GetClipsPerReloadCycle();
+
+		// If we have infinite clips, just fulfill our clip count and early out.
+		if( sv_infinite_clips )
+		{
+			Clip = neededClips;
+			return;
+		}
+
 		var addedClips = ConsumeAmmoFromReserve( neededClips );
 		Clip += addedClips;
 	}
+
+	[ConVar.Replicated] public static bool sv_infinite_clips { get; set; }
 
 	public virtual int GetClipsPerReloadCycle()
 	{
