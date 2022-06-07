@@ -74,8 +74,8 @@ partial class Source1Camera : CameraMode
 
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
-		Rotation *= Rotation.From( player.ViewPunchAngle.x, player.ViewPunchAngle.y, player.ViewPunchAngle.z );
-		Position += player.ViewPunchOffset;
+		var punch = player.ViewPunchAngle / 2;
+		Rotation *= Rotation.From( punch.x, punch.y, punch.z );
 
 		if( cl_thirdperson )
 		{

@@ -53,8 +53,7 @@ partial class Source1Player
 		//
 		if ( velocity >= MaxSafeFallSpeed )
 		{
-			var punch = new Vector3( 0, 0, velocity * 0.013f );
-			PunchViewAngles( punch );
+			ViewPunchAngle = new Vector3( 0, 0, velocity * 0.013f );
 		}
 	}
 }

@@ -4,8 +4,8 @@ namespace Amper.Source1;
 
 partial class Source1Weapon
 {
-	[Net, Predicted]
-	public float NextAttackTime { get; set; }
+	[Net, Predicted] public float NextAttackTime { get; set; }
+	[Net, Predicted] public float LastAttackTime { get; set; }
 
 	/// <summary>
 	/// This simulates weapon's secondary attack.
@@ -89,34 +89,41 @@ partial class Source1Weapon
 	/// <summary>
 	/// Return the position in the worldspace, from which the attack is made.
 	/// </summary>
-	/// <returns></returns>
 	public virtual Vector3 GetAttackOrigin()
 	{
-		if ( Owner == null ) return Vector3.Zero;
-		return Owner.EyePosition;
+		if ( Player == null ) 
+			return Vector3.Zero;
+
+		return Player.GetAttackPosition();
 	}
 
 	/// <summary>
 	/// Return the diretion of the attack of this weapon.
 	/// </summary>
-	/// <returns></returns>
-	public virtual Vector3 GetAttackDirection()
+	public virtual Rotation GetAttackRotation()
 	{
-		if ( Owner == null ) return Vector3.Zero;
-		return Owner.EyeRotation.Forward;
+		if ( Player == null )
+			return Rotation.Identity;
+
+		return Player.GetAttackRotation();
 	}
+
+	public virtual Vector3 GetAttackDirection() => GetAttackRotation().Forward;
 
 	/// <summary>
 	/// Return the diretion of the attack of this weapon.
 	/// </summary>
 	/// <returns></returns>
-	public virtual Vector3 GetAttackSpreadDirection()
+	public virtual Vector3 GetAttackDirectionWithSpread( Vector2 spread )
 	{
-		var dir = GetAttackDirection();
+		var rotation = GetAttackRotation();
 
-		var spread = GetBulletSpread();
-		dir += Vector3.Random * spread * .15f;
+		var forward = rotation.Forward;
+		var right = rotation.Right;
+		var up = rotation.Up;
 
+		var dir = forward + spread.x * right + spread.y * up;
+		dir = dir.Normal;
 		return dir;
 	}
 }

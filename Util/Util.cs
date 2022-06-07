@@ -98,4 +98,18 @@ public static partial class Util
 		}
 		return "";
 	}
+
+	/// <summary>
+	/// YRES(y) macro from Source SDK.
+	/// </summary>
+	public static float ResY( this float y ) => y * GameRules.Current.ScreenSize.y / 480;
+	/// <summary>
+	/// XRES(y) macro from Source SDK.
+	/// </summary>
+	public static float ResX( this float x ) => x * GameRules.Current.ScreenSize.x / 640;
+
+	public static int NearestToInt(this float num)
+	{
+		return (int)(num < 0 ? (num - 0.5) : (num + 0.5));
+	}
 }

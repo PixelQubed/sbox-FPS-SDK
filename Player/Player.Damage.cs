@@ -89,7 +89,7 @@ partial class Source1Player
 		var maxPunch = 5;
 		var maxDamage = 100;
 		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		PunchViewAngles( -punchAngle, 0, 0 );
+		// PunchViewAngles( -punchAngle, 0, 0 );
 	}
 
 	/// <summary>

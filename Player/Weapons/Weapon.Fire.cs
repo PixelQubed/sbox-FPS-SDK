@@ -108,8 +108,10 @@ partial class Source1Weapon
 	{
 		Rand.SetSeed( Time.Tick + seedOffset );
 
+		var spread = Vector3.Random.WithZ( 0 ) * GetSpread();
+
 		Vector3 origin = GetAttackOrigin();
-		Vector3 direction = GetAttackSpreadDirection();
+		Vector3 direction = GetAttackDirectionWithSpread( spread );
 
 		var target = origin + direction * GetRange();
 
@@ -137,7 +139,7 @@ partial class Source1Weapon
 	}
 
 	[ConVar.Replicated] public static bool sv_debug_hitscan_hits { get; set; }
-	void DrawDebugTrace( TraceResult tr, float time = 5 )
+	protected void DrawDebugTrace( TraceResult tr, float time = 5 )
 	{
 		DebugOverlay.Line( tr.StartPosition, tr.EndPosition, IsServer ? Color.Yellow : Color.Green, time, true );
 

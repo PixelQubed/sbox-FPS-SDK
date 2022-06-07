@@ -42,6 +42,7 @@ partial class Source1Weapon
 			return;
 		}
 
+		LastAttackTime = Time.Now;
 		FinishReload();
 		Fire();
 	}

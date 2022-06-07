@@ -147,4 +147,13 @@ partial class Source1Player
 
 		SwitchToWeapon( PreviousWeapon );
 	}
+
+	public virtual Vector3 GetAttackPosition() => EyePosition;
+	public virtual Rotation GetAttackRotation()
+	{
+		var eyeAngles = EyeRotation;
+		var punch = ViewPunchAngle;
+		eyeAngles *= Rotation.From( punch.x, punch.y, punch.z );
+		return eyeAngles;
+	}
 }

@@ -90,7 +90,7 @@ partial class Source1Weapon
 		return 1;
 	}
 
-	public void StartReload()
+	public virtual void StartReload()
 	{
 		if ( !CanReload() )
 			return;
@@ -102,7 +102,7 @@ partial class Source1Weapon
 		NextReloadCycleTime = Time.Now + GetReloadStartTime();
 	}
 
-	public void FinishReload()
+	public virtual void FinishReload()
 	{
 		if ( !IsReloading )
 			return;
@@ -111,7 +111,7 @@ partial class Source1Weapon
 		IsReloading = false;
 	}
 
-	public void StartReloadCycle()
+	public virtual void StartReloadCycle()
 	{
 		if ( !IsReloading )
 			return;

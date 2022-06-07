@@ -111,7 +111,7 @@ public partial class Source1GameMovement : PawnController
 			Player.FallVelocity = -Velocity.z;
 		}
 
-		SimulateDucking();
+		SimulateModifiers();
 		UpdateViewOffset();
 		Player.SimulateFootsteps( Position, Velocity );
 
@@ -147,6 +147,11 @@ public partial class Source1GameMovement : PawnController
 				FullObserverMove();
 				break;
 		}
+	}
+
+	public virtual void SimulateModifiers()
+	{
+		SimulateDucking();
 	}
 
 	public virtual void UpdateViewOffset()

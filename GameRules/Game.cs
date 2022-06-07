@@ -176,12 +176,37 @@ public partial class GameRules : Game
 	}
 
 	public virtual float DamageForce( Vector3 size, float damage, float scale )
-	{ 
+	{
 		float force = damage * ((48 * 48 * 82) / (size.x * size.y * size.z)) * scale;
 
 		if ( force > 1000 ) 
 			force = 1000;
 
 		return force;
+	}
+
+	public Vector2 ScreenSize { get; private set; }
+	public override void RenderHud()
+	{
+		base.RenderHud();
+
+		var player = Local.Pawn as Source1Player;
+		if ( player == null )
+			return;
+
+		//
+		// scale the screen using a matrix, so the scale math doesn't invade everywhere
+		// (other than having to pass the new scale around)
+		//
+
+		var scale = Screen.Height / 1080.0f;
+		var screenSize = Screen.Size / scale;
+		var matrix = Matrix.CreateScale( scale );
+		ScreenSize = screenSize;
+
+		using ( Render.Draw2D.MatrixScope( matrix ) )
+		{
+			player.RenderHud( screenSize );
+		}
 	}
 }

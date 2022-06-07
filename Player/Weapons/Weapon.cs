@@ -29,6 +29,9 @@ public partial class Source1Weapon : AnimatedEntity
 	{
 		SimulateReload();
 		SimulateAttack();
+
+		if ( sv_debug_weapons && IsLocalPawn )
+			DebugScreenText( Time.Delta );
 	}
 
 	/// <summary>
@@ -144,17 +147,24 @@ public partial class Source1Weapon : AnimatedEntity
 	/// <summary>
 	/// An anim tag has been fired from the viewmodel.
 	/// </summary>
-	public virtual void OnViewModelAnimGraphTag( string tag, AnimGraphTagEvent type )
-	{
-	}
+	public virtual void OnViewModelAnimGraphTag( string tag, AnimGraphTagEvent type ) { }
 
 	/// <summary>
 	/// An anim tag has been fired from the viewmodel.
 	/// </summary>
-	public virtual void OnPlayerAnimGraphTag( string tag, AnimGraphTagEvent type )
-	{
-	}
+	public virtual void OnPlayerAnimGraphTag( string tag, AnimGraphTagEvent type ) { }
 
 	public virtual void OnViewModelAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData ) { }
 	public virtual void OnPlayerAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData ) { }
+
+	public virtual void RenderHud( Vector2 screenSize ) 
+	{
+		var center = screenSize * .5f;
+		DrawCrosshair( screenSize, center );
+	}
+
+	public virtual void DrawCrosshair( Vector2 screenSize, Vector2 center ) { }
+
+	protected virtual void DebugScreenText( float interval ) { }
+	[ConVar.Replicated] public static bool sv_debug_weapons { get; set; }
 }

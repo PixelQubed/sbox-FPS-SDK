@@ -20,7 +20,7 @@ partial class Source1Weapon
 	public virtual float GetDamage() => 1;
 	public virtual int GetTracerFrequency() => 1;
 	public virtual int GetRange() => 4096;
-	public virtual float GetBulletSpread() => 0;
+	public virtual float GetSpread() => 0;
 	public virtual int GetClipSize() => 1;
 	public virtual bool IsReloadingEntireClip() => false;
 }

@@ -1,57 +1,42 @@
 using Sandbox;
+using System;
 
 namespace Amper.Source1;
 
 partial class Source1Player
 {
-	protected Vector3 WishViewPunchAngle { get; set; }
-	public Vector3 ViewPunchAngle { get; private set; }
-
-	protected Vector3 WishViewPunchOffset { get; set; }
-	public Vector3 ViewPunchOffset { get; private set; }
-
-	public void PunchViewAngles( Vector3 dir ) => PunchViewAngles( dir.x, dir.y, dir.z );
-	public void PunchViewOffset( Vector3 dir ) => PunchViewOffset( dir.x, dir.y, dir.z );
-
-	[ClientRpc]
-	public virtual void PunchViewAngles( float x, float y, float z )
-	{
-		WishViewPunchAngle += new Vector3( x, y, z );
-	}
-
-
-	[ClientRpc]
-	public virtual void PunchViewOffset( float x, float y, float z )
-	{
-		WishViewPunchOffset += new Vector3( x, y, z );
-	}
-
-	[ClientRpc]
-	public void PunchViewOffsetClient( float x, float y, float z ) 
-	{
-		PunchViewOffset( x, y, z ); 
-	}
+	[Net, Predicted] public Vector3 ViewPunchAngle { get;  set; }
+	[Net, Predicted] public Vector3 ViewPunchAngleVelocity { get;  set; }
 
 	public virtual void SimulateVisuals()
 	{
-		if ( IsClient ) 
-			DecayViewPunch();
+		DecayViewModificators();
 	}
 
-	public void DecayViewPunch()
+	public virtual void DecayViewModificators()
 	{
-		//
-		// View Punch Angle
-		//
+		var angles = ViewPunchAngle;
+		DecayAngles( ref angles, sv_view_punch_decay, 0, Time.Delta );
+		ViewPunchAngle = angles;
+	}
 
-		WishViewPunchAngle = WishViewPunchAngle.LerpTo( 0, Time.Delta * 5f );
-		ViewPunchAngle = ViewPunchAngle.LerpTo( WishViewPunchAngle, Time.Delta * 10f );
+	[ConVar.Replicated] public static float sv_view_punch_decay { get; set; } = 18f;
 
-		//
-		// View Punch Offset
-		//
+	public void DecayAngles( ref Vector3 angle, float exp, float lin, float time )
+	{
+		exp *= time;
+		lin *= time;
 
-		WishViewPunchOffset = WishViewPunchOffset.LerpTo( 0, Time.Delta * 5f );
-		ViewPunchOffset = ViewPunchOffset.LerpTo( WishViewPunchOffset, Time.Delta * 10f );
+		angle *= MathF.Exp( -exp );
+
+		var mag = angle.Length;
+		if ( mag > lin )
+		{
+			angle *= (1 - lin / mag);
+		}
+		else
+		{
+			angle = 0;
+		}
 	}
 }

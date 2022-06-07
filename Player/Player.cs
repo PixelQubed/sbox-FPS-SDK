@@ -333,6 +333,11 @@ public partial class Source1Player : AnimatedEntity
 	{
 		ActiveWeapon?.OnPlayerAnimEventGeneric( name, intData, floatData, vectorData, stringData );
 	}
+
+	public virtual void RenderHud( Vector2 screenSize )
+	{
+		ActiveWeapon?.RenderHud( screenSize );
+	}
 }
 
 public static class PlayerTags
