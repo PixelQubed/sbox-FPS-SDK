@@ -82,7 +82,7 @@ partial class Source1Weapon
 		// If we have infinite clips, just fulfill our clip count and early out.
 		if( sv_infinite_clips )
 		{
-			Clip = neededClips;
+			Clip += neededClips;
 			return;
 		}
 
