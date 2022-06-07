@@ -27,6 +27,29 @@ partial class GameRules
 		player.CommitSuicide( explode: true );
 	}
 
+	[ConCmd.Admin( "god" )]
+	public static void Command_God()
+	{
+		var client = ConsoleSystem.Caller;
+		if ( client == null )
+			return;
+
+		var player = client.Pawn as Source1Player;
+		if ( player == null )
+			return;
+
+		if ( player.IsInGodMode )
+		{
+			player.Tags.Remove( PlayerTags.GodMode );
+			Log.Info( $"Disabled god for {client.Name}" );
+		}
+		else
+		{
+			player.Tags.Add( PlayerTags.GodMode );
+			Log.Info( $"Enabled god for {client.Name}" );
+		}
+	}
+
 	[ConCmd.Admin( "respawn" )]
 	public static void Command_Respawn()
 	{
