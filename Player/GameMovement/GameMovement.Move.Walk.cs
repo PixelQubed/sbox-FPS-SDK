@@ -122,6 +122,15 @@ public partial class Source1GameMovement
 
 		Velocity = Velocity.WithZ( 0 );
 		Accelerate( wishdir, wishspeed, acceleration );
+
+		// Clamp the players speed in x,y.
+		float flNewSpeed = Velocity.Length;
+		if ( flNewSpeed > MaxSpeed )
+		{
+			float flScale = MaxSpeed / flNewSpeed;
+			Velocity = Velocity.WithX( Velocity.x * flScale ).WithY( Velocity.y * flScale );
+		}
+
 		Velocity = Velocity.WithZ( 0 );
 
 		Velocity += BaseVelocity;

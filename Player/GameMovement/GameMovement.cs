@@ -149,6 +149,17 @@ public partial class Source1GameMovement : PawnController
 		}
 	}
 
+	Vector3 LastEyeLocalPosition { get; set; }
+	[ConVar.Client] public static float cl_viewoffset_lerp_speed { get; set; } = 5;
+	public void SmoothLocalViewOffset()
+	{
+		var newEyePos = EyeLocalPosition;
+		var oldEyePos = LastEyeLocalPosition;
+
+		EyeLocalPosition = oldEyePos.LerpTo( newEyePos, Time.Delta * cl_viewoffset_lerp_speed );
+		LastEyeLocalPosition = EyeLocalPosition;
+	}
+
 	public virtual void SimulateModifiers()
 	{
 		SimulateDucking();
@@ -161,6 +172,8 @@ public partial class Source1GameMovement : PawnController
 
 		// this updates z offset.
 		SetDuckedEyeOffset( Easing.QuadraticInOut( DuckProgress ) );
+
+		SmoothLocalViewOffset();
 	}
 
 	public virtual void SetDuckedEyeOffset( float duckFraction )
@@ -575,11 +588,9 @@ public partial class Source1GameMovement : PawnController
 				$"\n" +
 
 				$"[DUCKING]\n" +
-				$"IsDucked              {IsDucked}\n" +
+				$"IsDucked              {Player.IsDucked}\n" +
 				$"IsDucking             {IsDucking}\n" +
-				$"DuckStartTime         {DuckStartTime}\n" +
-				$"DuckDuration          {DuckDuration}\n" +
-				$"Duck Time			    {Math.Clamp((Time.Now - DuckStartTime) / TimeToDuck,0,1)}\n" +
+				$"DuckTime              {DuckTime}\n" +
 				$"\n" +
 
 				$"[OBSERVER]\n" +

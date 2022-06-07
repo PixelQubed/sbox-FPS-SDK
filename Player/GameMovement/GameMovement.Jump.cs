@@ -17,7 +17,7 @@ public partial class Source1GameMovement
 		if ( IsInAir )
 			return false;
 
-		if ( IsDucked )
+		if ( Player.IsDucked )
 			return false;
 
 		// Yeah why not.
@@ -27,7 +27,6 @@ public partial class Source1GameMovement
 	/// <summary>
 	/// Returns true if we succesfully made a jump.
 	/// </summary>
-	/// <returns></returns>
 	public virtual bool CheckJumpButton()
 	{
 		if ( !CheckWaterJumpButton() )
@@ -55,9 +54,5 @@ public partial class Source1GameMovement
 	}
 
 	public virtual float JumpImpulse => 321;
-
-	public virtual void OnJump( float velocity )
-	{
-
-	}
+	public virtual void OnJump( float velocity ) { }
 }
