@@ -33,10 +33,6 @@ public partial class Source1GameMovement : PawnController
 	/// How much should we move up?
 	/// </summary>
 	protected float UpMove { get; set; }
-	/// <summary>
-	/// Local eye position that is not modified by any of view punches.
-	/// </summary>
-	protected Vector3 PureLocalEyePosition { get; set; }
 
 	public override void FrameSimulate()
 	{
@@ -149,18 +145,6 @@ public partial class Source1GameMovement : PawnController
 		}
 	}
 
-	Vector3 LastEyeLocalPosition { get; set; }
-	[ConVar.Client] public static float cl_viewoffset_lerp_speed { get; set; } = 15;
-
-	public void SmoothLocalViewOffset()
-	{
-		var newEyePos = EyeLocalPosition;
-		var oldEyePos = LastEyeLocalPosition;
-
-		EyeLocalPosition = oldEyePos.LerpTo( newEyePos, Time.Delta * cl_viewoffset_lerp_speed );
-		LastEyeLocalPosition = EyeLocalPosition;
-	}
-
 	public virtual void SimulateModifiers()
 	{
 		SimulateDucking();
@@ -173,8 +157,6 @@ public partial class Source1GameMovement : PawnController
 
 		// this updates z offset.
 		SetDuckedEyeOffset( Easing.QuadraticInOut( DuckProgress ) );
-
-		SmoothLocalViewOffset();
 	}
 
 	public virtual void SetDuckedEyeOffset( float duckFraction )

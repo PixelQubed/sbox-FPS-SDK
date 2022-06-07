@@ -35,6 +35,8 @@ partial class Source1Weapon
 	/// </summary>
 	public virtual void FireBullet( float damage, int seedOffset = 0 )
 	{
+		using var _ = Prediction.Off();
+
 		FireBulletClient( damage, seedOffset );
 		if ( IsServer ) FireBulletServer( damage, seedOffset );
 	}
