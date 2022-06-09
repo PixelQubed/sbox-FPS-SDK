@@ -42,7 +42,7 @@ partial class Source1Player
 		}
 
 		// Make an rpc to do stuff clientside.
-		OnTakeDamageEffects( info.Damage, info.Flags );
+		OnTakeDamageEffects( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
 
 		// Let gamerules know about this.
 		GameRules.Current.PlayerHurt( this, info );
@@ -108,6 +108,5 @@ partial class Source1Player
 		SetAnimParameter( "b_flinch", true );
 	}
 
-	[ClientRpc]
-	public virtual void OnTakeDamageEffects( float damage, DamageFlags flags ) { }
+	[ClientRpc] public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, int bone, Vector3 force ) { }
 }

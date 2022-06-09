@@ -35,8 +35,6 @@ partial class Source1Weapon
 	/// </summary>
 	public virtual void FireBullet( float damage, int seedOffset = 0 )
 	{
-		using var _ = Prediction.Off();
-
 		FireBulletClient( damage, seedOffset );
 		if ( IsServer ) FireBulletServer( damage, seedOffset );
 	}
@@ -129,7 +127,6 @@ partial class Source1Weapon
 	protected virtual Trace SetupFireBulletTrace( Vector3 Origin, Vector3 Target )
 	{
 		var tr = Trace.Ray( Origin, Target )
-			.Size( 2 )
 			.Ignore( this )
 			.Ignore( Owner )
 			.HitLayer( CollisionLayer.Solid )
