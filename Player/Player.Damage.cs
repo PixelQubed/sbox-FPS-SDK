@@ -14,7 +14,6 @@ partial class Source1Player
 		if ( !CanTakeDamage( attacker, info ) ) 
 			return;
 
-
 		// Apply all global damage modifications.
 		GameRules.Current.ApplyOnDamageModifyRules( ref info, this );
 
@@ -42,11 +41,19 @@ partial class Source1Player
 		}
 
 		// Make an rpc to do stuff clientside.
-		OnTakeDamageEffects( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
+		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
 
 		// Let gamerules know about this.
 		GameRules.Current.PlayerHurt( this, info );
 	}
+
+	[ClientRpc]
+	void TakeDamageRPC( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, int hitbox, Vector3 force )
+	{
+		OnTakeDamageEffects( attacker, weapon, damage, flags, position, hitbox, force );
+	}
+
+	public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, int hitbox, Vector3 force ) { }
 
 	public bool PreventDeath( DamageInfo info )
 	{
@@ -59,7 +66,6 @@ partial class Source1Player
 
 		return false;
 	}
-
 
 	/// <summary>
 	/// Check if this player is allowed to take damage from a given attacker.
@@ -108,5 +114,4 @@ partial class Source1Player
 		SetAnimParameter( "b_flinch", true );
 	}
 
-	[ClientRpc] public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, int bone, Vector3 force ) { }
 }
