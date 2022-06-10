@@ -129,16 +129,46 @@ public partial class Source1Weapon : AnimatedEntity
 		SendPlayerAnimParameter( name, value );
 		SendViewModelAnimParameter( name, value );
 	}
-
-	public virtual void SendPlayerAnimParameter( string name, bool value = true )
+	public virtual void SendAnimParameter( string name, int value )
 	{
-		Player?.SetAnimParameter( name, value );
+		SendPlayerAnimParameter( name, value );
+		SendViewModelAnimParameter( name, value );
+	}
+	public virtual void SendAnimParameter( string name, float value )
+	{
+		SendPlayerAnimParameter( name, value );
+		SendViewModelAnimParameter( name, value );
 	}
 
-	public virtual void SendViewModelAnimParameter( string name, bool value = true )
+	public virtual void SendAnimParameter( string name, Vector3 value )
 	{
-		Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+		SendPlayerAnimParameter( name, value );
+		SendViewModelAnimParameter( name, value );
 	}
+	public virtual void SendAnimParameter( string name, Rotation value )
+	{
+		SendPlayerAnimParameter( name, value );
+		SendViewModelAnimParameter( name, value );
+	}
+	public virtual void SendAnimParameter( string name, Transform value )
+	{
+		SendPlayerAnimParameter( name, value );
+		SendViewModelAnimParameter( name, value );
+	}
+
+	public virtual void SendPlayerAnimParameter( string name, bool value = true ) => Player?.SetAnimParameter( name, value );
+	public virtual void SendPlayerAnimParameter( string name, int value ) => Player?.SetAnimParameter( name, value );
+	public virtual void SendPlayerAnimParameter( string name, float value ) => Player?.SetAnimParameter( name, value );
+	public virtual void SendPlayerAnimParameter( string name, Vector3 value ) => Player?.SetAnimParameter( name, value );
+	public virtual void SendPlayerAnimParameter( string name, Rotation value ) => Player?.SetAnimParameter( name, value );
+	public virtual void SendPlayerAnimParameter( string name, Transform value ) => Player?.SetAnimParameter( name, value );
+
+	public virtual void SendViewModelAnimParameter( string name, bool value = true ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	public virtual void SendViewModelAnimParameter( string name, int value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	public virtual void SendViewModelAnimParameter( string name, float value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	public virtual void SendViewModelAnimParameter( string name, Vector3 value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	public virtual void SendViewModelAnimParameter( string name, Rotation value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	public virtual void SendViewModelAnimParameter( string name, Transform value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
 
 	[Net, Predicted] public int Clip { get; set; }
 	public virtual bool HasAmmo() => Clip > 0 || !NeedsAmmo();
