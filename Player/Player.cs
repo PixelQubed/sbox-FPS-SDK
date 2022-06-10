@@ -129,8 +129,18 @@ public partial class Source1Player : AnimatedEntity
 		StopUsing();
 		StartObserverMode( ObserverMode.Deathcam );
 
+		OnKilledRPC();
+
 		GameRules.Current.PlayerDeath( this, LastDamageInfo );
 	}
+
+	[ClientRpc]
+	void OnKilledRPC()
+	{
+		OnKilledEffects();
+	}
+
+	public virtual void OnKilledEffects() { }
 
 	public override void OnNewModel( Model model )
 	{

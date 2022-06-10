@@ -90,11 +90,17 @@ public partial class Source1Weapon : AnimatedEntity
 		NextAttackTime = Time.Now + GetDeployTime();
 
 		SetupViewModel();
+		SetupAnimParameters();
+	}
+
+	public virtual void SetupAnimParameters()
+	{
 		SendAnimParameter( "b_deploy" );
 	}
 
 	public virtual void OnHolster( Source1Player owner )
 	{
+		EnableDrawing = false;
 		NextAttackTime = Time.Now;
 
 		ClearViewModel();
