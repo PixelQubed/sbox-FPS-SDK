@@ -4,20 +4,22 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	public Entity HoveredEntity { get; private set; }
-	public Entity Using { get; protected set; }
+	[Net] public Entity HoveredEntity { get; private set; }
+	[Net] public Entity Using { get; protected set; }
 
 	protected virtual Entity FindHovered()
 	{
-		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * 5000 )
+		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * sv_max_use_distance )
 			.Ignore( this )
 			.HitLayer( CollisionLayer.Solid )
 			.HitLayer( CollisionLayer.Debris )
 			.Run();
 
-		if ( !tr.Entity.IsValid() ) return null;
-		if ( tr.Entity == null ) return null;
-		if ( tr.Entity.IsWorld ) return null;
+		if ( !tr.Entity.IsValid() ) 
+			return null;
+
+		if ( tr.Entity.IsWorld ) 
+			return null;
 
 		return tr.Entity;
 	}
@@ -27,53 +29,44 @@ partial class Source1Player
 		// The entity we're currently looking at.
 		HoveredEntity = FindHovered();
 
-		// Turn prediction off
-		using ( Prediction.Off() )
+		using var _ = Prediction.Off();
+
+		// If we pressed use button.
+		if ( Input.Pressed( InputButton.Use ) )
 		{
-			if ( Input.Pressed( InputButton.Use ) )
+			if ( CanUse( HoveredEntity ) )
 			{
-				if ( CanUse( HoveredEntity ) )
-				{
-					Using = HoveredEntity;
-				}
-				else
-				{
-					UseFail();
-				}
+				// Start using the hovered entity.
+				StartUsing( HoveredEntity );
 			}
-
-			if ( !Input.Down( InputButton.Use ) )
-			{
-				StopUsing();
-				return;
-			}
-
-			if ( !Using.IsValid() )
-				return;
-
-			// If we move too far away or something we should probably ClearUse()?
-
-			//
-			// If use returns true then we can keep using it
-			//
-			if ( Using is IUse use && use.OnUse( this ) )
-				return;
-
-			StopUsing();
 		}
+
+		// If we stopped pressing use key, stop using.
+		if ( !Input.Down( InputButton.Use ) )
+		{
+			StopUsing();
+			return;
+		}
+
+		// We dont have an entity to use.
+		if ( !Using.IsValid() )
+			return;
+
+		if ( !CanContinueUsing( Using ) ) 
+			StopUsing();
 	}
 
-	protected virtual void StopUsing()
+	protected void StopUsing()
 	{
 		Using = null;
 	}
 
-	protected virtual void UseFail()
+	public void StartUsing( Entity entity )
 	{
-		PlaySound( "player_use_fail" );
+		Using = entity;
 	}
 
-	public bool CanUse( Entity entity )
+	public virtual bool CanUse( Entity entity )
 	{
 		if ( entity is not IUse use )
 			return false;
@@ -81,7 +74,18 @@ partial class Source1Player
 		if ( !use.IsUsable( this ) )
 			return false;
 
-		return Vector3.DistanceBetween( entity.Position, Position ) < sv_max_use_distance;
+		return true;
+	}
+
+	public virtual bool CanContinueUsing( Entity entity )
+	{
+		if ( HoveredEntity != entity )
+			return false;
+
+		if ( entity is IUse use && use.OnUse( this ) )
+			return true;
+
+		return false;
 	}
 
 	[ConVar.Replicated] public static float sv_max_use_distance { get; set; } = 100;
