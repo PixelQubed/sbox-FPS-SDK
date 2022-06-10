@@ -57,6 +57,9 @@ public partial class Source1Weapon : AnimatedEntity
 	/// </summary>
 	public virtual void OnEquip( Source1Player owner )
 	{
+		if ( !IsValid )
+			return;
+
 		if ( IsClient )
 			return;
 
@@ -73,6 +76,9 @@ public partial class Source1Weapon : AnimatedEntity
 	/// </summary>
 	public virtual void OnDrop( Source1Player owner )
 	{
+		if ( !IsValid )
+			return;
+
 		if ( IsClient )
 			return;
 
@@ -86,6 +92,9 @@ public partial class Source1Weapon : AnimatedEntity
 
 	public virtual void OnDeploy( Source1Player owner )
 	{
+		if ( !IsValid )
+			return;
+
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();
 
@@ -100,6 +109,9 @@ public partial class Source1Weapon : AnimatedEntity
 
 	public virtual void OnHolster( Source1Player owner )
 	{
+		if ( !IsValid )
+			return;
+
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;
 
