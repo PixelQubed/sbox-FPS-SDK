@@ -4,10 +4,18 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
+	/// <summary>
+	/// This is called before all the calculations are made. Even if the damage doesn't go through!
+	/// </summary>
+	public virtual void OnAttackedBy( Entity attacker, DamageInfo info ) { }
+
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( !IsServer )
 			return;
+
+		// Call pre event hook.
+		OnAttackedBy( info.Attacker, info );
 
 		// Check if player can receive damage from attacker.
 		var attacker = info.Attacker;
@@ -22,7 +30,6 @@ partial class Source1Player
 
 		// Do all the reactions to this damage.
 		OnTakeDamageReaction( info );
-
 
 		// Remember this damage as the one we taken last.
 		// This is NOT networked!
