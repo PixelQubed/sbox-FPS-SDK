@@ -24,6 +24,7 @@ public partial class Source1Weapon : AnimatedEntity
 	}
 
 	public virtual bool CanEquip( Source1Player player ) => true;
+	public virtual bool RemoveOnRoundRestart() => false;
 
 	public override void Simulate( Client cl )
 	{

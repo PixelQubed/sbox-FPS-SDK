@@ -56,5 +56,15 @@ partial class GameRules
 		// reset all the doors to their initial state.
 		var doors = All.OfType<DoorEntity>();
 		foreach ( var door in doors ) door.Reset();
+
+		Map.Reset( MapCleanUpFilter );
+	}
+
+	public virtual bool MapCleanUpFilter( string classname, Entity entity )
+	{
+		if ( entity is Source1Weapon weapon && weapon.RemoveOnRoundRestart() )
+			return true;
+
+		return false;
 	}
 }

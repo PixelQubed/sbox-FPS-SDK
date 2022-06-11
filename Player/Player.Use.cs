@@ -9,7 +9,7 @@ partial class Source1Player
 
 	protected virtual Entity FindHovered()
 	{
-		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * sv_max_use_distance )
+		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * 5000 )
 			.Ignore( this )
 			.HitLayer( CollisionLayer.Solid )
 			.HitLayer( CollisionLayer.Debris )
@@ -72,6 +72,9 @@ partial class Source1Player
 			return false;
 
 		if ( !use.IsUsable( this ) )
+			return false;
+
+		if ( entity.Position.Distance( Position ) > sv_max_use_distance )
 			return false;
 
 		return true;
