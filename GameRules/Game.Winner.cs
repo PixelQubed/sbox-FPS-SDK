@@ -25,19 +25,25 @@ partial class GameRules
 		if ( !Score.ContainsKey( winner ) ) Score[winner] = 0;
 		Score[winner]++;
 
-		PlayTeamWinSong( winner );
+		OnTeamWin( winner );
+
 		// play lose song for all opponents
 		foreach ( var index in TeamManager.Teams.Keys )
 		{
-			if ( index == winner ) continue;
-			if ( TeamManager.IsPlayable( index ) )
-			{
-				PlayTeamLoseSong( index );
-			}
+			if ( index == winner ) 
+				continue;
+
+			if ( !TeamManager.IsPlayable( index ) )
+				return;
+
+			OnTeamLose( index );
 		}
 
 		// TODO: For spectators the sound depends on who the user last spectated.
 	}
+
+	public virtual void OnTeamWin( int team ) { PlayTeamWinSong( team ); }
+	public virtual void OnTeamLose( int team ) { PlayTeamLoseSong( team ); }
 
 	public virtual void PlayTeamWinSong( int team ) { }
 	public virtual void PlayTeamLoseSong( int team ) { }

@@ -156,4 +156,9 @@ partial class Source1Player
 		eyeAngles *= Rotation.From( punch.x, punch.y, punch.z );
 		return eyeAngles;
 	}
+
+	public T GetWeapon<T>() where T : Source1Weapon
+	{
+		return Children.OfType<T>().FirstOrDefault();
+	}
 }

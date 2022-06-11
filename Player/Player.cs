@@ -116,6 +116,16 @@ public partial class Source1Player : AnimatedEntity
 		}
 	}
 
+	public float GetFOV()
+	{
+		var camFov = ((Source1Camera)CameraMode).FieldOfView;
+		if ( camFov > 0 )
+			return camFov;
+
+		// Fallback to 90, this is most likely just bots.
+		return 90;
+	}
+
 	public override void OnKilled()
 	{
 		DeleteAllWeapons();
