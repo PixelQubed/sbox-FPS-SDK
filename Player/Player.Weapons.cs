@@ -7,50 +7,34 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
-	[Net, Predicted] public Source1Weapon PreviousWeapon { get; set; }
+	[Net, Predicted] public Source1Weapon ActiveWeapon { get; private set; }
+	[Net, Predicted] public Source1Weapon LastWeapon { get; set; }
 	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
-
-	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
-	{
-		if ( LastActiveWeapon != weapon )
-		{
-			OnActiveWeaponChanged( LastActiveWeapon, weapon );
-			LastActiveWeapon = weapon;
-		}
-
-		if ( !LastActiveWeapon.IsValid() )
-			return;
-
-		if ( LastActiveWeapon.IsAuthority )
-			LastActiveWeapon.Simulate( cl );
-	}
 
 	public virtual void SimulateWeaponSwitch()
 	{
-		if ( Input.ActiveChild != null )
+		if ( Input.ActiveChild is Source1Weapon weapon ) 
+			SwitchToWeapon( weapon );
+
+		if ( LastActiveWeapon != ActiveWeapon )
 		{
-			var newWeapon = Input.ActiveChild as Source1Weapon;
-			if ( newWeapon != null )
-			{
-				ActiveWeapon = newWeapon;
-			}
-		}
+			OnActiveWeaponChanged( LastActiveWeapon, ActiveWeapon );
+			LastActiveWeapon = ActiveWeapon;
+		} 
 	}
 
-	/// <summary>
-	/// Called when the Active child is detected to have changed
-	/// </summary>
-	public virtual void OnActiveWeaponChanged( Source1Weapon previous, Source1Weapon next )
+	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
 	{
-		previous?.OnHolster( this );
-		next?.OnDeploy( this );
+		if ( !weapon.IsValid() )
+			return;
 
-		PreviousWeapon = previous;
+		if ( !weapon.IsAuthority )
+			return;
+
+		weapon.Simulate( cl );
 	}
 
 	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
-
 	public virtual bool EquipWeapon( Source1Weapon weapon, bool makeActive = false )
 	{
 		Host.AssertServer();
@@ -69,15 +53,12 @@ partial class Source1Player
 		weapon.OnEquip( this );
 
 		if ( makeActive )
-			ActiveWeapon = weapon;
+			SwitchToWeapon( weapon );
 
 		return true;
 	}
 
-	public virtual bool IsEquipped( Source1Weapon weapon )
-	{
-		return Children.Contains( weapon );
-	}
+	public virtual bool IsEquipped( Source1Weapon weapon ) => Children.Contains( weapon );
 
 	public virtual void DeleteAllWeapons()
 	{
@@ -96,6 +77,73 @@ partial class Source1Player
 		}
 	}
 
+	/// <summary>
+	/// Can this player attack using their weapons?
+	/// </summary>
+	public virtual bool CanAttack() => true;
+
+	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
+	{
+		if ( weapon == null )
+			return false;
+
+		// We already have some weapon out.
+		if ( ActiveWeapon.IsValid() )
+		{
+			// We already are using this weapon.
+			if ( ActiveWeapon == weapon )
+				return false;
+
+			// We can't switch from this weapon.
+			if ( !CanSwitchFrom( ActiveWeapon ) )
+				return false;
+		}
+
+		// We can't switch to this weapon.
+		if ( !CanSwitchTo( weapon ) )
+			return false;
+
+		var lastWeapon = ActiveWeapon;
+		ActiveWeapon = weapon;
+
+		if ( rememberLast )
+			LastWeapon = lastWeapon;
+
+		return true;
+	}
+
+	/// <summary>
+	/// Called when the Active child is detected to have changed
+	/// </summary>
+	public virtual void OnActiveWeaponChanged( Source1Weapon previous, Source1Weapon next )
+	{
+		previous?.OnHolster( this );
+		next?.OnDeploy( this );
+	}
+
+	public bool CanSwitchTo( Source1Weapon weapon ) => true;
+	public bool CanSwitchFrom( Source1Weapon weapon ) => true;
+
+	public virtual void SwitchToPreviousWeapon()
+	{
+		if ( !LastWeapon.IsValid() )
+			return;
+
+		SwitchToWeapon( LastWeapon );
+	}
+
+	public virtual Vector3 GetAttackPosition() => EyePosition;
+	public virtual Rotation GetAttackRotation()
+	{
+		var eyeAngles = EyeRotation;
+		var punch = ViewPunchAngle;
+		eyeAngles *= Rotation.From( punch.x, punch.y, punch.z );
+		return eyeAngles;
+	}
+
+	public T GetWeaponOfType<T>() where T : Source1Weapon => Children.OfType<T>().FirstOrDefault();
+	public bool HasWeaponOfType<T>() where T : Source1Weapon => GetWeaponOfType<T>() != null;
+
 	public List<ViewModel> ViewModels { get; set; } = new();
 
 	public ViewModel GetViewModel( int index = 0 )
@@ -105,7 +153,7 @@ partial class Source1Player
 
 		if ( index < ViewModels.Count )
 		{
-			if ( ViewModels[index] != null ) 
+			if ( ViewModels[index] != null )
 				return ViewModels[index];
 		}
 
@@ -126,39 +174,4 @@ partial class Source1Player
 	}
 
 	public virtual ViewModel CreateViewModel() => new ViewModel();
-
-	/// <summary>
-	/// Can this player attack using their weapons?
-	/// </summary>
-	public virtual bool CanAttack() => true;
-
-	Source1Weapon ForcedWeapon { get; set; }
-
-	[ClientRpc]
-	public void SwitchToWeapon( Source1Weapon weapon )
-	{
-		ForcedWeapon = weapon;
-	}
-
-	public virtual void SwitchToPreviousWeapon()
-	{
-		if ( PreviousWeapon == null )
-			return;
-
-		SwitchToWeapon( PreviousWeapon );
-	}
-
-	public virtual Vector3 GetAttackPosition() => EyePosition;
-	public virtual Rotation GetAttackRotation()
-	{
-		var eyeAngles = EyeRotation;
-		var punch = ViewPunchAngle;
-		eyeAngles *= Rotation.From( punch.x, punch.y, punch.z );
-		return eyeAngles;
-	}
-
-	public T GetWeapon<T>() where T : Source1Weapon
-	{
-		return Children.OfType<T>().FirstOrDefault();
-	}
 }
