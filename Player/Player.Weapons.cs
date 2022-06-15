@@ -13,14 +13,13 @@ partial class Source1Player
 
 	public virtual void SimulateWeaponSwitch()
 	{
-		if ( Input.ActiveChild is Source1Weapon weapon ) 
-			SwitchToWeapon( weapon );
-
-		if ( LastActiveWeapon != ActiveWeapon )
+		if ( Input.ActiveChild is Source1Weapon weapon )
 		{
-			OnActiveWeaponChanged( LastActiveWeapon, ActiveWeapon );
-			LastActiveWeapon = ActiveWeapon;
-		} 
+			SwitchToWeapon( weapon );
+			Log.Info( $"{(IsClient ? "CL" : "SV")} Switch: {weapon}" );
+
+			Input.ActiveChild = null;
+		}
 	}
 
 	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
@@ -104,21 +103,15 @@ partial class Source1Player
 			return false;
 
 		var lastWeapon = ActiveWeapon;
+		lastWeapon?.OnHolster( this );
+
 		ActiveWeapon = weapon;
+		ActiveWeapon?.OnDeploy( this );
 
 		if ( rememberLast )
 			LastWeapon = lastWeapon;
 
 		return true;
-	}
-
-	/// <summary>
-	/// Called when the Active child is detected to have changed
-	/// </summary>
-	public virtual void OnActiveWeaponChanged( Source1Weapon previous, Source1Weapon next )
-	{
-		previous?.OnHolster( this );
-		next?.OnDeploy( this );
 	}
 
 	public bool CanSwitchTo( Source1Weapon weapon ) => true;

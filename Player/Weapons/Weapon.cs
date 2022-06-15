@@ -96,6 +96,8 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
+		Log.Info( this + "::OnDeploy()" );
+
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();
 
@@ -112,6 +114,8 @@ public partial class Source1Weapon : AnimatedEntity
 	{
 		if ( !IsValid )
 			return;
+
+		Log.Info( this + "::OnHolster()" );
 
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;

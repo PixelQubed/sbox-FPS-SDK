@@ -7,7 +7,7 @@ partial class Source1GameMovement
 	public virtual bool IsDucking => DuckTime > 0;
 	public virtual float TimeToDuck => .2f;
 	public virtual float DuckProgress => DuckTime / TimeToDuck;
-	public float DuckTime { get; set; }
+	[Net, Predicted] public float DuckTime { get; set; }
 
 	public virtual bool WishDuck() => Input.Down( InputButton.Duck );
 
