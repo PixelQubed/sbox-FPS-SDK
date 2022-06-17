@@ -53,10 +53,17 @@ partial class Source1GameMovement
 			FinishUnDuck();
 	}
 
+	private void DuckLog( string msg )
+	{
+		Log.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {msg}" );
+	}
+
 	public virtual void FinishDuck()
 	{
 		if ( Player.IsDucked ) 
 			return;
+
+		DuckLog( Player + "::FinishDuck()" );
 
 		Player.IsDucked = true;
 		DuckTime = TimeToDuck;
@@ -82,6 +89,8 @@ partial class Source1GameMovement
 	{
 		if ( !Player.IsDucked )
 			return;
+
+		DuckLog( Player + "::FinishUnDuck()" );
 
 		Player.IsDucked = false;
 		DuckTime = 0;
