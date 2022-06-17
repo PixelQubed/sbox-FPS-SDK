@@ -8,11 +8,10 @@ partial class Source1GameMovement
 	public virtual bool IsDucking => DuckTime > 0;
 	public virtual float TimeToDuck => .3f;
 	public virtual float DuckProgress => GetDuckProgress();
-	[Net, Predicted] public float DuckTime { get; set; }
 
-	[Net, Predicted] public float DuckTransitionEndTime { get; set; }
-
-	[Net, Predicted] public DuckStateTypes DuckState { get; set; }
+	public float DuckTime { get; set; }
+	public float DuckTransitionEndTime { get; set; }
+	public DuckStateTypes DuckState { get; set; }
 
 	public enum DuckStateTypes
 	{

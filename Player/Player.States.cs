@@ -5,7 +5,7 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	[Net, Predicted] public bool IsDucked { get; set; }
+	public bool IsDucked { get; set; }
 
 	public bool InWater => WaterLevelType >= WaterLevelType.Feet;
 	public bool IsGrounded => GroundEntity != null;

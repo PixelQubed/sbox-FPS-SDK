@@ -42,7 +42,7 @@ public partial class Source1GameMovement : PawnController
 		if ( Player == null )
 			return;
 
-		UpdateViewOffset();
+		// UpdateViewOffset();
 	}
 
 	public virtual void PawnChanged( Source1Player player, Source1Player prev ) { }
@@ -156,6 +156,7 @@ public partial class Source1GameMovement : PawnController
 		EyeLocalPosition = GetPlayerViewOffset( false );
 
 		// this updates z offset.
+		Log.Info( DuckProgress );
 		SetDuckedEyeOffset( Util.SimpleSpline( DuckProgress ) );
 	}
 
