@@ -103,7 +103,6 @@ partial class Source1GameMovement
 		{
 			var duckStart = DuckTransitionEndTime - TimeToDuck;
 			duckTime = Time.Now - duckStart;
-			Log.Info( duckTime );
 		}
 
 		DuckTransitionEndTime = Time.Now + duckTime;
