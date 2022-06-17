@@ -156,7 +156,6 @@ public partial class Source1GameMovement : PawnController
 		EyeLocalPosition = GetPlayerViewOffset( false );
 
 		// this updates z offset.
-		Log.Info( DuckProgress );
 		SetDuckedEyeOffset( Util.SimpleSpline( DuckProgress ) );
 	}
 
