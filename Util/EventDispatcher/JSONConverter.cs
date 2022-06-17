@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Amper.Source1;
 
-public class EntityJSONConverter : JsonConverter<Entity>
+public class EntityJsonConverter : JsonConverter<Entity>
 {
 	public override Entity Read( ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options ) => Entity.FindByIndex( reader.GetInt32() );
 	public override void Write( Utf8JsonWriter writer, Entity entity, JsonSerializerOptions options ) => writer.WriteNumberValue( entity.NetworkIdent );
@@ -18,7 +18,7 @@ public class EntityJSONConverter : JsonConverter<Entity>
 	}
 }
 
-public class ClientJSONConverter : JsonConverter<Client>
+public class ClientJsonConverter : JsonConverter<Client>
 {
 	public override Client Read( ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options )
 	{
@@ -29,14 +29,21 @@ public class ClientJSONConverter : JsonConverter<Client>
 	public override void Write( Utf8JsonWriter writer, Client client, JsonSerializerOptions options ) => writer.WriteNumberValue( client.NetworkIdent );
 }
 
-public class AssetJSONConverter : JsonConverter<GameResource>
+public class ResourceJsonConverter : JsonConverter<Resource>
 {
-	public override GameResource Read( ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options ) => ResourceLibrary.Get<GameResource>( reader.GetString() );
-	public override void Write( Utf8JsonWriter writer, GameResource asset, JsonSerializerOptions options ) => writer.WriteStringValue( asset.Path );
+	public override Resource Read( ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options )
+	{
+		return ResourceLibrary.Get<Resource>( reader.GetInt32() );
+	}
+
+	public override void Write( Utf8JsonWriter writer, Resource asset, JsonSerializerOptions options )
+	{
+		writer.WriteNumberValue( asset.ResourceId );
+	}
 
 	public override bool CanConvert( Type typeToConvert )
 	{
 		// Allow conversion of Entity and GameResource of Entity.
-		return typeToConvert.IsSubclassOf( typeof( GameResource ) ) || base.CanConvert( typeToConvert );
+		return typeToConvert.IsSubclassOf( typeof( Resource ) ) || base.CanConvert( typeToConvert );
 	}
 }

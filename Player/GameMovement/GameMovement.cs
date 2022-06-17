@@ -81,6 +81,7 @@ public partial class Source1GameMovement : PawnController
 		ForwardMove = Input.Forward * speed;
 		RightMove = -Input.Left * speed;
 		UpMove = Input.Up * speed;
+		BaseVelocity = 0;
 
 		ReduceTimers();
 		CheckParameters();

@@ -16,7 +16,7 @@ partial class Source1Player
 		if ( Input.ActiveChild is Source1Weapon weapon )
 		{
 			SwitchToWeapon( weapon );
-			Log.Info( $"{(IsClient ? "CL" : "SV")} Switch: {weapon}" );
+			// Log.Info( $"{(IsClient ? "CL" : "SV")} Switch: {weapon}" );
 
 			Input.ActiveChild = null;
 		}

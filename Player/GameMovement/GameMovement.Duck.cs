@@ -81,8 +81,6 @@ partial class Source1GameMovement
 
 	public virtual void StartDucking()
 	{
-		Log.Info( "Start Ducking" );
-
 		var duckTime = TimeToDuck;
 		if ( DuckState == DuckStateTypes.Unducking )
 		{
@@ -96,8 +94,6 @@ partial class Source1GameMovement
 
 	public virtual void StartUnducking()
 	{
-		Log.Info( "Start Unducking" );
-
 		var duckTime = TimeToDuck;
 		if ( DuckState == DuckStateTypes.Ducking )
 		{
@@ -114,7 +110,6 @@ partial class Source1GameMovement
 		if ( DuckState == DuckStateTypes.Ducked )
 			return;
 
-		Log.Info( "Finished Ducking" );
 		DuckState = DuckStateTypes.Ducked;
 		Player.IsDucked = true;
 		DuckTransitionEndTime = -1;
@@ -138,7 +133,6 @@ partial class Source1GameMovement
 
 	public virtual void FinishUnducking()
 	{
-		Log.Info( "Finish Unducking" );
 		DuckState = DuckStateTypes.Unducked;
 		DuckTransitionEndTime = -1;
 		Player.IsDucked = false;

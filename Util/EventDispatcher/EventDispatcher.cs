@@ -20,10 +20,10 @@ public partial class EventDispatcher
 	{
 		serializerOptions = new JsonSerializerOptions
 		{
-			Converters = { 
-				new EntityJSONConverter(), 
-				new ClientJSONConverter(), 
-				new AssetJSONConverter() 
+			Converters = {
+				new ResourceJsonConverter(),
+				new ClientJsonConverter(),
+				new EntityJsonConverter()
 			}
 		};
 	}
@@ -227,7 +227,7 @@ public partial class EventDispatcher
 		// Log.Info( $"Sending Event: {name}..." );
 
 		//Check if this event should be sent to clients and/or server.
-		if ( (dispatchTypes & DispatchType.Client) == DispatchType.Client ) 
+		if ( (dispatchTypes & DispatchType.Client) == DispatchType.Client )
 		{
 			if( Host.IsClient )
 			{
