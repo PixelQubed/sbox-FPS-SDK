@@ -6,7 +6,7 @@ namespace Amper.Source1;
 partial class Source1GameMovement
 {
 	public virtual bool IsDucking => DuckTime > 0;
-	public virtual float TimeToDuck => .3f;
+	public virtual float TimeToDuck => .2f;
 	public virtual float DuckProgress => GetDuckProgress();
 
 	public float DuckTime { get; set; }
@@ -48,6 +48,11 @@ partial class Source1GameMovement
 		{
 			OnUnducking();
 		}
+
+		HandleDuckingSpeedCrop();
+
+		if ( Player.IsDucked )
+			SetTag( "ducked" );
 	}
 
 	public virtual void OnDucking()
@@ -112,6 +117,7 @@ partial class Source1GameMovement
 
 		Log.Info( "Finished Ducking" );
 		DuckState = DuckStateTypes.Ducked;
+		Player.IsDucked = true;
 		DuckTransitionEndTime = -1;
 
 		if ( IsGrounded )
@@ -136,6 +142,7 @@ partial class Source1GameMovement
 		Log.Info( "Finish Unducking" );
 		DuckState = DuckStateTypes.Unducked;
 		DuckTransitionEndTime = -1;
+		Player.IsDucked = false;
 
 		if ( IsGrounded )
 		{
