@@ -156,7 +156,12 @@ public partial class Source1GameMovement : PawnController
 		EyeLocalPosition = GetPlayerViewOffset( false );
 
 		// this updates z offset.
-		SetDuckedEyeOffset( Easing.QuadraticInOut( DuckProgress ) );
+		SetDuckedEyeOffset( Util.SimpleSpline( DuckProgress ) );
+	}
+
+	public float EaseOutCubic( float x )
+	{
+		return x < 0.5f ? 4 * x * x * x : 1 - MathF.Pow( -2 * x + 2, 3 ) / 2;
 	}
 
 	public virtual void SetDuckedEyeOffset( float duckFraction )
