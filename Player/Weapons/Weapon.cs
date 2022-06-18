@@ -96,7 +96,7 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( this + "::OnDeploy()" );
+		Log.Info( this + "::OnDeploy()" );
 
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();

@@ -103,15 +103,27 @@ partial class Source1Player
 			return false;
 
 		var lastWeapon = ActiveWeapon;
-		lastWeapon?.OnHolster( this );
-
 		ActiveWeapon = weapon;
-		ActiveWeapon?.OnDeploy( this );
+
+		if ( IsServer )
+		{
+			lastWeapon?.OnHolster( this );
+			ActiveWeapon?.OnDeploy( this );
+		}
+
+		EquipWeaponHack( lastWeapon, ActiveWeapon );
 
 		if ( rememberLast )
 			LastWeapon = lastWeapon;
 
 		return true;
+	}
+
+	[ClientRpc]
+	public void EquipWeaponHack( Source1Weapon last, Source1Weapon newweap )
+	{
+		last?.OnHolster( this );
+		newweap?.OnDeploy( this );
 	}
 
 	public bool CanSwitchTo( Source1Weapon weapon ) => true;
