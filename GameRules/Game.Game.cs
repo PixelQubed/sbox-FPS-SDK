@@ -14,8 +14,11 @@ partial class GameRules
 		Score.Clear();
 		TotalRoundsPlayed = 0;
 
+		OnGameRestart();
 		RestartRound();
 	}
+
+	public virtual void OnGameRestart() { }
 
 	[ConCmd.Server( "mp_restartgame" )]
 	public static void Command_RestartGame()
