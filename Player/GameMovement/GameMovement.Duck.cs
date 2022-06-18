@@ -181,11 +181,6 @@ partial class Source1GameMovement
 			FinishUnDuck();
 	}
 
-	private void DuckLog( string msg )
-	{
-		Log.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {msg}" );
-	}
-
 	public virtual void FinishDuck()
 	{
 		if ( DuckState == DuckStateTypes.Ducked ) 
