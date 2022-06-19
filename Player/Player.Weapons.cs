@@ -111,7 +111,7 @@ partial class Source1Player
 			ActiveWeapon?.OnDeploy( this );
 		}
 
-		EquipWeaponHack( lastWeapon, ActiveWeapon );
+		EquipWeaponHack( To.Single( Client ), lastWeapon, ActiveWeapon );
 
 		if ( rememberLast )
 			LastWeapon = lastWeapon;
