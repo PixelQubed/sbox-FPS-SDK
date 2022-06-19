@@ -118,7 +118,7 @@ partial class Source1Weapon
 		using ( LagCompensation() )
 		{
 			var tr = SetupFireBulletTrace( origin, target ).Run();
-			if ( sv_debug_hitscan_hits ) DrawDebugTrace( tr );
+			DrawDebugTrace( tr );
 
 			return tr;
 		}
@@ -137,20 +137,30 @@ partial class Source1Weapon
 		return tr;
 	}
 
+	[ConVar.Replicated] public static bool sv_debug_hitscan_traces { get; set; }
 	[ConVar.Replicated] public static bool sv_debug_hitscan_hits { get; set; }
+
 	protected void DrawDebugTrace( TraceResult tr, float time = 5 )
 	{
-		DebugOverlay.Line( tr.StartPosition, tr.EndPosition, IsServer ? Color.Yellow : Color.Green, time, true );
+		var drawTrace = sv_debug_hitscan_traces;
+		var drawHit = drawTrace || sv_debug_hitscan_hits;
 
-		DebugOverlay.Sphere( tr.StartPosition, 2f, Color.Cyan, time, true );
-		DebugOverlay.Sphere( tr.EndPosition, 2f, Color.Red, time, true );
+		if ( drawTrace )
+		{
+			DebugOverlay.Line( tr.StartPosition, tr.EndPosition, IsServer ? Color.Yellow : Color.Green, time, true );
 
-		DebugOverlay.Text(
-			$"Distance: {tr.Distance}\n" +
-			$"HitBox: {tr.HitboxIndex}\n" +
-			$"Entity: {tr.Entity}\n" +
-			$"Fraction: {tr.Fraction}",
-			tr.EndPosition,
-			time );
+			DebugOverlay.Text(
+				$"Distance: {tr.Distance}\n" +
+				$"HitBox: {tr.HitboxIndex}\n" +
+				$"Entity: {tr.Entity}\n" +
+				$"Fraction: {tr.Fraction}",
+				tr.EndPosition,
+				time );
+		}
+
+		if( drawHit )
+		{
+			DebugOverlay.Sphere( tr.EndPosition, 2f, Color.Red, time, true );
+		}
 	}
 }
