@@ -111,7 +111,7 @@ partial class Source1Player
 			ActiveWeapon?.OnDeploy( this );
 		}
 
-		EquipWeaponHack( To.Single( Client ), lastWeapon, ActiveWeapon );
+		EquipWeaponHack( lastWeapon, ActiveWeapon );
 
 		if ( rememberLast )
 			LastWeapon = lastWeapon;
@@ -122,6 +122,10 @@ partial class Source1Player
 	[ClientRpc]
 	public void EquipWeaponHack( Source1Weapon last, Source1Weapon newweap )
 	{
+		if ( !IsLocalPawn )
+			return;
+
+
 		last?.OnHolster( this );
 		newweap?.OnDeploy( this );
 	}
