@@ -59,10 +59,10 @@ partial class Source1Weapon
 		if ( NeedsAmmo() )
 		{
 			if( !sv_infinite_ammo )
-				Clip -= AmmoPerShot;
+				Clip -= GetAmmoPerShot();
 		}
 
-		for ( var i = 0; i < BulletsPerShot; i++ )
+		for ( var i = 0; i < GetBulletsPerShot(); i++ )
 		{
 			FireBullet( GetDamage(), i );
 		}
