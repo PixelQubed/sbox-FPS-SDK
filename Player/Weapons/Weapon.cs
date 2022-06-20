@@ -13,9 +13,12 @@ public partial class Source1Weapon : AnimatedEntity
 		base.Spawn();
 
 		MoveType = MoveType.Physics;
-		CollisionGroup = CollisionGroup.Interactive;
+		CollisionGroup = CollisionGroup.Weapon;
+		SetInteractsAs( CollisionLayer.Debris );
+
 		PhysicsEnabled = true;
 		UsePhysicsCollision = true;
+
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
 
@@ -61,8 +64,7 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		if ( IsClient )
-			return;
+		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnEquip()" );
 
 		SetParent( owner, true );
 		Owner = owner;
@@ -80,8 +82,7 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		if ( IsClient )
-			return;
+		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnDrop()" );
 
 		SetParent( null );
 		Owner = null;
@@ -96,7 +97,7 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( this + "::OnDeploy()" );
+		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnDeploy()" );
 
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();
@@ -115,7 +116,7 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( this + "::OnHolster()" );
+		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnHolster()" );
 
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;

@@ -7,17 +7,14 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	[Net, Predicted] public Source1Weapon ActiveWeapon { get; private set; }
+	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
 	[Net, Predicted] public Source1Weapon LastWeapon { get; set; }
-	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
 
 	public virtual void SimulateWeaponSwitch()
 	{
 		if ( Input.ActiveChild is Source1Weapon weapon )
 		{
 			SwitchToWeapon( weapon );
-			// Log.Info( $"{(IsClient ? "CL" : "SV")} Switch: {weapon}" );
-
 			Input.ActiveChild = null;
 		}
 	}
@@ -47,15 +44,23 @@ partial class Source1Player
 		if ( !weapon.CanEquip( this ) )
 			return false;
 
+		OnPreEquipWeapon( weapon );
+
+		weapon.OnEquip( this );
+
 		weapon.Parent = this;
 		weapon.Owner = this;
-		weapon.OnEquip( this );
+
+		OnPostEquipWeapon( weapon );
 
 		if ( makeActive )
 			SwitchToWeapon( weapon );
 
 		return true;
 	}
+
+	public virtual void OnPreEquipWeapon( Source1Weapon weapon ) { }
+	public virtual void OnPostEquipWeapon( Source1Weapon weapon ) { }
 
 	public virtual bool IsEquipped( Source1Weapon weapon ) => Children.Contains( weapon );
 
@@ -125,8 +130,9 @@ partial class Source1Player
 		if ( !IsLocalPawn )
 			return;
 
+		if ( IsEquipped( last ) ) 
+			last?.OnHolster( this );
 
-		last?.OnHolster( this );
 		newweap?.OnDeploy( this );
 	}
 
@@ -139,6 +145,25 @@ partial class Source1Player
 			return;
 
 		SwitchToWeapon( LastWeapon );
+	}
+
+	public virtual void SwitchToNextBestWeapon()
+	{
+		if ( LastWeapon.IsValid() )
+		{
+			SwitchToWeapon( LastWeapon );
+			return;
+		}
+
+		var weapons = Children.OfType<Source1Weapon>()
+			.Where( x => x != ActiveWeapon && CanSwitchTo( x ) );
+
+		var first = weapons.FirstOrDefault();
+		if ( first.IsValid() )
+		{
+			SwitchToWeapon( first );
+			return;
+		}
 	}
 
 	public virtual Vector3 GetAttackPosition() => EyePosition;
