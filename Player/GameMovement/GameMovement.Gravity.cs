@@ -5,27 +5,6 @@ namespace Amper.Source1;
 
 public partial class GameMovement
 {
-	public virtual void StartGravity()
-	{
-		float ent_gravity = Player.PhysicsBody.GravityScale;
-		if ( ent_gravity <= 0 )
-			ent_gravity = 1;
-
-		Move.Velocity.z -= ent_gravity * GetCurrentGravity() * 0.5f * Time.Delta;
-		Move.Velocity.z += Player.BaseVelocity.z * Time.Delta;
-
-		var temp = Player.BaseVelocity;
-		temp.z = 0;
-		Player.BaseVelocity = temp;
-
-		CheckVelocity();
-	}
-
-	public virtual void FinishGravity()
-	{
-		Velocity -= new Vector3( 0, 0, GetCurrentGravity() * 0.5f ) * Time.Delta;
-	}
-
 	public virtual float GetCurrentGravity()
 	{
 		return sv_gravity * GameRules.Current.GetGravityMultiplier();

@@ -51,6 +51,16 @@ partial class Source1Player
 		return GetPlayerViewOffset( ducked ) * Scale;
 	}
 
+	public virtual Vector3 GetDeadViewHeight()
+	{
+		return ViewVectors.DeadViewOffset;
+	}
+
+	public Vector3 GetDeadViewHeightScaled()
+	{
+		return GetDeadViewHeight() * Scale;
+	}
+
 	public virtual ViewVectors ViewVectors => new()
 	{
 		ViewOffset = new( 0, 0, 64 ),

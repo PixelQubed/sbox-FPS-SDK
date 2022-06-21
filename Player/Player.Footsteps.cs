@@ -4,7 +4,6 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	public Surface SurfaceData { get; set; }
 	public float StepSoundTime { get; set; }
 	bool NextFootRight { get; set; }
 
