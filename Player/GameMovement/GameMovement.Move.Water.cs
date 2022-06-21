@@ -11,7 +11,7 @@ public enum WaterLevelType
 	Eyes
 }
 
-public partial class Source1GameMovement
+public partial class GameMovement
 {
 	protected float WaterJumpTime { get; set; }
 	protected Vector3 WaterJumpVelocity { get; set; }
@@ -139,7 +139,7 @@ public partial class Source1GameMovement
 		// if we have the jump key down, move us up as well
 		if ( Input.Down( InputButton.Jump ) ) 
 		{
-			WishVelocity = WishVelocity.WithZ( WishVelocity.z + MaxSpeed );
+			WishVelocity = WishVelocity.WithZ( WishVelocity.z + Player.MaxSpeed );
 		}
 
 		// Sinking after no other movement occurs
@@ -151,7 +151,7 @@ public partial class Source1GameMovement
 		{
 			// exaggerate upward movement along forward as well
 			float upwardMovememnt = ForwardMove * Forward.z * 2;
-			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, MaxSpeed );
+			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, Player.MaxSpeed );
 			WishVelocity = WishVelocity.WithZ( WishVelocity.z + UpMove + upwardMovememnt );
 		}
 
@@ -159,10 +159,10 @@ public partial class Source1GameMovement
 		var wishspeed = WishVelocity.Length;
 
 		// Cap speed.
-		if ( wishspeed > MaxSpeed )
+		if ( wishspeed > Player.MaxSpeed )
 		{
-			WishVelocity *= MaxSpeed / wishspeed;
-			wishspeed = MaxSpeed;
+			WishVelocity *= Player.MaxSpeed / wishspeed;
+			wishspeed = Player.MaxSpeed;
 		}
 
 		// Slow us down a bit.

@@ -2,10 +2,17 @@
 
 namespace Amper.Source1;
 
-public partial class Source1GameMovement
+public partial class GameMovement
 {
 	public virtual void FullWalkMove()
 	{
+		if ( !Player.CanMove() )
+		{
+			ForwardMove = 0;
+			RightMove = 0;
+			UpMove = 0;
+		}
+
 		if ( !InWater() )
 		{
 			StartGravity();
@@ -102,10 +109,10 @@ public partial class Source1GameMovement
 		var wishspeed = WishVelocity.Length;
 		var wishdir = WishVelocity.Normal;
 
-		if ( wishspeed != 0 && wishspeed > MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > Player.MaxSpeed )
 		{
-			WishVelocity *= MaxSpeed / wishspeed;
-			wishspeed = MaxSpeed;
+			WishVelocity *= Player.MaxSpeed / wishspeed;
+			wishspeed = Player.MaxSpeed;
 		}
 
 		var acceleration = sv_accelerate;
@@ -125,9 +132,9 @@ public partial class Source1GameMovement
 
 		// Clamp the players speed in x,y.
 		float flNewSpeed = Velocity.Length;
-		if ( flNewSpeed > MaxSpeed )
+		if ( flNewSpeed > Player.MaxSpeed )
 		{
-			float flScale = MaxSpeed / flNewSpeed;
+			float flScale = Player.MaxSpeed / flNewSpeed;
 			Velocity = Velocity.WithX( Velocity.x * flScale ).WithY( Velocity.y * flScale );
 		}
 
@@ -184,10 +191,10 @@ public partial class Source1GameMovement
 		var wishdir = WishVelocity.Normal;
 		var wishspeed = WishVelocity.Length;
 
-		if ( wishspeed != 0 && wishspeed > MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > Player.MaxSpeed )
 		{
-			WishVelocity *= MaxSpeed / wishspeed;
-			wishspeed = MaxSpeed;
+			WishVelocity *= Player.MaxSpeed / wishspeed;
+			wishspeed = Player.MaxSpeed;
 		}
 
 		AirAccelerate( wishdir, wishspeed, sv_airaccelerate );

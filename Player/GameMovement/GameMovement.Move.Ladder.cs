@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.Source1;
 
-partial class Source1GameMovement
+partial class GameMovement
 {
 	protected Vector3 LadderNormal { get; set; }
 	public virtual float LadderDistance => 2;

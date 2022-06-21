@@ -24,7 +24,7 @@ partial class GameRules
 		var up = origin + Vector3.Up * 64;
 		var down = origin + Vector3.Down * 64;
 
-		var controller = player.Controller as Source1GameMovement;
+		var controller = Movement;
 		if ( controller == null )
 			return true;
 

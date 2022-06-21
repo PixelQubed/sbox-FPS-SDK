@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.Source1;
 
-partial class Source1GameMovement
+partial class GameMovement
 {
 	public virtual bool IsDucking => DuckTime > 0;
 	public virtual float TimeToDuck => .2f;

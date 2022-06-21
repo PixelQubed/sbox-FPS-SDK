@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.Source1;
 
-partial class Source1GameMovement
+partial class GameMovement
 {
 	[ConVar.Replicated] public static float sv_gravity { get; set; } = 800;
 	[ConVar.Replicated] public static float sv_stopspeed { get; set; } = 100;

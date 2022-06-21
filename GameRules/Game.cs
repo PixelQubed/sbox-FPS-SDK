@@ -6,10 +6,12 @@ namespace Amper.Source1;
 public partial class GameRules : Game
 {
 	public new static GameRules Current { get; set; }
+	public GameMovement Movement { get; set; }
 
 	public GameRules()
 	{
 		Current = this;
+		Movement = new GameMovement();
 	}
 
 	public override void Spawn()

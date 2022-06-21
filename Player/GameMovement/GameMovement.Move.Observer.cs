@@ -2,7 +2,7 @@
 
 namespace Amper.Source1;
 
-public partial class Source1GameMovement
+public partial class GameMovement
 {
 	public virtual void FullNoClipMove( float factor, float maxacceleration )
 	{
@@ -122,7 +122,7 @@ public partial class Source1GameMovement
 
 		if ( wishspeed > maxspeed )
 		{
-			WishVelocity *= MaxSpeed / wishspeed;
+			WishVelocity *= Player.MaxSpeed / wishspeed;
 			wishspeed = maxspeed;
 		}
 

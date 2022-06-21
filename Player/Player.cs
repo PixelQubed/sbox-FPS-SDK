@@ -9,7 +9,6 @@ public partial class Source1Player : AnimatedEntity
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
-	[Net] public PawnController Controller { get; set; }
 	[Net] public PawnAnimator Animator { get; set; }
 	public CameraMode CameraMode
 	{
@@ -17,10 +16,7 @@ public partial class Source1Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
-	public float SurfaceFriction { get; set; } = 1;
-
-	public float MaxSpeed { get; set; }
-	public float MaxHealth { get; set; }
+	[Net] public float MaxHealth { get; set; }
 
 	// These are from Entity, but they're not networked by default.
 	// Client needs to be aware about these things.
@@ -29,9 +25,8 @@ public partial class Source1Player : AnimatedEntity
 
 	public override void Spawn()
 	{
-		base.Spawn();
+		base.Spawn();	
 
-		Controller = new Source1GameMovement();
 		Animator = new StandardPlayerAnimator();
 		CameraMode = new Source1Camera();
 
@@ -177,7 +172,6 @@ public partial class Source1Player : AnimatedEntity
 		SetCollisionBounds( mins, maxs );
 	}
 
-	public virtual WaterLevelType WaterLevelType { get; set; }
 
 	[Net] public TimeSince TimeSinceRespawned { get; set; }
 	[Net] public TimeSince TimeSinceDeath { get; set; }
@@ -193,7 +187,7 @@ public partial class Source1Player : AnimatedEntity
 			SimulateObserver();
 
 		UpdateMaxSpeed();
-		Controller?.Simulate( cl, this, Animator );
+		GameRules.Current.Movement.ProcessMovement( this );
 
 		SimulateWeaponSwitch();
 		SimulateActiveWeapon( cl, ActiveWeapon );
@@ -203,13 +197,6 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		SimulateHover();
-	}
-
-
-	public override void FrameSimulate( Client cl )
-	{
-		base.FrameSimulate( cl );
-		Controller?.FrameSimulate( cl, this, Animator );
 	}
 
 	public void UpdateMaxSpeed()
@@ -224,7 +211,7 @@ public partial class Source1Player : AnimatedEntity
 	/// Called before movement is calculated, we update our max speed values based on current effects.
 	/// I.e. if we're sprinting.
 	/// </summary>
-	public virtual float CalculateMaxSpeed() => Source1GameMovement.sv_maxspeed;
+	public virtual float CalculateMaxSpeed() => GameMovement.sv_maxspeed;
 
 	public void RemoveAllTags()
 	{
@@ -298,9 +285,7 @@ public partial class Source1Player : AnimatedEntity
 		Host.AssertClient();
 
 		if ( ActiveWeapon != null )
-		{
 			ActiveWeapon.PostCameraSetup( ref setup );
-		}
 	}
 
 	/// <summary>
@@ -312,8 +297,6 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		ActiveWeapon?.BuildInput( input );
-		Controller?.BuildInput( input );
-
 		if ( input.StopProcessing )
 			return;
 

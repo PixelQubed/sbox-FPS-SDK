@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.Source1;
 
-public partial class Source1GameMovement
+public partial class GameMovement
 {
 	public float JumpTime { get; set; }
 

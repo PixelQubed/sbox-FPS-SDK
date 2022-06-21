@@ -10,17 +10,9 @@ partial class Source1Player
 
 	public virtual void SimulateVisuals()
 	{
-		DecayViewModificators();
 	}
 
-	public virtual void DecayViewModificators()
-	{
-		var angles = ViewPunchAngle;
-		DecayAngles( ref angles, sv_view_punch_decay, 0, Time.Delta );
-		ViewPunchAngle = angles;
-	}
-
-	[ConVar.Replicated] public static float sv_view_punch_decay { get; set; } = 18f;
+	public virtual void DecayViewModificators() { }
 
 	public void DecayAngles( ref Vector3 angle, float exp, float lin, float time )
 	{

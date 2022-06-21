@@ -1,9 +1,8 @@
 ﻿using Sandbox;
-using System;
 
 namespace Amper.Source1;
 
-partial class Source1GameMovement
+partial class GameMovement
 {
 	/// <summary>
 	/// Traces the current bbox and returns the result.
@@ -22,8 +21,7 @@ partial class Source1GameMovement
 	/// </summary>
 	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 	{
-		var tr = SetupBBoxTrace( start, end, mins, maxs ).Run();
-		return tr;
+		return SetupBBoxTrace( start, end, mins, maxs ).Run();
 	}
 
 	public virtual Trace SetupBBoxTrace( Vector3 start, Vector3 end )

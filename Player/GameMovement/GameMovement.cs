@@ -3,101 +3,152 @@ using System;
 
 namespace Amper.Source1;
 
-public partial class Source1GameMovement : PawnController
+public struct MoveData
 {
-	Source1Player Player { get; set; }
-	protected float MaxSpeed { get; set; }
+	public float MaxSpeed;
 
-	/// <summary>
-	/// Forward direction of the player's movement.
-	/// </summary>
-	protected Vector3 Forward { get; set; }
-	/// <summary>
-	/// Right direction of the player's movement.
-	/// </summary>
-	protected Vector3 Right { get; set; }
-	/// <summary>
-	/// Up direction of the player's movement.
-	/// </summary>
-	protected Vector3 Up { get; set; }
+	public Vector3 Position;
+	public Vector3 Velocity;
+	public Rotation EyeRotation;
 
-	/// <summary>
-	/// How much should we move forward?
-	/// </summary>
-	protected float ForwardMove { get; set; }
-	/// <summary>
-	/// How much should we move to the side?
-	/// </summary>
-	protected float RightMove { get; set; }
-	/// <summary>
-	/// How much should we move up?
-	/// </summary>
-	protected float UpMove { get; set; }
+	public float ForwardMove;
+	public float RightMove;
+	public float UpMove;
 
-	public override void FrameSimulate()
+	public Vector3 Forward;
+	public Vector3 Right;
+	public Vector3 Up;
+}
+
+public partial class GameMovement 
+{
+
+	WaterLevelType m_nOldWaterLevel { get; set; }
+	float m_flWaterEntryTime { get; set; }
+	int m_nOnLadder { get; set; }
+	MoveData mv { get; set; }
+
+	public GameMovement()
 	{
-		base.FrameSimulate();
+		m_nOldWaterLevel = WaterLevelType.NotInWater;
+		m_flWaterEntryTime = 0;
+		m_nOnLadder = 0;
 
-		EyeRotation = Input.Rotation;
-		if ( Player == null )
-			return;
-
-		// UpdateViewOffset();
+		mv = default;
 	}
 
-	public virtual void PawnChanged( Source1Player player, Source1Player prev ) { }
-
-	public override void Simulate()
+	enum IntervalType_t
 	{
-		if ( Player != Pawn )
+		Ground,
+		Stuck,
+		Ladder
+	}
+
+	public const float CATEGORIZE_GROUND_SURFACE_INTERVAL = 0.3f;
+	public const float CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL = 0.3f;
+
+	int GetCheckInterval( IntervalType_t type )
+	{
+		int tickInterval = 1;
+		switch ( type )
 		{
-			var newPlayer = Pawn as Source1Player;
-			PawnChanged( newPlayer, Player );
-			Player = newPlayer;
-		}
+			default:
+				tickInterval = 1;
+				break;
 
-		ProcessMovement();
-		ShowDebugOverlay();
+			case IntervalType_t.Ground:
+				tickInterval = CATEGORIZE_GROUND_SURFACE_TICK_INTERVAL;
+				break;
+
+			case IntervalType_t.Stuck:
+
+				// If we are in the process of being "stuck", then try a new position every command tick until m_StuckLast gets reset back down to zero
+				if ( player->m_StuckLast != 0 )
+				{
+					tickInterval = 1;
+				}
+				else
+				{
+					tickInterval = CHECK_STUCK_TICK_INTERVAL;
+				}
+
+				break;
+
+			case IntervalType_t.Ladder:
+				tickInterval = CHECK_LADDER_TICK_INTERVAL;
+				break;
+		}
+		return tickInterval;
 	}
 
-	public virtual void ProcessMovement()
+	public void ProcessMovement( Source1Player player )
 	{
-		if ( Player == null )
+		if ( !player.IsValid() )
 			return;
 
-		MaxSpeed = Player.MaxSpeed;
+		ProcessingMovement = true;
+		InStuckTest = false;
 
-		PlayerMove();
+		SetupMoveData( player );
+		PlayerMove( player );
+
+		ProcessingMovement = false;
 	}
 
-	public virtual void PlayerMove()
+	public void DecayAngles( ref Vector3 angle, float exp, float lin, float time )
 	{
-		EyeRotation = Input.Rotation;
-		Forward = Input.Rotation.Forward;
-		Right = Input.Rotation.Right;
-		Up = Input.Rotation.Up;
+		exp *= time;
+		lin *= time;
 
-		var speed = MaxSpeed;
-		ForwardMove = Input.Forward * speed;
-		RightMove = -Input.Left * speed;
-		UpMove = Input.Up * speed;
-		BaseVelocity = 0;
+		angle *= MathF.Exp( -exp );
+
+		var mag = angle.Length;
+		if ( mag > lin )
+		{
+			angle *= (1 - lin / mag);
+		}
+		else
+		{
+			angle = 0;
+		}
+	}
+
+	public virtual void DecayViewPunchAngle()
+	{
+		var angles = Player.ViewPunchAngle;
+		DecayAngles( ref angles, view_punch_decay, 0, Time.Delta );
+		Player.ViewPunchAngle = angles;
+	}
+
+	[ConVar.Replicated] public static float view_punch_decay { get; set; } = 18f;
+
+	void SetupMoveData( Source1Player player )
+	{
+		Move.Position = player.Position;
+		Move.Velocity = player.Velocity;
+
+		Move.EyeRotation = Input.Rotation;
+
+		Move.Forward = Input.Rotation.Forward;
+		Move.Right = Input.Rotation.Right;
+		Move.Up = Input.Rotation.Up;
+
+		Move.MaxSpeed = Player.MaxSpeed;
+		Move.ForwardMove = Input.Forward * Move.MaxSpeed;
+		Move.RightMove = -Input.Left * Move.MaxSpeed;
+		Move.UpMove = Input.Up * Move.MaxSpeed;
+	}
+
+	Source1Player Player { get; set; }
+
+	public virtual void PlayerMove( Source1Player player )
+	{
+		Player = player;
+		if ( !Player.IsValid() )
+			return;
 
 		ReduceTimers();
 		CheckParameters();
-
-		if ( !Player.CanMove() )
-		{
-			ForwardMove = 0;
-			RightMove = 0;
-			UpMove = 0;
-		}
-
-		// Decrease velocity if we move vertically too quickly.
-		if ( Velocity.z > 250 )
-		{
-			ClearGroundEntity();
-		}
 
 		// remember last level type
 		LastWaterLevelType = Player.WaterLevelType;
@@ -160,11 +211,6 @@ public partial class Source1GameMovement : PawnController
 		SetDuckedEyeOffset( Util.SimpleSpline( DuckProgress ) );
 	}
 
-	public float EaseOutCubic( float x )
-	{
-		return x < 0.5f ? 4 * x * x * x : 1 - MathF.Pow( -2 * x + 2, 3 ) / 2;
-	}
-
 	public virtual void SetDuckedEyeOffset( float duckFraction )
 	{
 		Vector3 vDuckHullMin = GetPlayerMins( true );
@@ -194,10 +240,11 @@ public partial class Source1GameMovement : PawnController
 			Player.MoveType != MoveType.MOVETYPE_OBSERVER )
 		{
 			var speed = ForwardMove * ForwardMove + RightMove * RightMove + UpMove * UpMove;
+			var maxSpeed = Player.MaxSpeed;
 
-			if ( speed != 0 && speed > MaxSpeed * MaxSpeed )
+			if ( speed != 0 && speed > maxSpeed * maxSpeed )
 			{
-				var ratio = MaxSpeed / MathF.Sqrt( speed );
+				var ratio = maxSpeed / MathF.Sqrt( speed );
 
 				ForwardMove *= ratio;
 				RightMove *= ratio;
@@ -572,7 +619,7 @@ public partial class Source1GameMovement : PawnController
 				$"SurfaceFriction       {Player.SurfaceFriction}\n" +
 				$"MoveType              {Player.MoveType}\n" +
 				$"Speed                 {Velocity.Length}\n" +
-				$"MaxSpeed              {MaxSpeed}\n" +
+				$"MaxSpeed              {Player.MaxSpeed}\n" +
 				$"Fall Velocity         {Player.FallVelocity}\n" +
 				$"\n" +
 
