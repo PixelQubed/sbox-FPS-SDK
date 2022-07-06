@@ -1,5 +1,4 @@
 using Sandbox;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Amper.Source1;
@@ -187,7 +186,11 @@ public partial class Source1Player : AnimatedEntity
 			SimulateObserver();
 
 		UpdateMaxSpeed();
-		GameRules.Current.Movement.ProcessMovement( this );
+
+		var mv = SetupMove();
+		GameRules.Current.Movement.ProcessMovement( this, ref mv );
+		FinishMove( mv );
+
 
 		SimulateWeaponSwitch();
 		SimulateActiveWeapon( cl, ActiveWeapon );
@@ -197,6 +200,29 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		SimulateHover();
+	}
+
+	private MoveData SetupMove()
+	{
+		return new MoveData
+		{
+			Position = Position,
+			ViewAngles = Input.Rotation,
+			Velocity = Velocity,
+
+			ForwardMove = Input.Forward * MaxSpeed,
+			SideMove = -Input.Left * MaxSpeed,
+			UpMove = Input.Up * MaxSpeed,	
+
+			MaxSpeed = MaxSpeed
+		};
+	}
+
+	private void FinishMove( MoveData mv )
+	{
+		Position = mv.Position;
+		EyeRotation = mv.ViewAngles;
+		Velocity = mv.Velocity;
 	}
 
 	public void UpdateMaxSpeed()

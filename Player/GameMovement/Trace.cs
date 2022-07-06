@@ -21,6 +21,7 @@ partial class GameMovement
 	/// </summary>
 	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 	{
+		DebugOverlay.Box( end, mins, maxs, Host.IsServer ? Color.Blue : Color.Red, 0 );
 		return SetupBBoxTrace( start, end, mins, maxs ).Run();
 	}
 
@@ -39,6 +40,6 @@ partial class GameMovement
 			.HitLayer( CollisionLayer.PLAYER_CLIP, true )
 			.HitLayer( CollisionLayer.WINDOW, true )
 			.HitLayer( CollisionLayer.SKY, true )
-			.Ignore( Pawn );
+			.Ignore( Player );
 	}
 }
