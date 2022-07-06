@@ -27,7 +27,7 @@ partial class GameMovement
 
 	public virtual void FinishGravity()
 	{
-		if ( Player.m_flWaterJumpTime != 0 )
+		if ( Player.WaterJumpTime != 0 )
 			return;
 
 		var ent_gravity = Player.PhysicsBody.GravityScale;

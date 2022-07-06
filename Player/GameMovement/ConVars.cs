@@ -5,7 +5,7 @@ namespace Amper.Source1;
 
 partial class GameMovement
 {
-	[ConVar.Replicated] public static float sv_gravity { get; set; } = 800;
+	[ConVar.Replicated] public static float sv_gravity2 { get; set; } = 800;
 	[ConVar.Replicated] public static float sv_stopspeed { get; set; } = 100;
 	[ConVar.Replicated] public static float sv_noclip_accelerate { get; set; } = 5;
 	[ConVar.Replicated] public static float sv_noclip_speed { get; set; } = 5;

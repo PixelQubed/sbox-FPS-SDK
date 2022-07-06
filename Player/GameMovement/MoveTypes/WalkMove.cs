@@ -12,7 +12,7 @@ partial class GameMovement
 		}
 
 		// If we are leaping out of the water, just update the counters.
-		if ( Player.m_flWaterJumpTime != 0 )
+		if ( Player.WaterJumpTime != 0 )
 		{
 			// Try to jump out of the water (and check to see if we still are).
 			WaterJump();
@@ -160,7 +160,7 @@ partial class GameMovement
 		}
 
 		// If we are jumping out of water, don't do anything more.
-		if ( Player.m_flWaterJumpTime != 0 )
+		if ( Player.WaterJumpTime != 0 )
 		{
 			Move.Velocity -= Player.BaseVelocity;
 			return;
@@ -190,7 +190,7 @@ partial class GameMovement
 
 		if ( Player.GroundEntity != null )
 		{
-			var friction = sv_friction * Player.m_surfaceFriction;
+			var friction = sv_friction * Player.SurfaceFriction;
 			var control = (speed < sv_stopspeed) ? sv_stopspeed : speed;
 
 			// Add the amount to the drop amount.

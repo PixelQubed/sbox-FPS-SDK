@@ -34,21 +34,23 @@ partial class GameMovement
 			CategorizeGroundSurface( pm.Value );
 
 			// Then we are not in water jump sequence
-			Player.m_flWaterJumpTime = 0;
+			Player.AirDuckCount = 0;
+			Player.WaterJumpTime = 0;
+
 			Move.Velocity.z = 0;
 		}
 	}
 
 	public virtual void CategorizeGroundSurface( TraceResult pm )
 	{
-		Player.m_pSurfaceData = pm.Surface;
-		Player.m_surfaceFriction = pm.Surface.Friction;
+		Player.SurfaceData = pm.Surface;
+		Player.SurfaceFriction = pm.Surface.Friction;
 
 		// HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
 		// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
 		// This scaling trivially makes them equivalent.  REVISIT if this affects low friction surfaces too much.
-		Player.m_surfaceFriction *= 1.25f;
-		if ( Player.m_surfaceFriction > 1.0f )
-			Player.m_surfaceFriction = 1.0f;
+		Player.SurfaceFriction *= 1.25f;
+		if ( Player.SurfaceFriction > 1.0f )
+			Player.SurfaceFriction = 1.0f;
 	}
 }

@@ -20,7 +20,7 @@ partial class GameMovement
 		Move.ViewAngles.AngleVectors( out var forward, out _, out _ );
 
 		// Already water jumping.
-		if ( Player.m_flWaterJumpTime != 0 ) 
+		if ( Player.WaterJumpTime != 0 ) 
 			return;
 
 		// Don't hop out if we just jumped in
@@ -51,9 +51,9 @@ partial class GameMovement
 		if ( tr.Fraction == 1 )
 			return;
 
-		vecStart.z = Move.Position.z + GetPlayerViewOffset().z + WATERJUMP_HEIGHT;
+		vecStart.z = Move.Position.z + GetPlayerViewOffset().z + WaterJumpHeight;
 		vecEnd = vecStart + flatforward * 24;
-		Player.m_vecWaterJumpVel = tr.Normal * -50;
+		Player.WaterJumpVelocity = tr.Normal * -50;
 
 		tr = TraceBBox( vecStart, vecEnd );
 		if ( tr.Fraction < 1 )
@@ -68,7 +68,7 @@ partial class GameMovement
 		{
 			Move.Velocity.z = 256;
 			Player.AddFlags( PlayerFlags.FL_WATERJUMP );
-			Player.m_flWaterJumpTime = 2000;
+			Player.WaterJumpTime = 2000;
 		}
 	}
 
@@ -105,7 +105,7 @@ partial class GameMovement
 
 		if ( m_nOldWaterLevel == WaterLevelType.NotInWater && Player.WaterLevelType != WaterLevelType.NotInWater )
 		{
-			Player.m_flWaterEntryTime = Time.Now;
+			Player.WaterEntryTime = Time.Now;
 		}
 
 		return Player.WaterLevelType > WaterLevelType.Feet;

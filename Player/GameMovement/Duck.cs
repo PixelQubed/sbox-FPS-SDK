@@ -13,7 +13,7 @@ partial class GameMovement
 	{
 		if ( Player.IsDucked && Player.IsGrounded ) 
 		{
-			float frac = 0.33333333f;
+			float frac = Player.DuckingSpeedMultiplier;
 			Move.ForwardMove *= frac;
 			Move.SideMove *= frac;
 			Move.UpMove *= frac;
@@ -34,8 +34,15 @@ partial class GameMovement
 
 		HandleDuckingSpeedCrop();
 	}
+
 	public virtual bool CanDuck()
 	{
+		if ( Player.IsInAir )
+		{
+			if ( Player.AirDuckCount >= MaxAirDucks )
+				return false;
+		}
+
 		return true;
 	}
 
@@ -44,12 +51,12 @@ partial class GameMovement
 		if ( !CanDuck() )
 			return;
 
-		Player.m_flDuckTime = Player.m_flDuckTime.Approach( TimeToDuck, Time.Delta );
+		Player.DuckTime = Player.DuckTime.Approach( TimeToDuck, Time.Delta );
 
 		if ( Player.IsDucked )
 			return;
 
-		if ( Player.m_flDuckTime >= TimeToDuck || Player.IsInAir )
+		if ( Player.DuckTime >= TimeToDuck || Player.IsInAir )
 			FinishDuck();
 	}
 
@@ -58,12 +65,12 @@ partial class GameMovement
 		if ( !CanUnduck() )
 			return;
 
-		Player.m_flDuckTime = Player.m_flDuckTime.Approach( 0, Time.Delta );
+		Player.DuckTime = Player.DuckTime.Approach( 0, Time.Delta );
 
 		if ( !Player.IsDucked )
 			return;
 
-		if ( Player.m_flDuckTime <= 0 || Player.IsInAir )
+		if ( Player.DuckTime <= 0 || Player.IsInAir )
 			FinishUnDuck();
 	}
 
@@ -86,11 +93,11 @@ partial class GameMovement
 			newOrigin += viewDelta;
 		}
 
-		bool saveducked = Player.m_bDucked;
-		Player.m_bDucked = false;
+		bool saveducked = Player.IsDucked;
+		Player.IsDucked = false;
 
 		var trace = TraceBBox( Move.Position, newOrigin );
-		Player.m_bDucked = saveducked;
+		Player.IsDucked = saveducked;
 
 		if ( trace.StartedSolid || (trace.Fraction != 1.0f) )
 			return false;
@@ -122,8 +129,8 @@ partial class GameMovement
 		if ( Player.IsDucked )
 			return;
 
-		Player.AddFlags( PlayerFlags.FL_DUCKING );
-		Player.m_flDuckTime = TimeToDuck;
+		Player.IsDucked = true;
+		Player.DuckTime = TimeToDuck;
 
 		if ( Player.IsGrounded )
 		{
@@ -135,6 +142,8 @@ partial class GameMovement
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 			var viewDelta = hullSizeNormal - hullSizeCrouch;
 			Move.Position += viewDelta;
+
+			Player.AirDuckCount++;
 		}
 
 		// See if we are stuck?
@@ -147,8 +156,8 @@ partial class GameMovement
 		if ( !Player.IsDucked )
 			return;
 
-		Player.RemoveFlag( PlayerFlags.FL_DUCKING );
-		Player.m_flDuckTime = 0;
+		Player.IsDucked = false;
+		Player.DuckTime = 0;
 
 		if ( Player.IsGrounded )
 		{

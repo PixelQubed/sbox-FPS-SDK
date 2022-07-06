@@ -5,7 +5,6 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	public bool IsDucked => Flags.HasFlag( PlayerFlags.FL_DUCKING );
 
 	public bool InWater => WaterLevelType >= WaterLevelType.Feet;
 	public bool IsGrounded => GroundEntity != null;

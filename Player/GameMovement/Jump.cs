@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
+﻿using Sandbox;
 
 namespace Amper.Source1;
 
@@ -32,11 +27,11 @@ partial class GameMovement
 
 		SetGroundEntity( null );
 
-		Player.DoJumpSound( Move.Position, Player.m_pSurfaceData, 1 );
+		Player.DoJumpSound( Move.Position, Player.SurfaceData, 1 );
 		Player.SetAnimParameter( "b_jump", true );
 
 		var startz = Move.Velocity[2];
-		if ( Player.m_bDucking || Player.Flags.HasFlag( PlayerFlags.FL_DUCKING ) )
+		if ( Player.IsDucked )
 		{
 			Move.Velocity[2] = JumpImpulse;
 		}

@@ -46,7 +46,7 @@ partial class Source1Player
 			volume = velocity.RemapClamped( MaxSafeFallSpeed / 2, MaxSafeFallSpeed, .85f, 1 );
 		}
 
-		DoLandSound( Position, m_pSurfaceData, volume );
+		DoLandSound( Position, SurfaceData, volume );
 
 		//
 		// Knock the screen around a little bit, temporary effect.

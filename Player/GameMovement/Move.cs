@@ -232,7 +232,7 @@ partial class GameMovement
 					}
 					else
 					{
-						ClipVelocity( original_velocity, planes[i], out new_velocity, 1 + sv_bounce * (1 - Player.m_surfaceFriction) );
+						ClipVelocity( original_velocity, planes[i], out new_velocity, 1 + sv_bounce * (1 - Player.SurfaceFriction) );
 					}
 				}
 

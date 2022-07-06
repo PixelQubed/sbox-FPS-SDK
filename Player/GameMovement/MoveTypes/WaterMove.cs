@@ -15,8 +15,8 @@ partial class GameMovement
 			CheckWaterJump();
 
 		// If we are falling again, then we must not trying to jump out of water any more.
-		if ( Move.Velocity.z < 0 && Player.m_flWaterJumpTime != 0 )
-			Player.m_flWaterJumpTime = 0.0f;
+		if ( Move.Velocity.z < 0 && Player.WaterJumpTime != 0 )
+			Player.WaterJumpTime = 0.0f;
 
 		// Was jump button pressed?
 		if ( Input.Down( InputButton.Jump ) )
@@ -80,7 +80,7 @@ partial class GameMovement
 		var newspeed = 0f;
 		if ( speed != 0 )
 		{
-			newspeed = speed - Time.Delta * speed * sv_friction * Player.m_surfaceFriction;
+			newspeed = speed - Time.Delta * speed * sv_friction * Player.SurfaceFriction;
 			if ( newspeed < 0.1f )
 			{
 				newspeed = 0;
@@ -101,7 +101,7 @@ partial class GameMovement
 			{
 				wishvel = wishvel.Normal;
 
-				var accelspeed = sv_accelerate * wishspeed * Time.Delta * Player.m_surfaceFriction;
+				var accelspeed = sv_accelerate * wishspeed * Time.Delta * Player.SurfaceFriction;
 				if ( accelspeed > addspeed ) accelspeed = addspeed;
 
 				Move.Velocity += accelspeed * wishvel;
@@ -148,22 +148,22 @@ partial class GameMovement
 
 	public virtual void WaterJump( )
 	{
-		if ( Player.m_flWaterJumpTime > 10000 )
-			Player.m_flWaterJumpTime = 10000;
+		if ( Player.WaterJumpTime > 10000 )
+			Player.WaterJumpTime = 10000;
 
 		if ( !Player.IsJumpingFromWater )
 			return;
 
-		Player.m_flWaterJumpTime -= 1000.0f * Time.Delta;
+		Player.WaterJumpTime -= 1000.0f * Time.Delta;
 
-		if ( Player.m_flWaterJumpTime <= 0 || Player.WaterLevelType == WaterLevelType.NotInWater ) 
+		if ( Player.WaterJumpTime <= 0 || Player.WaterLevelType == WaterLevelType.NotInWater ) 
 		{
-			Player.m_flWaterJumpTime = 0;
+			Player.WaterJumpTime = 0;
 			Player.RemoveFlag( PlayerFlags.FL_WATERJUMP );
 		}
 
-		Move.Velocity[0] = Player.m_vecWaterJumpVel[0];
-		Move.Velocity[1] = Player.m_vecWaterJumpVel[1];
+		Move.Velocity[0] = Player.WaterJumpVelocity[0];
+		Move.Velocity[1] = Player.WaterJumpVelocity[1];
 	}
 
 	public virtual bool CheckWaterJumpButton()
@@ -171,10 +171,10 @@ partial class GameMovement
 		// See if we are water jumping.  If so, decrement count and return.
 		if ( Player.IsJumpingFromWater )
 		{
-			Player.m_flWaterJumpTime -= Time.Delta;
-			if ( Player.m_flWaterJumpTime < 0 )
+			Player.WaterJumpTime -= Time.Delta;
+			if ( Player.WaterJumpTime < 0 )
 			{
-				Player.m_flWaterJumpTime = 0;
+				Player.WaterJumpTime = 0;
 			}
 
 			return false;
@@ -190,10 +190,10 @@ partial class GameMovement
 			Move.Velocity.z = 100;
 
 			// Play swimming sound.
-			if ( Player.m_flSwimSoundTime <= 0 )
+			if ( Player.NextSwimSoundTime <= 0 )
 			{
 				// Don't play sound again for 1 second.
-				Player.m_flSwimSoundTime = 1000;
+				Player.NextSwimSoundTime = 1000;
 				Player.OnWaterWade();
 			}
 

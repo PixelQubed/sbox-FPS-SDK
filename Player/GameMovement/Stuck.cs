@@ -23,7 +23,7 @@ partial class GameMovement
 
 	protected void ResetStuckOffsets()
 	{
-		Player.m_StuckLast = 0;
+		Player.LastStuckOffsetIndex = 0;
 	}
 
 	protected bool CheckStuck()
@@ -48,10 +48,10 @@ partial class GameMovement
 		var fTime = Time.Now;
 
 		// Too soon?
-		if ( Player.m_StuckCheckTime[idx] >= fTime - CHECKSTUCK_MINTIME )
+		if ( Player.LastStuckCheckTime[idx] >= fTime - CHECKSTUCK_MINTIME )
 			return true;
 
-		Player.m_StuckCheckTime[idx] = fTime;
+		Player.LastStuckCheckTime[idx] = fTime;
 
 		GetRandomStuckOffsets( out offset );
 		test = vBase + offset;
@@ -74,7 +74,7 @@ partial class GameMovement
 	{
 		// Last time we did a full
 		int idx;
-		idx = Player.m_StuckLast++;
+		idx = Player.LastStuckOffsetIndex++;
 
 		offset = rgv3tStuckTable[idx % 54];
 		return (idx % 54);

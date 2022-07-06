@@ -75,10 +75,10 @@ public partial class GameMovement
 		// reset x,y
 		Player.EyeLocalPosition = GetPlayerViewOffset( false );
 
-		if ( Player.m_flDuckTime == 0 )
+		if ( Player.DuckTime == 0 )
 			return;
 
-		var duckProgress = Math.Clamp( Player.m_flDuckTime / TimeToDuck, 0, 1 );
+		var duckProgress = Math.Clamp( Player.DuckTime / TimeToDuck, 0, 1 );
 
 		// this updates z offset.
 		SetDuckedEyeOffset( Util.SimpleSpline( duckProgress ) );
@@ -140,13 +140,6 @@ public partial class GameMovement
 			if ( Player.m_nJumpTimeMsecs < 0 )
 				Player.m_nJumpTimeMsecs = 0;
 		}
-
-		if ( Player.m_flSwimSoundTime > 0 )
-		{
-			Player.m_flSwimSoundTime -= frame_msec;
-			if ( Player.m_flSwimSoundTime < 0 )
-				Player.m_flSwimSoundTime = 0;
-		}
 	}
 
 	protected void ReduceTimer( ref int timer, int delta )
@@ -183,7 +176,7 @@ public partial class GameMovement
 			return;
 
 		// Determine amount of acceleration.
-		var accelspeed = accel * wishspeed * Time.Delta * Player.m_surfaceFriction;
+		var accelspeed = accel * wishspeed * Time.Delta * Player.SurfaceFriction;
 
 		// Cap at addspeed
 		if ( accelspeed > addspeed )
@@ -194,7 +187,7 @@ public partial class GameMovement
 
 	public virtual bool CanAccelerate()
 	{
-		if ( Player.m_flWaterJumpTime != 0 )
+		if ( Player.WaterJumpTime != 0 )
 			return false;
 
 		return true;
@@ -216,7 +209,7 @@ public partial class GameMovement
 			return;
 
 		// Determine amount of acceleration.
-		var accelspeed = acceleration * Time.Delta * wishspeed * Player.m_surfaceFriction;
+		var accelspeed = acceleration * Time.Delta * wishspeed * Player.SurfaceFriction;
 
 		// Cap at addspeed
 		if ( accelspeed > addspeed )
@@ -263,7 +256,7 @@ public partial class GameMovement
 	}
 	public virtual void CategorizePosition()
 	{
-		Player.m_surfaceFriction = 1.0f;
+		Player.SurfaceFriction = 1.0f;
 		// CheckWater();
 
 		if ( Player.IsObserver )
@@ -312,7 +305,7 @@ public partial class GameMovement
 					if ( Move.Velocity.z > 0 &&
 						Player.MoveType != MoveType.MOVETYPE_NOCLIP )
 					{
-						Player.m_surfaceFriction = 0.25f;
+						Player.SurfaceFriction = 0.25f;
 					}
 				}
 				else

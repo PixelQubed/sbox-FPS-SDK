@@ -29,14 +29,15 @@ partial class GameMovement
 			$"\n" +
 
 			$"[DUCK]\n" +
-			$"m_flDuckTime          {Player.m_flDuckTime}\n" +
-			$"m_bDucked             {Player.m_bDucked}\n" +
-			$"m_bDucking            {Player.m_bDucking}\n" +
+			$"DuckTime              {Player.DuckTime}\n" +
+			$"IsDucked              {Player.IsDucked}\n" +
+			$"IsDucking             {Player.IsDucking}\n" +
+			$"AirDuckCount          {Player.AirDuckCount}\n" +
 			$"\n" +
 
 			$"[WATER]\n" +
 			$"Water Level           {Player.WaterLevelType}\n" +
-			$"m_flWaterJumpTime     {Player.m_flWaterJumpTime}";
+			$"WaterJumpTime         {Player.WaterJumpTime}";
 
 		return str;
 	}

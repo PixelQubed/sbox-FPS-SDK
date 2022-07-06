@@ -67,7 +67,7 @@ partial class Source1Player
 		if ( IsDucked )
 			volume *= 0.5f;
 
-		DoFootstep( position, m_pSurfaceData, volume );
+		DoFootstep( position, SurfaceData, volume );
 		TimeSinceFootstep = 0;
 	}
 

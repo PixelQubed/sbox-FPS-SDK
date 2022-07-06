@@ -147,7 +147,7 @@ partial class GameMovement
 			//  threshhold, bleed the theshold amount.
 			float control = (spd < maxspeed / 4) ? (maxspeed / 4) : spd;
 
-			float friction = sv_friction * Player.m_surfaceFriction;
+			float friction = sv_friction * Player.SurfaceFriction;
 
 			// Add the amount to the drop amount.
 			float drop = control * friction * Time.Delta;
