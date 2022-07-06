@@ -32,9 +32,7 @@ partial class Source1Player
 	//
 	[Net, Predicted] public bool m_bDucking { get; set; }
 	[Net, Predicted] public bool m_bDucked { get; set; }
-	[Net, Predicted] public int m_nDuckTimeMsecs { get; set; }
-	[Net, Predicted] public int m_nDuckJumpTimeMsecs { get; set; }
-	[Net, Predicted] public bool m_bInDuckJump { get; set; }
+	[Net, Predicted] public float m_flDuckTime { get; set; }
 
 	[Net, Predicted] public PlayerFlags Flags { get; set; }
 	

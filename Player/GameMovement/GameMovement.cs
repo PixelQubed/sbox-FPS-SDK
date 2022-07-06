@@ -72,23 +72,17 @@ public partial class GameMovement
 
 	public virtual void UpdateViewOffset()
 	{
-		if ( Player.m_nDuckJumpTimeMsecs != 0 )
-		{
-			int nDuckMilliseconds = Math.Max( 0, GAMEMOVEMENT_DUCK_TIME - Player.m_nDuckJumpTimeMsecs );
-			if ( nDuckMilliseconds > TIME_TO_UNDUCK_MSECS )
-			{
-				Player.m_nDuckJumpTimeMsecs = 0;
-				SetDuckedEyeOffset( 0.0f );
-			}
-			else
-			{
-				float flDuckFraction = Util.SimpleSpline( 1.0f - FractionUnDucked( nDuckMilliseconds ) );
-				SetDuckedEyeOffset( flDuckFraction );
-			}
-		}
-	}
+		// reset x,y
+		Player.EyeLocalPosition = GetPlayerViewOffset( false );
 
-	public virtual bool IsDead => !Player.IsAlive;
+		if ( Player.m_flDuckTime == 0 )
+			return;
+
+		var duckProgress = Math.Clamp( Player.m_flDuckTime / TimeToDuck, 0, 1 );
+
+		// this updates z offset.
+		SetDuckedEyeOffset( Util.SimpleSpline( duckProgress ) );
+	}
 
 	public virtual void SimulateModifiers()
 	{
@@ -139,20 +133,6 @@ public partial class GameMovement
 	{
 		float frame_msec = 1000.0f * Time.Delta;
 		int nFrameMsec = (int)frame_msec;
-
-		if ( Player.m_nDuckTimeMsecs > 0 )
-		{
-			Player.m_nDuckTimeMsecs -= nFrameMsec;
-			if ( Player.m_nDuckTimeMsecs < 0 )
-				Player.m_nDuckTimeMsecs = 0;
-		}
-
-		if ( Player.m_nDuckJumpTimeMsecs > 0 )
-		{
-			Player.m_nDuckJumpTimeMsecs -= nFrameMsec;
-			if ( Player.m_nDuckJumpTimeMsecs < 0 )
-				Player.m_nDuckJumpTimeMsecs = 0;
-		}
 
 		if ( Player.m_nJumpTimeMsecs > 0 )
 		{

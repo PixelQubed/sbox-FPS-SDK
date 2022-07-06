@@ -18,6 +18,7 @@ partial class GameMovement
 			$"[PLAYER]\n" +
 			$"GroundEntity          {Player.GroundEntity}\n" +
 			$"MoveType              {Player.MoveType}\n" +
+			$"Flags                 {Player.Flags}\n" +
 			$"\n" +
 
 			$"[Move Data]\n" +
@@ -28,11 +29,9 @@ partial class GameMovement
 			$"\n" +
 
 			$"[DUCK]\n" +
-			$"m_bDucking            {Player.m_bDucking}\n" +
+			$"m_flDuckTime          {Player.m_flDuckTime}\n" +
 			$"m_bDucked             {Player.m_bDucked}\n" +
-			$"m_nDuckTimeMsecs      {Player.m_nDuckTimeMsecs}\n" +
-			$"m_nDuckJumpTimeMsecs  {Player.m_nDuckJumpTimeMsecs}\n" +
-			$"m_bInDuckJump         {Player.m_bInDuckJump}\n" +
+			$"m_bDucking            {Player.m_bDucking}\n" +
 			$"\n" +
 
 			$"[WATER]\n" +

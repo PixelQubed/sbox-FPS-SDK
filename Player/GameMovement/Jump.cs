@@ -13,7 +13,7 @@ partial class GameMovement
 
 	public bool CanJump()
 	{
-		if ( IsDead )
+		if ( !Player.IsAlive )
 			return false;
 
 		if ( !Player.GroundEntity.IsValid() )
