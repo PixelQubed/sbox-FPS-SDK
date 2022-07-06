@@ -16,6 +16,9 @@ partial class GameMovement
 		if ( IsDead )
 			return false;
 
+		if ( !Player.GroundEntity.IsValid() )
+			return false;
+
 		return true;
 	}
 
