@@ -415,6 +415,14 @@ public partial class GameMovement
 				Player.MoveType != MoveType.MOVETYPE_NOCLIP &&
 				Player.MoveType != MoveType.MOVETYPE_OBSERVER )
 		{
+			if ( !Player.CanMove() )
+			{
+				ForwardMove = 0;
+				SideMove = 0;
+				UpMove = 0;
+				MaxSpeed = 0;
+			}
+
 			float spd = (ForwardMove * ForwardMove) +
 					(SideMove * SideMove) +
 					(UpMove * UpMove);
