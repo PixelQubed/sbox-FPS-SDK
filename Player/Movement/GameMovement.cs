@@ -7,6 +7,26 @@ public partial class GameMovement
 {
 	protected Source1Player Player;
 
+	public virtual void FrameSimulate( Source1Player player )
+	{
+		// Check if we've supplied proper player.
+		if ( !player.IsValid() )
+			return;
+
+		// Store variables.
+		Player = player;
+		SetupMoveData( player );
+
+		// Do frame updates
+		FrameUpdate();
+		ApplyMoveData( player );
+	}
+
+	public virtual void FrameUpdate()
+	{
+		ViewAngles = Input.Rotation;
+	}
+
 	public virtual void Simulate( Source1Player player )
 	{
 		// Check if we've supplied proper player.
@@ -18,9 +38,8 @@ public partial class GameMovement
 		SetupMoveData( player );
 
 		// Do movement.
-		PlayerMove();
+		Update();
 		ShowDebugOverlay();
-
 		ApplyMoveData( player );
 	}
 
@@ -52,7 +71,7 @@ public partial class GameMovement
 		player.Velocity = Velocity;
 	}
 
-	public virtual void PlayerMove()
+	public virtual void Update()
 	{
 		CheckParameters();
 		ReduceTimers();

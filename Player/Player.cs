@@ -35,6 +35,37 @@ public partial class Source1Player : AnimatedEntity
 
 	public virtual float GetMaxHealth() => 100;
 
+	public override void FrameSimulate( Client cl )
+	{
+		base.FrameSimulate( cl );
+		GameRules.Current.Movement.FrameSimulate( this );
+	}
+
+	public override void Simulate( Client cl )
+	{
+		if ( IsObserver )
+			SimulateObserver();
+
+		UpdateMaxSpeed();
+
+		//
+		// Singleton Controllers
+		//
+
+		GameRules.Current.Movement?.Simulate( this );
+		Animator?.Simulate( this );
+
+		//
+		// Weapons
+		//
+
+		SimulateWeaponSwitch();
+		SimulateActiveWeapon( cl, ActiveWeapon );
+		SimulatePassiveChildren( cl );
+
+		SimulateHover();
+	}
+
 	public virtual void Respawn()
 	{
 		//
@@ -178,30 +209,6 @@ public partial class Source1Player : AnimatedEntity
 
 	public DamageInfo LastDamageInfo { get; set; }
 
-	public override void Simulate( Client cl )
-	{
-		if ( IsObserver )
-			SimulateObserver();
-
-		UpdateMaxSpeed();
-
-		//
-		// Singleton Controllers
-		//
-
-		GameRules.Current.Movement?.Simulate( this );
-		Animator?.Simulate( this );
-
-		//
-		// Weapons
-		//
-
-		SimulateWeaponSwitch();
-		SimulateActiveWeapon( cl, ActiveWeapon );
-		SimulatePassiveChildren( cl );
-
-		SimulateHover();
-	}
 
 	public void UpdateMaxSpeed()
 	{
