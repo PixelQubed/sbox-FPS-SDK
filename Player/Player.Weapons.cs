@@ -42,9 +42,7 @@ partial class Source1Player
 		}
 
 		if ( newWeapon.IsValid() )
-		{
 			newWeapon.OnDeploy( this );
-		}
 	}
 
 	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
@@ -99,6 +97,11 @@ partial class Source1Player
 		if ( !weapon.CanEquip( this ) )
 			return false;
 
+		// See if have another weapon in this weapon's slot.
+		var slotWeapon = GetWeaponInSlot( weapon.SlotNumber );
+		if ( slotWeapon.IsValid() )
+			ThrowWeapon( slotWeapon );
+
 		weapon.OnEquip( this );
 
 		if ( makeActive )
@@ -135,7 +138,8 @@ partial class Source1Player
 	public virtual void SwitchToNextBestWeapon()
 	{
 		var weapons = Children.OfType<Source1Weapon>()
-			.Where( x => x != ActiveWeapon && CanSwitchTo( x ) );
+			.Where( x => x != ActiveWeapon && CanSwitchTo( x ) )
+			.OrderBy( x => x.SlotNumber );
 
 		var first = weapons.FirstOrDefault();
 		if ( first.IsValid() )
@@ -187,4 +191,58 @@ partial class Source1Player
 	}
 
 	public virtual ViewModel CreateViewModel() => new ViewModel();
+
+	public int GetActiveSlot()
+	{
+		if ( ActiveWeapon.IsValid() )
+			return ActiveWeapon.SlotNumber;
+
+		return 0;
+	}
+
+	public Source1Weapon GetWeaponInSlot( int slot )
+	{
+		return Children.OfType<Source1Weapon>().Where( x => x.SlotNumber == slot ).FirstOrDefault();
+	}
+
+	public virtual bool ThrowWeapon( Source1Weapon weapon, float force = 400 )
+	{
+		var origin = WorldSpaceBounds.Center;
+		var towards = origin + EyeRotation.Forward * 100 + Vector3.Up * 100;
+
+		if ( DropWeapon( weapon, origin, towards, force ) )
+		{
+			weapon.ApplyLocalAngularImpulse( new Vector3( Rand.Float( -600, 600 ), Rand.Float( -600, 600 ), 0 ) );
+			return true;
+		}
+
+		return false;
+	}
+
+	public virtual bool DropWeapon( Source1Weapon weapon, Vector3 origin, Vector3 towards, float force )
+	{
+		if ( !weapon.IsValid() )
+			return false;
+
+		if ( !IsEquipped( weapon ) )
+			return false;
+
+		if ( ActiveWeapon == weapon )
+		{
+			if ( !CanSwitchFrom( weapon ) )
+				return false;
+
+			ActiveWeapon = null;
+		}
+
+		weapon.OnDrop( this );
+		weapon.Position = origin;
+
+		var toPoint = towards - origin;
+		toPoint = toPoint.Normal;
+
+		var velocity = toPoint * force;
+		weapon.ApplyAbsoluteImpulse( velocity );
+		return true;
+	}
 }

@@ -7,6 +7,7 @@ public partial class Source1Weapon : AnimatedEntity
 	public Source1Player Player => Owner as Source1Player;
 	[Net] public int ViewModelIndex { get; set; }
 	[Net] public int AmmoTypeNumber { get; set; }
+	[Net] public int SlotNumber { get; set; }
 
 	public override void Spawn()
 	{
@@ -21,9 +22,6 @@ public partial class Source1Weapon : AnimatedEntity
 
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
-
-		// Assume.
-		ViewModelIndex = 0;
 	}
 
 	public virtual bool CanEquip( Source1Player player ) => true;

@@ -23,6 +23,9 @@ partial class Source1Weapon
 
 	public virtual bool CanAttack()
 	{
+		if ( !Owner.IsValid() )
+			return false;
+
 		if ( !GameRules.Current.CanWeaponsAttack() )
 			return false;
 
