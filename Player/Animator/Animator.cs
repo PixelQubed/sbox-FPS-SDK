@@ -20,8 +20,7 @@ public partial class PlayerAnimator : BaseNetworkable
 		UpdateMovement();
 		UpdateRotation();
 		UpdateLookAt();
-
-		// UpdateDucking();
+		UpdateDucking();
 	}
 
 	public virtual Rotation GetIdealRotation()
@@ -67,21 +66,9 @@ public partial class PlayerAnimator : BaseNetworkable
 		SetAnimParameter( "move_x", forward / Player.MaxSpeed );
 	}
 
-	public virtual float DuckMaxAnimSpeed => 10;
-	[Net, Predicted] float AnimDuckProgress { get; set; }
-
 	public virtual void UpdateDucking()
 	{
-		var sign = AnimDuckProgress <= Player.DuckProgress ? 1 : -1;
-
-		var newLerpedValue = AnimDuckProgress.LerpTo( Player.DuckProgress, Time.Delta * DuckMaxAnimSpeed );
-		var lerpedDelta = MathF.Abs( newLerpedValue - AnimDuckProgress );
-		var directDelta = MathF.Abs( Player.DuckProgress - AnimDuckProgress );
-		var delta = Math.Min( directDelta, lerpedDelta );
-
-		AnimDuckProgress += delta * sign;
-
-		SetAnimParameter( "f_duck", AnimDuckProgress );
+		SetAnimParameter( "f_duck", Player.DuckProgress );
 		SetAnimParameter( "b_ducked", Player.IsDucked );
 	}
 }
