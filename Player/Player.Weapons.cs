@@ -8,6 +8,7 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
+	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
 
 	/// <summary>
 	/// Can this player attack using their weapons?
@@ -19,11 +20,31 @@ partial class Source1Player
 		if ( Input.ActiveChild is Source1Weapon newWeapon )
 			SwitchToWeapon( newWeapon );
 
+		if ( LastActiveWeapon != ActiveWeapon )
+		{
+			OnSwitchedActiveWeapon( LastActiveWeapon, ActiveWeapon );
+			LastActiveWeapon = ActiveWeapon;
+		}
+
 		if ( !ActiveWeapon.IsValid() )
 			return;
 
 		if ( ActiveWeapon.IsAuthority )
 			ActiveWeapon.Simulate( cl );
+	}
+
+	public virtual void OnSwitchedActiveWeapon( Source1Weapon lastWeapon, Source1Weapon newWeapon )
+	{
+		if ( lastWeapon.IsValid() )
+		{
+			if ( IsEquipped( lastWeapon ) )
+				lastWeapon.OnHolster( this );
+		}
+
+		if ( newWeapon.IsValid() )
+		{
+			newWeapon.OnDeploy( this );
+		}
 	}
 
 	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
@@ -55,13 +76,9 @@ partial class Source1Player
 			// Check if weapon allows us to be switched from.
 			// if( !ActiveWeapon.CanHolster() )
 			// return false;
-
-			ActiveWeapon.OnHolster( this );
 		}
 
 		ActiveWeapon = weapon;
-		ActiveWeapon.OnDeploy( this );
-
 		return true;
 	}
 
