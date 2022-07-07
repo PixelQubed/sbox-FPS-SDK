@@ -180,8 +180,6 @@ public partial class Source1Player : AnimatedEntity
 
 	public override void Simulate( Client cl )
 	{
-		SimulateVisuals();
-
 		if ( IsObserver )
 			SimulateObserver();
 
