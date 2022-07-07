@@ -7,9 +7,6 @@ partial class GameMovement
 	//
 	// Ducking
 	//
-	public virtual float TimeToDuck => .2f;
-	public virtual float TimeToUnduck => .2f;
-	public virtual int MaxAirDucks => 1;
 
 	//
 	// Jumping

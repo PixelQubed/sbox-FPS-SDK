@@ -14,8 +14,10 @@ partial class Source1Player
 	//
 
 	[Net, Predicted] public float DuckTime { get; set; }
+	[Net, Predicted] public float DuckSpeed { get; set; }
 	[Net, Predicted] public bool IsDucked { get; set; }
 	[Net, Predicted] public int AirDuckCount { get; set; }
+	[Net, Predicted] public float LastDuckTime { get; set; }
 	public bool IsDucking => DuckTime > 0;
 
 	//
@@ -49,9 +51,6 @@ partial class Source1Player
 
 
 	[Net, Predicted] public float MaxSpeed { get; set; }
-
-	[Net, Predicted] public float DuckAmount { get; set; }
-	[Net, Predicted] public float DuckSpeed { get; set; }
 }
 
 [Flags]

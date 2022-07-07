@@ -1,29 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
+﻿using Sandbox;
+using System;
 
 namespace Amper.Source1;
 
 partial class GameMovement
 {
-	public virtual void HandleDuckingSpeedCrop()
+	public virtual float TimeToDuck => .2f;
+	public virtual float TimeToUnduck => .2f;
+	public virtual int MaxAirDucks => 1;
+	public virtual float IdealDuckSpeed => 1;
+	public float DuckProgress => Math.Clamp( Player.DuckTime / TimeToDuck, 0, 1 );
+	public virtual float TimeBetweenDucks => 0;
+
+	public virtual float DuckingSpeedModifier => 1;
+	public virtual float UnduckingSpeedModifier => 1;
+
+	public virtual float CalculateDuckSpeed( bool ducking )
 	{
-		if ( Player.IsDucked && Player.IsGrounded ) 
-		{
-			float frac = Player.DuckingSpeedMultiplier;
-			Move.ForwardMove *= frac;
-			Move.SideMove *= frac;
-			Move.UpMove *= frac;
-		}
+		var speed = Player.DuckSpeed;
+
+		speed *= ducking ? DuckingSpeedModifier : UnduckingSpeedModifier;
+		return speed;
 	}
+
 
 	public virtual bool WishDuck() => Input.Down( InputButton.Duck );
 	public virtual void SimulateDucking()
 	{
-		if ( WishDuck() )
+		// Reduce duck-spam penalty over time
+		Player.DuckSpeed = Player.DuckSpeed.Approach( IdealDuckSpeed, Time.Delta );
+
+		if ( WishDuck() && IsDuckingEnabled() )
 		{
 			OnDucking();
 		}
@@ -51,10 +58,8 @@ partial class GameMovement
 		if ( !CanDuck() )
 			return;
 
-		Player.DuckTime = Player.DuckTime.Approach( TimeToDuck, Time.Delta );
-
-		if ( Player.IsDucked )
-			return;
+		var speed = CalculateDuckSpeed( true );
+		Player.DuckTime = Player.DuckTime.Approach( TimeToDuck, Time.Delta * speed );
 
 		if ( Player.DuckTime >= TimeToDuck || Player.IsInAir )
 			FinishDuck();
@@ -65,10 +70,8 @@ partial class GameMovement
 		if ( !CanUnduck() )
 			return;
 
-		Player.DuckTime = Player.DuckTime.Approach( 0, Time.Delta );
-
-		if ( !Player.IsDucked )
-			return;
+		var speed = CalculateDuckSpeed( false );
+		Player.DuckTime = Player.DuckTime.Approach( 0, Time.Delta * speed );
 
 		if ( Player.DuckTime <= 0 || Player.IsInAir )
 			FinishUnDuck();
@@ -131,6 +134,7 @@ partial class GameMovement
 
 		Player.IsDucked = true;
 		Player.DuckTime = TimeToDuck;
+		Player.LastDuckTime = Time.Now;
 
 		if ( Player.IsGrounded )
 		{
@@ -198,4 +202,34 @@ partial class GameMovement
 		Move.Position = test;
 	}
 
+	public virtual float GetDuckSpeedModifier( float fraction )
+	{
+		return Player.DuckingSpeedMultiplier * fraction + 1 - fraction;
+	}
+
+	public virtual void HandleDuckingSpeedCrop()
+	{
+		if ( Player.ObserverMode == ObserverMode.Roaming )
+			return;
+
+		if ( Player.IsDucking )
+		{
+			float frac = GetDuckSpeedModifier( DuckProgress );
+			Move.ForwardMove *= frac;
+			Move.SideMove *= frac;
+			Move.UpMove *= frac;
+			Move.MaxSpeed *= frac;
+		}
+	}
+
+	public virtual bool IsDuckingEnabled()
+	{
+		if ( Player.DuckSpeed < 0.2f )
+			return false;
+
+		if ( !Player.IsDucked && Time.Now < (Player.LastDuckTime + TimeBetweenDucks) )
+			return false;
+
+		return true;
+	}
 }

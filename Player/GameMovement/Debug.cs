@@ -26,6 +26,7 @@ partial class GameMovement
 			$"SideMove              {Move.SideMove}\n" +
 			$"UpMove                {Move.UpMove}\n" +
 			$"Velocity              {Move.Velocity}\n" +
+			$"Speed                 {Move.Velocity.Length}\n" +
 			$"\n" +
 
 			$"[DUCK]\n" +
@@ -33,11 +34,12 @@ partial class GameMovement
 			$"IsDucked              {Player.IsDucked}\n" +
 			$"IsDucking             {Player.IsDucking}\n" +
 			$"AirDuckCount          {Player.AirDuckCount}\n" +
+			$"DuckSpeed             {Player.DuckSpeed}\n" +
 			$"\n" +
 
 			$"[WATER]\n" +
 			$"Water Level           {Player.WaterLevelType}\n" +
-			$"WaterJumpTime         {Player.WaterJumpTime}";
+			$"WaterJumpTime         {Player.WaterJumpTime}\n";
 
 		return str;
 	}
