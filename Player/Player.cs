@@ -284,7 +284,7 @@ public partial class Source1Player : AnimatedEntity
 		TakeDamage( info );
 	}
 
-	public virtual float DuckingSpeedMultiplier => 0.33f;
+	public virtual float DuckingSpeedModifier => 0.33f;
 
 	/// <summary>
 	/// Called after the camera setup logic has run. Allow the player to

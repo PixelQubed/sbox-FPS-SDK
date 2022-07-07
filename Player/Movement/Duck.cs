@@ -202,7 +202,7 @@ partial class GameMovement
 
 	public virtual float GetDuckSpeedModifier( float fraction )
 	{
-		return Player.DuckingSpeedMultiplier * fraction + 1 - fraction;
+		return Player.DuckingSpeedModifier * fraction + 1 - fraction;
 	}
 
 	public virtual void HandleDuckingSpeedCrop()

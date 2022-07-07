@@ -8,12 +8,12 @@ partial class PlayerAnimator
 	public virtual float LegShuffleMaxYawDiff => 45;
 	public virtual float LegShuffleYawSpeed => 10;
 
-	[Net, Predicted] protected Rotation IdealLegShuffleRotation { get; set; }
+	[Net, Predicted] protected Rotation IdealLegShuffleRotation { get; set; } = Rotation.Identity;
 
 	public virtual void UpdateLegShuffle()
 	{
 		var idealRotation = GetIdealRotation();
-		var yawDiff = Rotation.Difference( IdealLegShuffleRotation, idealRotation ).Angle();
+		var yawDiff = Rotation.Difference( idealRotation, IdealLegShuffleRotation ).Angle();
 
 		// See if we need to start shuffling.
 		if ( yawDiff >= LegShuffleMaxYawDiff )
