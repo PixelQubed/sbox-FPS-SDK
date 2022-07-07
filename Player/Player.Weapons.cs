@@ -208,9 +208,11 @@ partial class Source1Player
 	public virtual bool ThrowWeapon( Source1Weapon weapon, float force = 400 )
 	{
 		var origin = WorldSpaceBounds.Center;
-		var towards = origin + EyeRotation.Forward * 100 + Vector3.Up * 100;
+		var vecForce = EyeRotation.Forward * 100 + Vector3.Up * 100;
+		vecForce = vecForce.Normal;
+		vecForce *= 400;
 
-		if ( DropWeapon( weapon, origin, towards, force ) )
+		if ( DropWeapon( weapon, origin, vecForce ) )
 		{
 			weapon.ApplyLocalAngularImpulse( new Vector3( Rand.Float( -600, 600 ), Rand.Float( -600, 600 ), 0 ) );
 			return true;
@@ -219,7 +221,7 @@ partial class Source1Player
 		return false;
 	}
 
-	public virtual bool DropWeapon( Source1Weapon weapon, Vector3 origin, Vector3 towards, float force )
+	public virtual bool DropWeapon( Source1Weapon weapon, Vector3 origin, Vector3 force )
 	{
 		if ( !weapon.IsValid() )
 			return false;
@@ -237,12 +239,8 @@ partial class Source1Player
 
 		weapon.OnDrop( this );
 		weapon.Position = origin;
+		weapon.ApplyAbsoluteImpulse( force );
 
-		var toPoint = towards - origin;
-		toPoint = toPoint.Normal;
-
-		var velocity = toPoint * force;
-		weapon.ApplyAbsoluteImpulse( velocity );
 		return true;
 	}
 }
