@@ -37,7 +37,7 @@ partial class GameMovement
 			Player.AirDuckCount = 0;
 			Player.WaterJumpTime = 0;
 
-			Move.Velocity.z = 0;
+			Velocity.z = 0;
 		}
 	}
 

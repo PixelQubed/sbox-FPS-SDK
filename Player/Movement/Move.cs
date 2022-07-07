@@ -19,81 +19,81 @@ partial class GameMovement
 			return;
 		}
 
-		MoveHelper mover = new MoveHelper( Move.Position, Move.Velocity );
+		MoveHelper mover = new MoveHelper( Position, Velocity );
 		mover.Trace = SetupBBoxTrace( 0, 0 );
 		mover.MaxStandableAngle = sv_maxstandableangle;
 
 		mover.TryMoveWithStep( Time.Delta, Player.m_flStepSize );
 
-		Move.Position = mover.Position;
-		Move.Velocity = mover.Velocity;
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 	}
 
 	public virtual void StepMove2()
 	{
-		var vecEndPos = Move.Position + Move.Velocity * Time.Delta;
+		var vecEndPos = Position + Velocity * Time.Delta;
 
 		// Try sliding forward both on ground and up 16 pixels
 		//  take the move that goes farthest
-		var vecPos = Move.Position;
-		var vecVel = Move.Velocity;
+		var vecPos = Position;
+		var vecVel = Velocity;
 
 		// Slide move down.
 		TryPlayerMove();
 
 		// Down results.
-		var vecDownPos = Move.Position;
-		var vecDownVel = Move.Velocity;
+		var vecDownPos = Position;
+		var vecDownVel = Velocity;
 
 		// Reset original values.
-		Move.Position = vecPos;
-		Move.Velocity = vecVel;
+		Position = vecPos;
+		Velocity = vecVel;
 
 		// Move up a stair height.
-		vecEndPos = Move.Position;
+		vecEndPos = Position;
 		vecEndPos.z += Player.m_flStepSize + DIST_EPSILON;
 
-		var trace = TraceBBox( Move.Position, vecEndPos );
-		Move.Position = trace.EndPosition;
+		var trace = TraceBBox( Position, vecEndPos );
+		Position = trace.EndPosition;
 
 		// Slide move up.
 		TryPlayerMove();
 
 		// Move down a stair (attempt to).
-		vecEndPos = Move.Position;
+		vecEndPos = Position;
 		vecEndPos.z -= Player.m_flStepSize + DIST_EPSILON;
 
-		trace = TraceBBox( Move.Position, vecEndPos );
+		trace = TraceBBox( Position, vecEndPos );
 
 		// If we are not on the ground any more then use the original movement attempt.
 		if ( trace.Normal.z < 0.7f )
 		{
-			Move.Position = vecDownPos;
-			Move.Velocity = vecDownVel;
+			Position = vecDownPos;
+			Velocity = vecDownVel;
 			return;
 		}
 
 		// If the trace ended up in empty space, copy the end over to the origin.
 		if ( !trace.StartedSolid /* && !trace.allsolid */)
 		{
-			Move.Position = trace.EndPosition;
+			Position = trace.EndPosition;
 		}
 
 		// Copy this origin to up.
-		var vecUpPos = Move.Position;
+		var vecUpPos = Position;
 
 		// decide which one went farther
 		float flDownDist = (vecDownPos.x - vecPos.x) * (vecDownPos.x - vecPos.x) + (vecDownPos.y - vecPos.y) * (vecDownPos.y - vecPos.y);
 		float flUpDist = (vecUpPos.x - vecPos.x) * (vecUpPos.x - vecPos.x) + (vecUpPos.y - vecPos.y) * (vecUpPos.y - vecPos.y);
 		if ( flDownDist > flUpDist )
 		{
-			Move.Position = vecDownPos;
-			Move.Velocity = vecDownVel;
+			Position = vecDownPos;
+			Velocity = vecDownVel;
 		}
 		else
 		{
 			// copy z value from slide move
-			Move.Velocity.z = vecDownVel.z;
+			Velocity.z = vecDownVel.z;
 		}
 	}
 
@@ -105,14 +105,14 @@ partial class GameMovement
 			return;
 		}
 
-		MoveHelper mover = new MoveHelper( Move.Position, Move.Velocity );
+		MoveHelper mover = new MoveHelper( Position, Velocity );
 		mover.Trace = SetupBBoxTrace( 0, 0 );
 		mover.MaxStandableAngle = sv_maxstandableangle;
 
 		mover.TryMove( Time.Delta );
 
-		Move.Position = mover.Position;
-		Move.Velocity = mover.Velocity;
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 	}
 
 	public int TryPlayerMove2()
@@ -135,8 +135,8 @@ partial class GameMovement
 		blocked = 0;
 		numplanes = 0;
 
-		original_velocity = Move.Velocity;
-		primal_velocity = Move.Velocity;
+		original_velocity = Velocity;
+		primal_velocity = Velocity;
 
 		allFraction = 0;
 		time_left = Time.Delta;
@@ -145,13 +145,13 @@ partial class GameMovement
 
 		for ( bumpcount = 0; bumpcount < numbumps; bumpcount++ ) 
 		{
-			if ( Move.Velocity.Length == 0 )
+			if ( Velocity.Length == 0 )
 				break;
 
 			// Assume we can move all the way from the current origin to the
 			// end point.
-			end = Move.Position + Move.Velocity * time_left;
-			pm = TraceBBox( Move.Position, end );
+			end = Position + Velocity * time_left;
+			pm = TraceBBox( Position, end );
 
 			allFraction += pm.Fraction;
 
@@ -160,7 +160,7 @@ partial class GameMovement
 			//  are blocked by floor and wall.
 			if ( pm.StartedSolid ) 
 		    {
-				Move.Velocity = 0;
+				Velocity = 0;
 			    // entity is trapped in another solid
 			    return 4;
 		    }
@@ -180,13 +180,13 @@ partial class GameMovement
 					if ( stuck.StartedSolid || stuck.Fraction != 1.0f )
 					{
 						// Log.Info( "Player will become stuck!!!\n" );
-						Move.Velocity = 0;
+						Velocity = 0;
 						break;
 					}
 
 					// actually covered some distance
-					Move.Position = pm.EndPosition;
-					original_velocity = Move.Velocity;
+					Position = pm.EndPosition;
+					original_velocity = Velocity;
 					numplanes = 0;
 				}
 			}
@@ -209,7 +209,7 @@ partial class GameMovement
 			{
 				// this shouldn't really happen
 				// Stop our movement if so.
-				Move.Velocity = 0;
+				Velocity = 0;
 				break;
 			}
 
@@ -236,7 +236,7 @@ partial class GameMovement
 					}
 				}
 
-				Move.Velocity = new_velocity;
+				Velocity = new_velocity;
 				original_velocity = new_velocity;
 			}
 			else
@@ -246,7 +246,7 @@ partial class GameMovement
 					ClipVelocity(
 						original_velocity,
 						planes[i],
-						out Move.Velocity,
+						out Velocity,
 						1 );
 
 					for ( j = 0; j < numplanes; j++ )
@@ -254,7 +254,7 @@ partial class GameMovement
 						if ( j != i )
 						{
 							// Are we now moving against this plane?
-							if ( Vector3.Dot( Move.Velocity, planes[j] ) < 0 )
+							if ( Vector3.Dot( Velocity, planes[j] ) < 0 )
 								break;  // not ok
 						}
 					}
@@ -268,32 +268,32 @@ partial class GameMovement
 					// go along the crease
 					if ( numplanes != 2 )
 					{
-						Move.Velocity = 0;
+						Velocity = 0;
 						break;
 					}
 
 					dir = Vector3.Cross( planes[0], planes[1] );
 					dir = dir.Normal;
-					d = Vector3.Dot( dir, Move.Velocity );
-					Move.Velocity = d * dir;
+					d = Vector3.Dot( dir, Velocity );
+					Velocity = d * dir;
 				}
 
 				//
 				// if original velocity is against the original velocity, stop dead
 				// to avoid tiny occilations in sloping corners
 				//
-				d = Vector3.Dot( Move.Velocity, primal_velocity );
+				d = Vector3.Dot( Velocity, primal_velocity );
 				if ( d <= 0 )
 				{
 					//Con_DPrintf("Back\n");
-					Move.Velocity = 0;
+					Velocity = 0;
 					break;
 				}
 			}
 		}
 
 		if ( allFraction == 0 )
-			Move.Velocity = 0;
+			Velocity = 0;
 
 		/*
 		// Check if they slammed into a wall

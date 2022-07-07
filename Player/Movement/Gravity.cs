@@ -15,8 +15,8 @@ partial class GameMovement
 		if ( ent_gravity <= 0 )
 			ent_gravity = 1;
 
-		Move.Velocity.z -= (ent_gravity * GetCurrentGravity() * 0.5f * Time.Delta);
-		Move.Velocity.z += Player.BaseVelocity.z * Time.Delta;
+		Velocity.z -= (ent_gravity * GetCurrentGravity() * 0.5f * Time.Delta);
+		Velocity.z += Player.BaseVelocity.z * Time.Delta;
 
 		var temp = Player.BaseVelocity;
 		temp.z = 0;
@@ -34,7 +34,7 @@ partial class GameMovement
 		if ( ent_gravity <= 0 )
 			ent_gravity = 1;
 
-		Move.Velocity[2] -= (ent_gravity * GetCurrentGravity() * Time.Delta * 0.5f);
+		Velocity[2] -= (ent_gravity * GetCurrentGravity() * Time.Delta * 0.5f);
 		CheckVelocity();
 	}
 }

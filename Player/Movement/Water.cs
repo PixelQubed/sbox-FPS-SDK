@@ -17,18 +17,18 @@ partial class GameMovement
 	protected void CheckWaterJump()
 	{
 		// Determine movement angles
-		Move.ViewAngles.AngleVectors( out var forward, out _, out _ );
+		ViewAngles.AngleVectors( out var forward, out _, out _ );
 
 		// Already water jumping.
 		if ( Player.WaterJumpTime != 0 ) 
 			return;
 
 		// Don't hop out if we just jumped in
-		if ( Move.Velocity[2] < -180 ) 
+		if ( Velocity[2] < -180 ) 
 			return; // only hop out if we are moving up
 
 		// See if we are backing up
-		var flatvelocity = Move.Velocity;
+		var flatvelocity = Velocity;
 		flatvelocity[2] = 0;
 
 		// Must be moving
@@ -44,14 +44,14 @@ partial class GameMovement
 		if ( curspeed != 0 && Vector3.Dot( flatvelocity, flatforward ) < 0 )
 			return;
 
-		var vecStart = Move.Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
+		var vecStart = Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
 		var vecEnd = vecStart + flatforward * 24;
 
 		var tr = TraceBBox( vecStart, vecEnd );
 		if ( tr.Fraction == 1 )
 			return;
 
-		vecStart.z = Move.Position.z + GetPlayerViewOffset().z + WaterJumpHeight;
+		vecStart.z = Position.z + GetPlayerViewOffset().z + WaterJumpHeight;
 		vecEnd = vecStart + flatforward * 24;
 		Player.WaterJumpVelocity = tr.Normal * -50;
 
@@ -66,7 +66,7 @@ partial class GameMovement
 		tr = TraceBBox( vecStart, vecEnd );
 		if ( tr.Fraction < 1 && tr.Normal.z >= 0.7f )
 		{
-			Move.Velocity.z = 256;
+			Velocity.z = 256;
 			Player.AddFlags( PlayerFlags.FL_WATERJUMP );
 			Player.WaterJumpTime = 2000;
 		}

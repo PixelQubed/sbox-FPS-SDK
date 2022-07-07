@@ -18,9 +18,9 @@ partial class GameMovement
 			var target = Player.ObserverTarget;
 			if ( target != null )
 			{
-				Move.Position = target.Position;
-				Move.ViewAngles = target.Rotation;
-				Move.Velocity = target.Velocity;
+				Position = target.Position;
+				ViewAngles = target.Rotation;
+				Velocity = target.Velocity;
 			}
 
 			return;
@@ -39,15 +39,15 @@ partial class GameMovement
 
 		// do a full clipped free roam move:
 
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
 		// Copy movement amounts
 		float factor = sv_spectator_speed;
 		if ( Input.Down( InputButton.Run ) )
 			factor /= 2.0f;
 
-		float fmove = Move.ForwardMove * factor;
-		float smove = Move.SideMove * factor;
+		float fmove = ForwardMove * factor;
+		float smove = SideMove * factor;
 
 		forward = forward.Normal;
 		right = right.Normal;
@@ -55,7 +55,7 @@ partial class GameMovement
 		var wishvel = Vector3.Zero;
 		for ( int i = 0; i < 3; i++ )
 			wishvel[i] = forward[i] * fmove + right[i] + smove;
-		wishvel[2] += Move.UpMove;
+		wishvel[2] += UpMove;
 
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
@@ -67,17 +67,17 @@ partial class GameMovement
 		float maxspeed = sv_maxvelocity;
 		if ( wishspeed > maxspeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
+			wishvel *= MaxSpeed / wishspeed;
 			wishspeed = maxspeed;
 		}
 
 		// Set pmove velocity, give observer 50% acceration bonus
 		Accelerate( wishdir, wishspeed, sv_spectator_accelerate );
 
-		float spd = Move.Velocity.Length;
+		float spd = Velocity.Length;
 		if ( spd < 1 )
 		{
-			Move.Velocity = 0;
+			Velocity = 0;
 			return;
 		}
 
@@ -95,7 +95,7 @@ partial class GameMovement
 		// Determine proportion of old speed we are using.
 		newspeed /= spd;
 
-		Move.Velocity *= newspeed;
+		Velocity *= newspeed;
 		CheckVelocity();
 
 		TryPlayerMove();
@@ -104,13 +104,13 @@ partial class GameMovement
 	public virtual void FullNoClipMove( float factor, float maxacceleration )
 	{
 		float maxspeed = sv_maxspeed * factor;
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
 		if ( Input.Down( InputButton.Run ) )
 			factor /= 2.0f;
 
-		float fmove = Move.ForwardMove * factor;
-		float smove = Move.SideMove * factor;
+		float fmove = ForwardMove * factor;
+		float smove = SideMove * factor;
 
 		forward = forward.Normal;
 		right = right.Normal;
@@ -136,10 +136,10 @@ partial class GameMovement
 			// Set pmove velocity
 			Accelerate( wishdir, wishspeed, maxacceleration );
 
-			float spd = Move.Velocity.Length;
+			float spd = Velocity.Length;
 			if ( spd < 1 )
 			{
-				Move.Velocity = 0;
+				Velocity = 0;
 				return;
 			}
 
@@ -159,20 +159,20 @@ partial class GameMovement
 
 			// Determine proportion of old speed we are using.
 			newspeed /= spd;
-			Move.Velocity *= newspeed;
+			Velocity *= newspeed;
 		}
 		else
 		{
-			Move.Velocity = wishvel;
+			Velocity = wishvel;
 		}
 
 		// Just move ( don't clip or anything )
-		Move.Position += Time.Delta * Move.Velocity;
+		Position += Time.Delta * Velocity;
 
 		// Zero out velocity if in noaccel mode
 		if ( maxacceleration < 0f )
 		{
-			Move.Velocity = 0;
+			Velocity = 0;
 		}
 	}
 }

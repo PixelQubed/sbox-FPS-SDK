@@ -40,7 +40,7 @@ partial class GameMovement
 
 		if ( Player.GroundEntity.IsValid() ) 
 		{
-			Move.Velocity.z = 0;
+			Velocity.z = 0;
 			Friction();
 			WalkMove();
 		}
@@ -64,11 +64,11 @@ partial class GameMovement
 
 	public virtual void WalkMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 		var oldGround = Player.GroundEntity;
 
-		var fmove = Move.ForwardMove;
-		var smove = Move.SideMove;
+		var fmove = ForwardMove;
+		var smove = SideMove;
 
 		if ( forward[2] != 0 )
 		{
@@ -94,10 +94,10 @@ partial class GameMovement
 		//
 		// Clamp to server defined max speed
 		//
-		if ( wishspeed != 0 && wishspeed > Move.MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		var acceleration = sv_accelerate;
@@ -107,47 +107,47 @@ partial class GameMovement
 		var wishspeedThreshold = 100 * sv_friction / sv_accelerate;
 		if ( wishspeed > 0 && wishspeed < wishspeedThreshold )
 		{
-			float speed = Move.Velocity.Length;
+			float speed = Velocity.Length;
 			float flControl = (speed < sv_stopspeed) ? sv_stopspeed : speed;
 			acceleration = (flControl * sv_friction) / wishspeed + 1;
 		}
 
 		// Set pmove velocity
-		Move.Velocity[2] = 0;
+		Velocity[2] = 0;
 		Accelerate( wishdir, wishspeed, acceleration );
-		Move.Velocity[2] = 0;
+		Velocity[2] = 0;
 
 		// Clamp the players speed in x,y.
-		float newSpeed = Move.Velocity.Length;
-		if ( newSpeed > Move.MaxSpeed )
+		float newSpeed = Velocity.Length;
+		if ( newSpeed > MaxSpeed )
 		{
-			float flScale = Move.MaxSpeed / newSpeed;
-			Move.Velocity[0] *= flScale;
-			Move.Velocity[1] *= flScale;
+			float flScale = MaxSpeed / newSpeed;
+			Velocity[0] *= flScale;
+			Velocity[1] *= flScale;
 		}
 
-		Move.Velocity += Player.BaseVelocity;
-		var spd = Move.Velocity.Length;
+		Velocity += Player.BaseVelocity;
+		var spd = Velocity.Length;
 
 		if ( spd < 1 )
 		{
-			Move.Velocity = 0;
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity = 0;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		// first try just moving to the destination	
 		var dest = Vector3.Zero;
-		dest[0] = Move.Position[0] + Move.Velocity[0] * Time.Delta;
-		dest[1] = Move.Position[1] + Move.Velocity[1] * Time.Delta;
-		dest[2] = Move.Position[2];
+		dest[0] = Position[0] + Velocity[0] * Time.Delta;
+		dest[1] = Position[1] + Velocity[1] * Time.Delta;
+		dest[2] = Position[2];
 
-		var trace = TraceBBox( Move.Position, dest );
+		var trace = TraceBBox( Position, dest );
 		// didn't hit anything.
 		if ( trace.Fraction == 1 )
 		{
-			Move.Position = trace.EndPosition;
-			Move.Velocity -= Player.BaseVelocity;
+			Position = trace.EndPosition;
+			Velocity -= Player.BaseVelocity;
 
 			StayOnGround();
 			return;
@@ -155,19 +155,19 @@ partial class GameMovement
 
 		if ( oldGround == null && Player.WaterLevel == 0 )
 		{
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		// If we are jumping out of water, don't do anything more.
 		if ( Player.WaterJumpTime != 0 )
 		{
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		StepMove();
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 
 		StayOnGround();
 	}
@@ -182,7 +182,7 @@ partial class GameMovement
 			return;
 
 		// Calculate speed
-		var speed = Move.Velocity.Length;
+		var speed = Velocity.Length;
 		if ( speed < 0.1f )
 			return;
 
@@ -205,16 +205,16 @@ partial class GameMovement
 		if ( newspeed != speed )
 		{
 			newspeed /= speed;
-			Move.Velocity *= newspeed;
+			Velocity *= newspeed;
 		}
 	}
 
 	public virtual void AirMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
-		var fmove = Move.ForwardMove;
-		var smove = Move.SideMove;
+		var fmove = ForwardMove;
+		var smove = SideMove;
 
 		forward[2] = 0;
 		right[2] = 0;
@@ -229,16 +229,16 @@ partial class GameMovement
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
 
-		if ( wishspeed != 0 && wishspeed > Move.MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		AirAccelerate( wishdir, wishspeed, sv_airaccelerate );
 
-		Move.Velocity += Player.BaseVelocity;
+		Velocity += Player.BaseVelocity;
 		TryPlayerMove();
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 	}
 }

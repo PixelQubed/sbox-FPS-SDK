@@ -108,16 +108,16 @@ public partial class GameMovementOld
 		{
 			float spd;
 
-			spd = (Move.ForwardMove * Move.ForwardMove) +
-					(Move.SideMove * Move.SideMove) +
-					(Move.UpMove * Move.UpMove);
+			spd = (ForwardMove * ForwardMove) +
+					(SideMove * SideMove) +
+					(UpMove * UpMove);
 
-			if ( (spd != 0) && (spd > Move.MaxSpeed * Move.MaxSpeed) )
+			if ( (spd != 0) && (spd > MaxSpeed * MaxSpeed) )
 			{
-				var ratio = Move.MaxSpeed / MathF.Sqrt( spd );
-				Move.ForwardMove *= ratio;
-				Move.SideMove *= ratio;
-				Move.UpMove *= ratio;
+				var ratio = MaxSpeed / MathF.Sqrt( spd );
+				ForwardMove *= ratio;
+				SideMove *= ratio;
+				UpMove *= ratio;
 			}
 		}
 
@@ -125,31 +125,31 @@ public partial class GameMovementOld
 			Player.Flags.HasFlag( PlayerFlags.FL_ONTRAIN ) ||
 			IsDead() )
 		{
-			Move.ForwardMove = 0;
-			Move.SideMove = 0;
-			Move.UpMove = 0;
+			ForwardMove = 0;
+			SideMove = 0;
+			UpMove = 0;
 		}
 
 		DecayPunchAngle();
 
 		if ( !IsDead() )
 		{
-			var v_angle = Move.ViewAngles;
+			var v_angle = ViewAngles;
 			v_angle = v_angle + Player.ViewPunchAngle;
 
 			// Now adjust roll angle
 			if ( Player.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
 				 Player.MoveType != MoveType.MOVETYPE_NOCLIP )
 			{
-				// Move.ViewAngles.Roll = CalcRoll( v_angle, Move.Velocity, sv_rollangle, sv_rollspeed );
+				// ViewAngles.Roll = CalcRoll( v_angle, Velocity, sv_rollangle, sv_rollspeed );
 			}
 			else
 			{
-				Move.ViewAngles.Roll = 0; // v_angle[ ROLL ];
+				ViewAngles.Roll = 0; // v_angle[ ROLL ];
 			}
 
-			Move.ViewAngles.Pitch = v_angle.Pitch;
-			Move.ViewAngles.Yaw = v_angle.Yaw;
+			ViewAngles.Pitch = v_angle.Pitch;
+			ViewAngles.Yaw = v_angle.Yaw;
 		}
 		else
 		{
@@ -161,9 +161,9 @@ public partial class GameMovementOld
 			Player.ViewOffset = Player.GetDeadViewHeightScaled();
 		}
 
-		if ( Move.ViewAngles.Yaw > 180 )
+		if ( ViewAngles.Yaw > 180 )
 		{
-			Move.ViewAngles.Yaw -= 360;
+			ViewAngles.Yaw -= 360;
 		}
 	}
 
@@ -312,8 +312,8 @@ public partial class GameMovementOld
 		if ( ent_gravity <= 0 )
 			ent_gravity = 1;
 
-		Move.Velocity.z -= (ent_gravity * GetCurrentGravity() * 0.5f * Time.Delta);
-		Move.Velocity.z += Player.BaseVelocity.z * Time.Delta;
+		Velocity.z -= (ent_gravity * GetCurrentGravity() * 0.5f * Time.Delta);
+		Velocity.z += Player.BaseVelocity.z * Time.Delta;
 
 		var temp = Player.BaseVelocity;
 		temp.z = 0;
@@ -324,7 +324,7 @@ public partial class GameMovementOld
 
 	protected void CheckWaterJump()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out _, out _ );
+		ViewAngles.AngleVectors( out var forward, out _, out _ );
 
 		// Already water jumping.
 		if ( Player.m_flWaterJumpTime > 0 ) 
@@ -332,11 +332,11 @@ public partial class GameMovementOld
 
 		// Don't hop out if we just jumped in
 		// only hop out if we are moving up
-		if ( Move.Velocity.z < -180 )
+		if ( Velocity.z < -180 )
 			return;
 
 		// See if we are backing up
-		var flatvelocity = Move.Velocity.WithZ( 0 );
+		var flatvelocity = Velocity.WithZ( 0 );
 
 		// Must be moving
 		var curspeed = flatvelocity.Length;
@@ -349,13 +349,13 @@ public partial class GameMovementOld
 		if ( curspeed != 0 && Vector3.Dot( flatvelocity, flatforward ) < 0 )
 			return;
 
-		var vecStart = Move.Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
+		var vecStart = Position + (GetPlayerMins() + GetPlayerMaxs()) * .5f;
 		var vecEnd = vecStart + flatforward * 24;
 
 		var tr = TraceBBox( vecStart, vecEnd );
 		if ( tr.Fraction < 1 )
 		{
-			vecStart.z = Move.Position.z + GetPlayerViewOffset().z + WATERJUMP_HEIGHT;
+			vecStart.z = Position.z + GetPlayerViewOffset().z + WATERJUMP_HEIGHT;
 			vecEnd = vecStart + flatforward * 24;
 			Player.m_vecWaterJumpVel = tr.Normal * -50;
 
@@ -370,7 +370,7 @@ public partial class GameMovementOld
 				tr = TraceBBox( vecStart, vecEnd );
 				if ( tr.Fraction < 1 && tr.Normal.z >= 0.7f )
 				{
-					Move.Velocity.z = 256;
+					Velocity.z = 256;
 					Player.AddFlags( PlayerFlags.FL_WATERJUMP );
 					Player.m_flWaterJumpTime = 2000;
 				}
@@ -394,53 +394,53 @@ public partial class GameMovementOld
 			Player.RemoveFlag( PlayerFlags.FL_WATERJUMP );
 		}
 
-		Move.Velocity[0] = Player.m_vecWaterJumpVel[0];
-		Move.Velocity[1] = Player.m_vecWaterJumpVel[1];
+		Velocity[0] = Player.m_vecWaterJumpVel[0];
+		Velocity[1] = Player.m_vecWaterJumpVel[1];
 	}
 
 	protected void WaterMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
 		Vector3 wishvel = 0;
 		for ( int i = 0; i < 3; i++ )
 		{
-			wishvel[i] = forward[i] * Move.ForwardMove + right[i] * Move.SideMove;
+			wishvel[i] = forward[i] * ForwardMove + right[i] * SideMove;
 		}
 
 		// if we have the jump key down, move us up as well
 		if ( Input.Down( InputButton.Jump ) )
 		{
-			wishvel.z += Move.MaxSpeed;
+			wishvel.z += MaxSpeed;
 		}
 		// Sinking after no other movement occurs
-		else if ( Move.ForwardMove == 0 && Move.SideMove == 0 && Move.UpMove == 0 )
+		else if ( ForwardMove == 0 && SideMove == 0 && UpMove == 0 )
 		{
 			wishvel.z -= 60;
 		}
 		else  // Go straight up by upmove amount.
 		{
 			// exaggerate upward movement along forward as well
-			float upwardMovememnt = Move.ForwardMove * forward.z * 2;
-			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, Move.MaxSpeed );
-			wishvel[2] += Move.UpMove += upwardMovememnt;
+			float upwardMovememnt = ForwardMove * forward.z * 2;
+			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, MaxSpeed );
+			wishvel[2] += UpMove += upwardMovememnt;
 		}
 
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
 
 		// Cap speed.
-		if ( wishspeed > Move.MaxSpeed )
+		if ( wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		// Slow us down a bit.
 		wishspeed *= 0.8f;
 
 		// Water friction
-		var temp = Move.Velocity;
+		var temp = Velocity;
 		var speed = temp.Length;
 
 		var newspeed = 0f;
@@ -452,7 +452,7 @@ public partial class GameMovementOld
 				newspeed = 0;
 			}
 
-			Move.Velocity *= newspeed / speed;
+			Velocity *= newspeed / speed;
 		}
 		else
 		{
@@ -480,13 +480,13 @@ public partial class GameMovementOld
 			}
 		}
 
-		Move.Velocity += Player.BaseVelocity;
+		Velocity += Player.BaseVelocity;
 
 		// Now move
 		// assume it is a stair or a slope, so press down from stepheight above
-		var dest = Move.Position + Move.Velocity * Time.Delta;
+		var dest = Position + Velocity * Time.Delta;
 
-		var pm = TraceBBox( Move.Position, dest );
+		var pm = TraceBBox( Position, dest );
 		if ( pm.Fraction == 1 )
 		{
 			var start = dest;
@@ -496,8 +496,8 @@ public partial class GameMovementOld
 			if ( !pm.StartedSolid )
 			{
 				// walked up the step, so just keep result and exit
-				Move.Position = pm.EndPosition;
-				Move.Velocity -= Player.BaseVelocity;
+				Position = pm.EndPosition;
+				Velocity -= Player.BaseVelocity;
 				return;
 			}
 
@@ -509,14 +509,14 @@ public partial class GameMovementOld
 			if ( Player.GroundEntity == null ) 
 			{
 				TryPlayerMove();
-				Move.Velocity -= Player.BaseVelocity;
+				Velocity -= Player.BaseVelocity;
 				return;
 			}
 
 			StepMove( dest, pm );
 		}
 
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 	}
 
 	public virtual void StepMove( Vector3 dest, TraceResult trace )
@@ -525,65 +525,65 @@ public partial class GameMovementOld
 
 		// Try sliding forward both on ground and up 16 pixels
 		//  take the move that goes farthest
-		var vecPos = Move.Position;
-		var vecVel = Move.Velocity;
+		var vecPos = Position;
+		var vecVel = Velocity;
 
 		// Slide move down.
 		TryPlayerMove( vecEndPos, trace );
 
 		// Down results.
-		var vecDownPos = Move.Position;
-		var vecDownVel = Move.Velocity;
+		var vecDownPos = Position;
+		var vecDownVel = Velocity;
 
 		// Reset original values.
-		Move.Position = vecPos;
-		Move.Velocity = vecVel;
+		Position = vecPos;
+		Velocity = vecVel;
 
 		// Move up a stair height.
-		vecEndPos = Move.Position;
+		vecEndPos = Position;
 		vecEndPos.z += Player.m_flStepSize + DIST_EPSILON;
 
-		trace = TraceBBox( Move.Position, vecEndPos );
-		Move.Position = trace.EndPosition;
+		trace = TraceBBox( Position, vecEndPos );
+		Position = trace.EndPosition;
 
 		// Slide move up.
 		TryPlayerMove();
 
 		// Move down a stair (attempt to).
-		vecEndPos = Move.Position;
+		vecEndPos = Position;
 		vecEndPos.z -= Player.m_flStepSize + DIST_EPSILON;
 
-		trace = TraceBBox( Move.Position, vecEndPos );
+		trace = TraceBBox( Position, vecEndPos );
 
 		// If we are not on the ground any more then use the original movement attempt.
 		if ( trace.Normal.z < 0.7f )
 		{
-			Move.Position = vecDownPos;
-			Move.Velocity = vecDownVel;
+			Position = vecDownPos;
+			Velocity = vecDownVel;
 			return;
 		}
 
 		// If the trace ended up in empty space, copy the end over to the origin.
 		if ( !trace.StartedSolid /* && !trace.allsolid */)
 		{
-			Move.Position = trace.EndPosition;
+			Position = trace.EndPosition;
 		}
 
 		// Copy this origin to up.
-		var vecUpPos = Move.Position;
+		var vecUpPos = Position;
 
 		// decide which one went farther
 		float flDownDist = (vecDownPos.x - vecPos.x) * (vecDownPos.x - vecPos.x) + (vecDownPos.y - vecPos.y) * (vecDownPos.y - vecPos.y);
 		float flUpDist = (vecUpPos.x - vecPos.x) * (vecUpPos.x - vecPos.x) + (vecUpPos.y - vecPos.y) * (vecUpPos.y - vecPos.y);
 		if ( flDownDist > flUpDist )
 		{
-			Move.Position = vecDownPos;
-			Move.Velocity = vecDownVel;
+			Position = vecDownPos;
+			Velocity = vecDownVel;
 		}
 		else
 		{
 			// copy z value from slide move
-			Move.Velocity.z = vecDownVel.z;
+			Velocity.z = vecDownVel.z;
 		}
 	}
 
@@ -597,7 +597,7 @@ public partial class GameMovementOld
 			return;
 
 		// Calculate speed
-		var speed = Move.Velocity.Length;
+		var speed = Velocity.Length;
 		if ( speed < 0.1f )
 			return;
 
@@ -620,7 +620,7 @@ public partial class GameMovementOld
 		if ( newspeed != speed )
 		{
 			newspeed /= speed;
-			Move.Velocity *= newspeed;
+			Velocity *= newspeed;
 		}
 	}
 
@@ -633,7 +633,7 @@ public partial class GameMovementOld
 		if ( ent_gravity <= 0 )
 			ent_gravity = 1;
 
-		Move.Velocity[2] -= (ent_gravity * GetCurrentGravity() * Time.Delta * 0.5f);
+		Velocity[2] -= (ent_gravity * GetCurrentGravity() * Time.Delta * 0.5f);
 		CheckVelocity();
 	}
 
@@ -654,7 +654,7 @@ public partial class GameMovementOld
 			wishspd = GetAirSpeedCap();
 
 		// See if we are changing direction a bit
-		var currentspeed = Move.Velocity.Dot( wishdir );
+		var currentspeed = Velocity.Dot( wishdir );
 
 		// Reduce wishspeed by the amount of veer.
 		var addspeed = wishspd - currentspeed;
@@ -670,15 +670,15 @@ public partial class GameMovementOld
 		if ( accelspeed > addspeed )
 			accelspeed = addspeed;
 
-		Move.Velocity += accelspeed * wishdir;
+		Velocity += accelspeed * wishdir;
 	}
 
 	public virtual void AirMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
-		var fmove = Move.ForwardMove;
-		var smove = Move.SideMove;
+		var fmove = ForwardMove;
+		var smove = SideMove;
 
 		forward[2] = 0;
 		right[2] = 0;
@@ -693,17 +693,17 @@ public partial class GameMovementOld
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
 
-		if ( wishspeed != 0 && wishspeed > Move.MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		AirAccelerate( wishdir, wishspeed, sv_airaccelerate );
 
-		Move.Velocity += Player.BaseVelocity;
+		Velocity += Player.BaseVelocity;
 		TryPlayerMove();
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 	}
 
 	public virtual bool CanAccelerate()
@@ -726,7 +726,7 @@ public partial class GameMovementOld
 			return;
 
 		// See if we are changing direction a bit
-		var currentspeed = Move.Velocity.Dot( wishdir );
+		var currentspeed = Velocity.Dot( wishdir );
 
 		var addspeed = wishspeed - currentspeed;
 		if ( addspeed <= 0 )
@@ -739,7 +739,7 @@ public partial class GameMovementOld
 		if ( accelspeed > addspeed )
 			accelspeed = addspeed;
 
-		Move.Velocity += accelspeed * wishdir;
+		Velocity += accelspeed * wishdir;
 	}
 
 	public const int COORD_FRACTIONAL_BITS = 5;
@@ -751,14 +751,14 @@ public partial class GameMovementOld
 	/// </summary>
 	public virtual void StayOnGround()
 	{
-		var start = Move.Position;
-		var end = Move.Position;
+		var start = Position;
+		var end = Position;
 
 		start.z += 2;
 		end.z -= Player.m_flStepSize;
 
 		// See how far up we can go without getting stuck
-		var trace = TraceBBox( Move.Position, start );
+		var trace = TraceBBox( Position, start );
 		start = trace.EndPosition;
 
 		// Now trace down from a known safe position
@@ -769,11 +769,11 @@ public partial class GameMovementOld
 			!trace.StartedSolid &&
 			trace.Normal[2] >= 0.7f )
 		{
-			var flDelta = MathF.Abs( Move.Position.z - trace.EndPosition.z );
+			var flDelta = MathF.Abs( Position.z - trace.EndPosition.z );
 
 			if ( flDelta > 0.5f * COORD_RESOLUTION )
 			{
-				Move.Position = trace.EndPosition;
+				Position = trace.EndPosition;
 			}
 		}
 	}
@@ -782,11 +782,11 @@ public partial class GameMovementOld
 
 	public virtual void WalkMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 		var oldGround = Player.GroundEntity;
 
-		var fmove = Move.ForwardMove;
-		var smove = Move.SideMove;
+		var fmove = ForwardMove;
+		var smove = SideMove;
 
 		if ( forward[2] != 0 )
 		{
@@ -812,10 +812,10 @@ public partial class GameMovementOld
 		//
 		// Clamp to server defined max speed
 		//
-		if ( wishspeed != 0 && wishspeed > Move.MaxSpeed )
+		if ( wishspeed != 0 && wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		var acceleration = sv_accelerate;
@@ -825,47 +825,47 @@ public partial class GameMovementOld
 		var wishspeedThreshold = 100 * sv_friction / sv_accelerate;
 		if ( wishspeed > 0 && wishspeed < wishspeedThreshold )
 		{
-			float speed = Move.Velocity.Length;
+			float speed = Velocity.Length;
 			float flControl = (speed < sv_stopspeed) ? sv_stopspeed : speed;
 			acceleration = (flControl * sv_friction) / wishspeed + 1;
 		}
 
 		// Set pmove velocity
-		Move.Velocity[2] = 0;
+		Velocity[2] = 0;
 		Accelerate( wishdir, wishspeed, acceleration );
-		Move.Velocity[2] = 0;
+		Velocity[2] = 0;
 
 		// Clamp the players speed in x,y.
-		float newSpeed = Move.Velocity.Length;
-		if ( newSpeed > Move.MaxSpeed )
+		float newSpeed = Velocity.Length;
+		if ( newSpeed > MaxSpeed )
 		{
-			float flScale = Move.MaxSpeed / newSpeed;
-			Move.Velocity[0] *= flScale;
-			Move.Velocity[1] *= flScale;
+			float flScale = MaxSpeed / newSpeed;
+			Velocity[0] *= flScale;
+			Velocity[1] *= flScale;
 		}
 
-		Move.Velocity += Player.BaseVelocity;
-		var spd = Move.Velocity.Length;
+		Velocity += Player.BaseVelocity;
+		var spd = Velocity.Length;
 
 		if ( spd < 1 )
 		{
-			Move.Velocity = 0;
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity = 0;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		// first try just moving to the destination	
 		var dest = Vector3.Zero;
-		dest[0] = Move.Position[0] + Move.Velocity[0] * Time.Delta;
-		dest[1] = Move.Position[1] + Move.Velocity[1] * Time.Delta;
-		dest[2] = Move.Position[2];
+		dest[0] = Position[0] + Velocity[0] * Time.Delta;
+		dest[1] = Position[1] + Velocity[1] * Time.Delta;
+		dest[2] = Position[2];
 
-		var trace = TraceBBox( Move.Position, dest );
+		var trace = TraceBBox( Position, dest );
 		// didn't hit anything.
 		if ( trace.Fraction == 1 )
 		{
-			Move.Position = trace.EndPosition;
-			Move.Velocity -= Player.BaseVelocity;
+			Position = trace.EndPosition;
+			Velocity -= Player.BaseVelocity;
 
 			StayOnGround();
 			return;
@@ -873,19 +873,19 @@ public partial class GameMovementOld
 
 		if ( oldGround == null && Player.WaterLevel == 0 )
 		{
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		// If we are jumping out of water, don't do anything more.
 		if ( Player.m_flWaterJumpTime != 0 ) 
 		{
-			Move.Velocity -= Player.BaseVelocity;
+			Velocity -= Player.BaseVelocity;
 			return;
 		}
 
 		StepMove( dest, trace );
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 
 		StayOnGround();
 	}
@@ -900,9 +900,9 @@ public partial class GameMovementOld
 			var target = Player.ObserverTarget;
 			if ( target != null )
 			{
-				Move.Position = target.Position;
-				Move.ViewAngles = target.Rotation;
-				Move.Velocity = target.Velocity;
+				Position = target.Position;
+				ViewAngles = target.Rotation;
+				Velocity = target.Velocity;
 			}
 
 			return;
@@ -921,15 +921,15 @@ public partial class GameMovementOld
 
 		// do a full clipped free roam move:
 
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
 		// Copy movement amounts
 		float factor = sv_spectator_speed;
 		if ( Input.Down( InputButton.Run ) )
 			factor /= 2.0f;
 
-		float fmove = Move.ForwardMove * factor;
-		float smove = Move.SideMove * factor;
+		float fmove = ForwardMove * factor;
+		float smove = SideMove * factor;
 
 		forward = forward.Normal;
 		right = right.Normal;
@@ -937,7 +937,7 @@ public partial class GameMovementOld
 		var wishvel = Vector3.Zero;
 		for ( int i = 0; i < 3; i++ )
 			wishvel[i] = forward[i] * fmove + right[i] + smove;
-		wishvel[2] += Move.UpMove;
+		wishvel[2] += UpMove;
 
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
@@ -949,17 +949,17 @@ public partial class GameMovementOld
 		float maxspeed = sv_maxvelocity;
 		if ( wishspeed > maxspeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
+			wishvel *= MaxSpeed / wishspeed;
 			wishspeed = maxspeed;
 		}
 
 		// Set pmove velocity, give observer 50% acceration bonus
 		Accelerate( wishdir, wishspeed, sv_spectator_accelerate );
 
-		float spd = Move.Velocity.Length;
+		float spd = Velocity.Length;
 		if ( spd < 1 )
 		{
-			Move.Velocity = 0;
+			Velocity = 0;
 			return;
 		}
 
@@ -977,7 +977,7 @@ public partial class GameMovementOld
 		// Determine proportion of old speed we are using.
 		newspeed /= spd;
 
-		Move.Velocity *= newspeed;
+		Velocity *= newspeed;
 		CheckVelocity();
 
 		TryPlayerMove();
@@ -986,13 +986,13 @@ public partial class GameMovementOld
 	public virtual void FullNoClipMove( float factor, float maxacceleration )
 	{
 		float maxspeed = sv_maxspeed * factor;
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
 		if ( Input.Down( InputButton.Run ) )
 			factor /= 2.0f;
 
-		float fmove = Move.ForwardMove * factor;
-		float smove = Move.SideMove * factor;
+		float fmove = ForwardMove * factor;
+		float smove = SideMove * factor;
 
 		forward = forward.Normal;
 		right = right.Normal;
@@ -1000,7 +1000,7 @@ public partial class GameMovementOld
 		var wishvel = Vector3.Zero;
 		for ( int i = 0; i < 3; i++ )
 			wishvel[i] = forward[i] * fmove + right[i] + smove;
-		wishvel[2] += Move.UpMove;
+		wishvel[2] += UpMove;
 
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
@@ -1019,10 +1019,10 @@ public partial class GameMovementOld
 			// Set pmove velocity
 			Accelerate( wishdir, wishspeed, maxacceleration );
 
-			float spd = Move.Velocity.Length;
+			float spd = Velocity.Length;
 			if ( spd < 1 )
 			{
-				Move.Velocity = 0;
+				Velocity = 0;
 				return;
 			}
 
@@ -1042,20 +1042,20 @@ public partial class GameMovementOld
 
 			// Determine proportion of old speed we are using.
 			newspeed /= spd;
-			Move.Velocity *= newspeed;
+			Velocity *= newspeed;
 		}
 		else
 		{
-			Move.Velocity = wishvel;
+			Velocity = wishvel;
 		}
 
 		// Just move ( don't clip or anything )
-		Move.Position += Time.Delta * Move.Velocity;
+		Position += Time.Delta * Velocity;
 
 		// Zero out velocity if in noaccel mode
 		if ( maxacceleration < 0f )
 		{
-			Move.Velocity = 0;
+			Velocity = 0;
 		}
 	}
 
@@ -1084,7 +1084,7 @@ public partial class GameMovementOld
 		if ( InWater() )
 		{
 			ClearGroundEntity();
-			Move.Velocity[2] = 100;
+			Velocity[2] = 100;
 
 			if ( Player.m_flSwimSoundTime <= 0 )
 			{
@@ -1106,21 +1106,21 @@ public partial class GameMovementOld
 
 		ClearGroundEntity();
 
-		Player.DoJumpSound( Move.Position, Player.m_pSurfaceData, 1 );
+		Player.DoJumpSound( Position, Player.m_pSurfaceData, 1 );
 		Player.SetAnimParameter( "b_jump", true );
 
-		var startz = Move.Velocity[2];
+		var startz = Velocity[2];
 		if ( Player.m_bDucking || Player.Flags.HasFlag( PlayerFlags.FL_DUCKING ) ) 
 		{
-			Move.Velocity[2] = JumpImpulse;
+			Velocity[2] = JumpImpulse;
 		}
 		else
 		{
-			Move.Velocity[2] += JumpImpulse;
+			Velocity[2] += JumpImpulse;
 		}
 
 		FinishGravity();
-		OnJump( Move.Velocity.z - startz );
+		OnJump( Velocity.z - startz );
 
 		return true;
 	}
@@ -1138,8 +1138,8 @@ public partial class GameMovementOld
 
 		var planes = new Vector3[MAX_CLIP_PLANES];
 
-		var original_velocity = Move.Velocity;
-		var primal_velocity = Move.Velocity;
+		var original_velocity = Velocity;
+		var primal_velocity = Velocity;
 
 		var allFraction = 0f;
 		var timeLeft = Time.Delta;
@@ -1148,17 +1148,17 @@ public partial class GameMovementOld
 
 		for ( var bumpcount = 0; bumpcount < numbumps; bumpcount++ )
 		{
-			if ( Move.Velocity.Length == 0 )
+			if ( Velocity.Length == 0 )
 				break;
 
 			// Assume we can move all the way from the current origin to the
 			// end point.
-			var end = Move.Position + Move.Velocity * timeLeft;
+			var end = Position + Velocity * timeLeft;
 
 			if ( firstDest.HasValue && end == firstDest.Value )
 				pm = firstTrace.Value;
 			else
-				pm = TraceBBox( Move.Position, end );
+				pm = TraceBBox( Position, end );
 
 			allFraction += pm.Fraction;
 
@@ -1189,13 +1189,13 @@ public partial class GameMovementOld
 					if ( stuck.StartedSolid || stuck.Fraction != 1.0f )
 					{
 						Log.Info( "Player will become stuck!!!\n" );
-						Move.Velocity = 0;
+						Velocity = 0;
 						break;
 					}
 
 					// actually covered some distance
-					Move.Position = pm.EndPosition;
-					original_velocity = Move.Velocity;
+					Position = pm.EndPosition;
+					original_velocity = Velocity;
 					numplanes = 0;
 				}
 			}
@@ -1218,7 +1218,7 @@ public partial class GameMovementOld
 			{
 				// this shouldn't really happen
 				//  Stop our movement if so.
-				Move.Velocity = 0;
+				Velocity = 0;
 				break;
 			}
 
@@ -1243,7 +1243,7 @@ public partial class GameMovementOld
 					}
 				}
 
-				Move.Velocity = new_velocity;
+				Velocity = new_velocity;
 				original_velocity = new_velocity;
 			}
 			else
@@ -1254,7 +1254,7 @@ public partial class GameMovementOld
 					ClipVelocity(
 						original_velocity,
 						planes[i],
-						out Move.Velocity,
+						out Velocity,
 						1 );
 
 					var j = 0;
@@ -1263,7 +1263,7 @@ public partial class GameMovementOld
 						if ( j != i )
 						{
 							// Are we now moving against this plane?
-							if ( Vector3.Dot( Move.Velocity, planes[j] ) < 0 )
+							if ( Vector3.Dot( Velocity, planes[j] ) < 0 )
 								break;  // not ok
 						}
 					}
@@ -1278,32 +1278,32 @@ public partial class GameMovementOld
 					// go along the crease
 					if ( numplanes != 2 )
 					{
-						Move.Velocity = 0;
+						Velocity = 0;
 						break;
 					}
 
 					var dir = Vector3.Cross( planes[0], planes[1] );
 					dir = dir.Normal;
-					d = Vector3.Dot( dir, Move.Velocity );
-					Move.Velocity = d * dir;
+					d = Vector3.Dot( dir, Velocity );
+					Velocity = d * dir;
 				}
 
 				//
 				// if original velocity is against the original velocity, stop dead
 				// to avoid tiny occilations in sloping corners
 				//
-				d = Vector3.Dot( Move.Velocity, primal_velocity );
+				d = Vector3.Dot( Velocity, primal_velocity );
 				if ( d <= 0 )
 				{
 					//Con_DPrintf("Back\n");
-					Move.Velocity = 0;
+					Velocity = 0;
 					break;
 				}
 			}
 		}
 
 		if ( allFraction == 0 )
-			Move.Velocity = 0;
+			Velocity = 0;
 
 		/*
 		// Check if they slammed into a wall
@@ -1343,28 +1343,28 @@ public partial class GameMovementOld
 	{
 		for ( int i = 0; i < 3; i++ )
 		{
-			if ( float.IsNaN( Move.Velocity[i] ) )
+			if ( float.IsNaN( Velocity[i] ) )
 			{
 				Log.Info( $"Got a NaN velocity {DescribeAxis( i )}" );
-				Move.Velocity[i] = 0;
+				Velocity[i] = 0;
 			}
 
-			if ( float.IsNaN( Move.Position[i] ) )
+			if ( float.IsNaN( Position[i] ) )
 			{
 				Log.Info( $"Got a NaN position {DescribeAxis( i )}" );
-				Move.Position[i] = 0;
+				Position[i] = 0;
 			}
 
-			if ( Move.Velocity[i] > sv_maxvelocity )
+			if ( Velocity[i] > sv_maxvelocity )
 			{
 				Log.Info( $"Got a velocity too high on {DescribeAxis( i )}" );
-				Move.Velocity[i] = sv_maxvelocity;
+				Velocity[i] = sv_maxvelocity;
 			}
 
-			if ( Move.Velocity[i] < -sv_maxvelocity )
+			if ( Velocity[i] < -sv_maxvelocity )
 			{
 				Log.Info( $"Got a velocity too low on {DescribeAxis( i )}" );
-				Move.Velocity[i] = -sv_maxvelocity;
+				Velocity[i] = -sv_maxvelocity;
 			}
 		}
 	}
@@ -1498,7 +1498,7 @@ public partial class GameMovementOld
 
 			// Then we are not in water jump sequence
 			Player.m_flWaterJumpTime = 0;
-			Move.Velocity.z = 0;
+			Velocity.z = 0;
 		}
 	}
 
@@ -1574,10 +1574,10 @@ public partial class GameMovementOld
 
 		var offset = 2;
 
-		var point = Move.Position + Vector3.Down * offset;
-		var bumpOrigin = Move.Position;
+		var point = Position + Vector3.Down * offset;
+		var bumpOrigin = Position;
 
-		float zvel = Move.Velocity.z;
+		float zvel = Velocity.z;
 		bool bMovingUp = zvel > 0;
 		bool bMovingUpRapidly = zvel > NON_JUMP_VELOCITY;
 		float flGroundEntityVelZ = 0;
@@ -1612,7 +1612,7 @@ public partial class GameMovementOld
 				{
 					ClearGroundEntity();
 
-					if ( Move.Velocity.z > 0 && 
+					if ( Velocity.z > 0 && 
 						Player.MoveType != MoveType.MOVETYPE_NOCLIP )
 					{
 						Player.m_surfaceFriction = 0.25f;

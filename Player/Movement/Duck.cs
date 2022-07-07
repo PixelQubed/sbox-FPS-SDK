@@ -5,11 +5,9 @@ namespace Amper.Source1;
 
 partial class GameMovement
 {
-	public virtual float TimeToDuck => .2f;
-	public virtual float TimeToUnduck => .2f;
+	public virtual float AirDuckBodyShiftModifier => 1;
 	public virtual int MaxAirDucks => 1;
 	public virtual float IdealDuckSpeed => 1;
-	public float DuckProgress => Math.Clamp( Player.DuckTime / TimeToDuck, 0, 1 );
 	public virtual float TimeBetweenDucks => 0;
 
 	public virtual float DuckingSpeedModifier => 1;
@@ -59,9 +57,9 @@ partial class GameMovement
 			return;
 
 		var speed = CalculateDuckSpeed( true );
-		Player.DuckTime = Player.DuckTime.Approach( TimeToDuck, Time.Delta * speed );
+		Player.DuckTime = Player.DuckTime.Approach( Player.TimeToDuck, Time.Delta * speed );
 
-		if ( Player.DuckTime >= TimeToDuck || Player.IsInAir )
+		if ( Player.DuckTime >= Player.TimeToDuck || Player.IsInAir )
 			FinishDuck();
 	}
 
@@ -79,7 +77,7 @@ partial class GameMovement
 
 	public virtual bool CanUnduck()
 	{
-		var newOrigin = Move.Position;
+		var newOrigin = Position;
 
 		if ( Player.GroundEntity.IsValid() )
 		{
@@ -99,7 +97,7 @@ partial class GameMovement
 		bool saveducked = Player.IsDucked;
 		Player.IsDucked = false;
 
-		var trace = TraceBBox( Move.Position, newOrigin );
+		var trace = TraceBBox( Position, newOrigin );
 		Player.IsDucked = saveducked;
 
 		if ( trace.StartedSolid || (trace.Fraction != 1.0f) )
@@ -133,19 +131,19 @@ partial class GameMovement
 			return;
 
 		Player.IsDucked = true;
-		Player.DuckTime = TimeToDuck;
+		Player.DuckTime = Player.TimeToDuck;
 		Player.LastDuckTime = Time.Now;
 
 		if ( Player.IsGrounded )
 		{
-			Move.Position -= GetPlayerMins( true ) - GetPlayerMins( false );
+			Position -= GetPlayerMins( true ) - GetPlayerMins( false );
 		}
 		else
 		{
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 			var viewDelta = hullSizeNormal - hullSizeCrouch;
-			Move.Position += viewDelta;
+			Position += viewDelta * AirDuckBodyShiftModifier;
 
 			Player.AirDuckCount++;
 		}
@@ -165,14 +163,14 @@ partial class GameMovement
 
 		if ( Player.IsGrounded )
 		{
-			Move.Position += GetPlayerMins( true ) - GetPlayerMins( false );
+			Position += GetPlayerMins( true ) - GetPlayerMins( false );
 		}
 		else
 		{
 			var hullSizeNormal = GetPlayerMaxs( false ) - GetPlayerMins( false );
 			var hullSizeCrouch = GetPlayerMaxs( true ) - GetPlayerMins( true );
 			var viewDelta = hullSizeNormal - hullSizeCrouch;
-			Move.Position -= viewDelta;
+			Position -= viewDelta * AirDuckBodyShiftModifier;
 		}
 
 		// Recategorize position since ducking can change origin
@@ -183,23 +181,23 @@ partial class GameMovement
 	{
 		int direction = upward ? 1 : 0;
 
-		var trace = TraceBBox( Move.Position, Move.Position );
+		var trace = TraceBBox( Position, Position );
 		if ( trace.Entity == null )
 			return;
 
-		var test = Move.Position;
+		var test = Position;
 		for ( int i = 0; i < 36; i++ )
 		{
-			var org = Move.Position;
+			var org = Position;
 			org.z += direction;
 
-			Move.Position = org;
-			trace = TraceBBox( Move.Position, Move.Position );
+			Position = org;
+			trace = TraceBBox( Position, Position );
 			if ( trace.Entity == null )
 				return;
 		}
 
-		Move.Position = test;
+		Position = test;
 	}
 
 	public virtual float GetDuckSpeedModifier( float fraction )
@@ -214,11 +212,11 @@ partial class GameMovement
 
 		if ( Player.IsDucking )
 		{
-			float frac = GetDuckSpeedModifier( DuckProgress );
-			Move.ForwardMove *= frac;
-			Move.SideMove *= frac;
-			Move.UpMove *= frac;
-			Move.MaxSpeed *= frac;
+			float frac = GetDuckSpeedModifier( Player.DuckProgress );
+			ForwardMove *= frac;
+			SideMove *= frac;
+			UpMove *= frac;
+			MaxSpeed *= frac;
 		}
 	}
 

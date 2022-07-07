@@ -30,7 +30,7 @@ partial class GameMovement
 	{
 		CreateStuckTable();
 
-		var traceresult = TraceBBox( Move.Position, Move.Position );
+		var traceresult = TraceBBox( Position, Position );
 		var hitent = traceresult.Entity;
 		if ( !hitent.IsValid() ) 
 		{
@@ -38,7 +38,7 @@ partial class GameMovement
 			return false;
 		}
 
-		var vBase = Move.Position;
+		var vBase = Position;
 
 		Vector3 offset, test;
 
@@ -60,7 +60,7 @@ partial class GameMovement
 		if ( !traceresult.Entity.IsValid() ) 
 		{
 			ResetStuckOffsets();
-			Move.Position = test;
+			Position = test;
 			return false;
 		}
 

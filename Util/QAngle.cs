@@ -11,6 +11,10 @@ public struct QAngle
 	public float y { get => Yaw; set { Yaw = value; } }
 	public float z { get => Roll; set { Roll = value; } }
 
+	public Vector3 Forward => ((Rotation)this).Forward;
+	public Vector3 Right => ((Rotation)this).Right;
+	public Vector3 Up => ((Rotation)this).Up;
+
 	public QAngle() : this( 0, 0, 0 ) { }
 	public QAngle( float x, float y, float z )
 	{

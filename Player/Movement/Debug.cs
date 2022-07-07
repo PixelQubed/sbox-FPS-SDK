@@ -22,11 +22,11 @@ partial class GameMovement
 			$"\n" +
 
 			$"[Move Data]\n" +
-			$"ForwardMove           {Move.ForwardMove}\n" +
-			$"SideMove              {Move.SideMove}\n" +
-			$"UpMove                {Move.UpMove}\n" +
-			$"Velocity              {Move.Velocity}\n" +
-			$"Speed                 {Move.Velocity.Length}\n" +
+			$"ForwardMove           {ForwardMove}\n" +
+			$"SideMove              {SideMove}\n" +
+			$"UpMove                {UpMove}\n" +
+			$"Velocity              {Velocity}\n" +
+			$"Speed                 {Velocity.Length}\n" +
 			$"\n" +
 
 			$"[DUCK]\n" +

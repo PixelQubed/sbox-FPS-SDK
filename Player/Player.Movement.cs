@@ -5,6 +5,8 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
+	[Net, Predicted] public float MaxSpeed { get; set; }
+
 	public Vector3 ViewOffset { get => EyeLocalPosition; set => EyeLocalPosition = value; }
 	public float SurfaceFriction { get; set; } = 1;
 	public Surface SurfaceData { get; set; }
@@ -19,6 +21,8 @@ partial class Source1Player
 	[Net, Predicted] public int AirDuckCount { get; set; }
 	[Net, Predicted] public float LastDuckTime { get; set; }
 	public bool IsDucking => DuckTime > 0;
+	public float DuckProgress => Math.Clamp( DuckTime / TimeToDuck, 0, 1 );
+	public virtual float TimeToDuck => .2f;
 
 	//
 	// Water
@@ -48,9 +52,6 @@ partial class Source1Player
 	public void AddFlags( PlayerFlags flag ) { Flags |= flag; }
 	public void RemoveFlag( PlayerFlags flag ) { Flags &= ~flag; }
 
-
-
-	[Net, Predicted] public float MaxSpeed { get; set; }
 }
 
 [Flags]

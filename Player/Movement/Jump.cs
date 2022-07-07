@@ -27,21 +27,21 @@ partial class GameMovement
 
 		SetGroundEntity( null );
 
-		Player.DoJumpSound( Move.Position, Player.SurfaceData, 1 );
+		Player.DoJumpSound( Position, Player.SurfaceData, 1 );
 		Player.SetAnimParameter( "b_jump", true );
 
-		var startz = Move.Velocity[2];
+		var startz = Velocity[2];
 		if ( Player.IsDucked )
 		{
-			Move.Velocity[2] = JumpImpulse;
+			Velocity[2] = JumpImpulse;
 		}
 		else
 		{
-			Move.Velocity[2] += JumpImpulse;
+			Velocity[2] += JumpImpulse;
 		}
 
 		FinishGravity();
-		OnJump( Move.Velocity.z - startz );
+		OnJump( Velocity.z - startz );
 
 		return true;
 	}

@@ -8,7 +8,7 @@ public partial class Source1Player : AnimatedEntity
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
-	[Net] public PawnAnimator Animator { get; set; }
+	[Net] public PlayerAnimator Animator { get; set; }
 	public CameraMode CameraMode
 	{
 		get => Components.Get<CameraMode>();
@@ -26,7 +26,7 @@ public partial class Source1Player : AnimatedEntity
 	{
 		base.Spawn();	
 
-		Animator = new StandardPlayerAnimator();
+		Animator = new PlayerAnimator();
 		CameraMode = new Source1Camera();
 
 		TeamNumber = 0;
@@ -185,42 +185,22 @@ public partial class Source1Player : AnimatedEntity
 
 		UpdateMaxSpeed();
 
-		var mv = SetupMove();
-		GameRules.Current.Movement.ProcessMovement( this, ref mv );
-		FinishMove( mv );
+		//
+		// Singleton Controllers
+		//
 
+		GameRules.Current.Movement?.Simulate( this );
+		Animator?.Simulate( this );
+
+		//
+		// Weapons
+		//
 
 		SimulateWeaponSwitch();
 		SimulateActiveWeapon( cl, ActiveWeapon );
 		SimulatePassiveChildren( cl );
 
-		if ( !IsAlive )
-			return;
-
 		SimulateHover();
-	}
-
-	private MoveData SetupMove()
-	{
-		return new MoveData
-		{
-			Position = Position,
-			ViewAngles = Input.Rotation,
-			Velocity = Velocity,
-
-			ForwardMove = Input.Forward * MaxSpeed,
-			SideMove = -Input.Left * MaxSpeed,
-			UpMove = Input.Up * MaxSpeed,	
-
-			MaxSpeed = MaxSpeed
-		};
-	}
-
-	private void FinishMove( MoveData mv )
-	{
-		Position = mv.Position;
-		EyeRotation = mv.ViewAngles;
-		Velocity = mv.Velocity;
 	}
 
 	public void UpdateMaxSpeed()
@@ -321,10 +301,6 @@ public partial class Source1Player : AnimatedEntity
 			return;
 
 		ActiveWeapon?.BuildInput( input );
-		if ( input.StopProcessing )
-			return;
-
-		Animator?.BuildInput( input );
 	}
 
 	public virtual void AttemptRespawn()

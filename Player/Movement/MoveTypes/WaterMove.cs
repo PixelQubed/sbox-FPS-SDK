@@ -15,7 +15,7 @@ partial class GameMovement
 			CheckWaterJump();
 
 		// If we are falling again, then we must not trying to jump out of water any more.
-		if ( Move.Velocity.z < 0 && Player.WaterJumpTime != 0 )
+		if ( Velocity.z < 0 && Player.WaterJumpTime != 0 )
 			Player.WaterJumpTime = 0.0f;
 
 		// Was jump button pressed?
@@ -31,50 +31,50 @@ partial class GameMovement
 		// If we are on ground, no downward velocity.
 		if ( Player.GroundEntity.IsValid() ) 
 		{
-			Move.Velocity.z = 0;
+			Velocity.z = 0;
 		}
 	}
 
 	protected void WaterMove()
 	{
-		Move.ViewAngles.AngleVectors( out var forward, out var right, out var up );
+		ViewAngles.AngleVectors( out var forward, out var right, out var up );
 
-		var wishvel = forward * Move.ForwardMove + right * Move.SideMove;
+		var wishvel = forward * ForwardMove + right * SideMove;
 
 		// if we have the jump key down, move us up as well
 		if ( Input.Down( InputButton.Jump ) )
 		{
-			wishvel.z += Move.MaxSpeed;
+			wishvel.z += MaxSpeed;
 		}
 
 		// Sinking after no other movement occurs
-		else if ( Move.ForwardMove == 0 && Move.SideMove == 0 && Move.UpMove == 0 )
+		else if ( ForwardMove == 0 && SideMove == 0 && UpMove == 0 )
 		{
 			wishvel.z -= 60;
 		}
 		else  // Go straight up by upmove amount.
 		{
 			// exaggerate upward movement along forward as well
-			float upwardMovememnt = Move.ForwardMove * forward.z * 2;
-			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, Move.MaxSpeed );
-			wishvel.z += Move.UpMove + upwardMovememnt;
+			float upwardMovememnt = ForwardMove * forward.z * 2;
+			upwardMovememnt = Math.Clamp( upwardMovememnt, 0, MaxSpeed );
+			wishvel.z += UpMove + upwardMovememnt;
 		}
 
 		var wishdir = wishvel.Normal;
 		var wishspeed = wishvel.Length;
 
 		// Cap speed.
-		if ( wishspeed > Move.MaxSpeed )
+		if ( wishspeed > MaxSpeed )
 		{
-			wishvel *= Move.MaxSpeed / wishspeed;
-			wishspeed = Move.MaxSpeed;
+			wishvel *= MaxSpeed / wishspeed;
+			wishspeed = MaxSpeed;
 		}
 
 		// Slow us down a bit.
 		wishspeed *= 0.8f;
 
 		// Water friction
-		var temp = Move.Velocity;
+		var temp = Velocity;
 		var speed = temp.Length;
 
 		var newspeed = 0f;
@@ -86,7 +86,7 @@ partial class GameMovement
 				newspeed = 0;
 			}
 
-			Move.Velocity *= newspeed / speed;
+			Velocity *= newspeed / speed;
 		}
 		else
 		{
@@ -104,17 +104,17 @@ partial class GameMovement
 				var accelspeed = sv_accelerate * wishspeed * Time.Delta * Player.SurfaceFriction;
 				if ( accelspeed > addspeed ) accelspeed = addspeed;
 
-				Move.Velocity += accelspeed * wishvel;
+				Velocity += accelspeed * wishvel;
 			}
 		}
 
-		Move.Velocity += Player.BaseVelocity;
+		Velocity += Player.BaseVelocity;
 
 		// Now move
 		// assume it is a stair or a slope, so press down from stepheight above
-		var dest = Move.Position + Move.Velocity * Time.Delta;
+		var dest = Position + Velocity * Time.Delta;
 
-		var pm = TraceBBox( Move.Position, dest );
+		var pm = TraceBBox( Position, dest );
 		if ( pm.Fraction == 1 )
 		{
 			var start = dest.WithZ( dest.z + sv_stepsize + 1 );
@@ -123,8 +123,8 @@ partial class GameMovement
 			if ( !pm.StartedSolid )
 			{
 				// walked up the step, so just keep result and exit
-				Move.Position = pm.EndPosition;
-				Move.Velocity -= Player.BaseVelocity;
+				Position = pm.EndPosition;
+				Velocity -= Player.BaseVelocity;
 				return;
 			}
 
@@ -136,14 +136,14 @@ partial class GameMovement
 			if ( !Player.GroundEntity.IsValid() ) 
 			{
 				TryPlayerMove();
-				Move.Velocity -= Player.BaseVelocity;
+				Velocity -= Player.BaseVelocity;
 				return;
 			}
 
 			StepMove();
 		}
 
-		Move.Velocity -= Player.BaseVelocity;
+		Velocity -= Player.BaseVelocity;
 	}
 
 	public virtual void WaterJump( )
@@ -162,8 +162,8 @@ partial class GameMovement
 			Player.RemoveFlag( PlayerFlags.FL_WATERJUMP );
 		}
 
-		Move.Velocity[0] = Player.WaterJumpVelocity[0];
-		Move.Velocity[1] = Player.WaterJumpVelocity[1];
+		Velocity[0] = Player.WaterJumpVelocity[0];
+		Velocity[1] = Player.WaterJumpVelocity[1];
 	}
 
 	public virtual bool CheckWaterJumpButton()
@@ -187,7 +187,7 @@ partial class GameMovement
 			SetGroundEntity( null );
 
 			// We move up a certain amount.
-			Move.Velocity.z = 100;
+			Velocity.z = 100;
 
 			// Play swimming sound.
 			if ( Player.NextSwimSoundTime <= 0 )
