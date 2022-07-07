@@ -12,7 +12,7 @@ public enum WaterLevelType
 
 partial class GameMovement
 {
-	WaterLevelType m_nOldWaterLevel { get; set; }
+	WaterLevelType LastWaterLevelType { get; set; }
 
 	protected void CheckWaterJump()
 	{
@@ -103,7 +103,7 @@ partial class GameMovement
 			Player.WaterLevelType = WaterLevelType.Feet;
 		}
 
-		if ( m_nOldWaterLevel == WaterLevelType.NotInWater && Player.WaterLevelType != WaterLevelType.NotInWater )
+		if ( LastWaterLevelType == WaterLevelType.NotInWater && Player.WaterLevelType != WaterLevelType.NotInWater )
 		{
 			Player.WaterEntryTime = Time.Now;
 		}

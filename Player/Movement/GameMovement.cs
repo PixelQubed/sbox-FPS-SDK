@@ -22,10 +22,7 @@ public partial class GameMovement
 		ApplyMoveData( player );
 	}
 
-	public virtual void FrameUpdate()
-	{
-		ViewAngles = Input.Rotation;
-	}
+	public virtual void FrameUpdate() { }
 
 	public virtual void Simulate( Source1Player player )
 	{
@@ -81,6 +78,9 @@ public partial class GameMovement
 			if ( CheckStuck() )
 				return;
 		}
+
+		if ( Player.IsInAir )
+			Player.FallVelocity = -Velocity.z;
 
 		UpdateViewOffset();
 		SimulateModifiers();
@@ -427,6 +427,13 @@ public partial class GameMovement
 				UpMove *= ratio;
 			}
 		}
+
+		// Remember last water level
+		LastWaterLevelType = Player.WaterLevelType;
+
+		// if we are going upwards with this speed, we can't be standing on anything.
+		if ( Velocity.z > 250 )
+			SetGroundEntity( null );
 
 		DecayViewPunchAngle();
 

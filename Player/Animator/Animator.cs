@@ -17,11 +17,11 @@ public partial class PlayerAnimator : BaseNetworkable
 	{
 		SetAnimParameter( "b_grounded", Player.IsGrounded );
 
+		UpdateMovement();
 		UpdateRotation();
 		UpdateLookAt();
 
-		UpdateMovement();
-		UpdateDucking();
+		// UpdateDucking();
 	}
 
 	public virtual Rotation GetIdealRotation()
@@ -67,8 +67,8 @@ public partial class PlayerAnimator : BaseNetworkable
 		SetAnimParameter( "move_x", forward / Player.MaxSpeed );
 	}
 
-	float AnimDuckProgress { get; set; }
 	public virtual float DuckMaxAnimSpeed => 10;
+	[Net, Predicted] float AnimDuckProgress { get; set; }
 
 	public virtual void UpdateDucking()
 	{

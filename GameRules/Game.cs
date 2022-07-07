@@ -64,6 +64,18 @@ public partial class GameRules : Game
 		}
 	}
 
+	[ConVar.Client] public static bool cl_show_prediction_errors { get; set; }
+
+	public override void Simulate( Client cl )
+	{
+		base.Simulate( cl );
+
+		if ( IsClient && cl_show_prediction_errors && !Prediction.FirstTime )
+		{
+			DebugOverlay.ScreenText( $"Prediction Error! Rerunning ticks... (Tick: {Time.Tick})", new Vector2( Screen.Width - 400, 120 ), 0, Color.Red, .6f );
+		}
+	}
+
 	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
 	{
 		if ( client.Pawn.IsValid() )

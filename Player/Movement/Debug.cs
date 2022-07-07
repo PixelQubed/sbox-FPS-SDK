@@ -21,12 +21,13 @@ partial class GameMovement
 			$"Flags                 {Player.Flags}\n" +
 			$"\n" +
 
-			$"[Move Data]\n" +
+			$"[MOVEMENT]\n" +
 			$"ForwardMove           {ForwardMove}\n" +
 			$"SideMove              {SideMove}\n" +
 			$"UpMove                {UpMove}\n" +
 			$"Velocity              {Velocity}\n" +
 			$"Speed                 {Velocity.Length}\n" +
+			$"Fall Velocity         {Player.FallVelocity}\n" +
 			$"\n" +
 
 			$"[DUCK]\n" +

@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 
 namespace Amper.Source1;
 
@@ -22,4 +23,7 @@ public static class Source1Extensions
 		door.Speed = lastSpeed;
 		if ( startsLocked ) door.Lock();
 	}
+
+	public static void NetInfo( this Logger logger, FormattableString message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
+	public static void NetInfo( this Logger logger, object message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
 }

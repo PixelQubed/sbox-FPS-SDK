@@ -46,24 +46,43 @@ public partial class Source1Player : AnimatedEntity
 		if ( IsObserver )
 			SimulateObserver();
 
+		//
+		// Movements
+		//
+
 		UpdateMaxSpeed();
-
-		//
-		// Singleton Controllers
-		//
-
 		GameRules.Current.Movement?.Simulate( this );
 		Animator?.Simulate( this );
 
-		//
-		// Weapons
-		//
-
-		SimulateWeaponSwitch();
-		SimulateActiveWeapon( cl, ActiveWeapon );
+		SimulateActiveWeapon( cl );
 		SimulatePassiveChildren( cl );
-
 		SimulateHover();
+
+		DrawDebugPredictionHistory();
+	}
+
+	[ConVar.Replicated] public static bool r_debug_prediction_history { get; set; }
+
+	private void DrawDebugPredictionHistory()
+	{
+		if ( !r_debug_prediction_history )
+			return;
+
+		if ( IsClient )
+		{
+			if ( Prediction.FirstTime )
+			{
+				DebugOverlay.Box( this, Color.Green, .1f );
+			}
+			else
+			{
+				DebugOverlay.Box( this, Color.Yellow, .1f );
+			}
+		}
+		else
+		{
+			DebugOverlay.Box( this, Color.Red, .1f );
+		}
 	}
 
 	public virtual void Respawn()
@@ -122,7 +141,6 @@ public partial class Source1Player : AnimatedEntity
 		//
 		// Weapons
 		//
-		LastWeapon = null;
 		ActiveWeapon = null;
 
 		//
@@ -235,7 +253,7 @@ public partial class Source1Player : AnimatedEntity
 
 	public virtual void SimulatePassiveChildren( Client client )
 	{
-		var children = Children.OfType<IPassiveChild>().ToList();
+		var children = Children.OfType<IPassiveChild>().ToArray();
 
 		foreach ( var child in children )
 		{

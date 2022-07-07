@@ -6,7 +6,7 @@ partial class GameMovement
 {
 	public virtual void FullWalkMove()
 	{
-		if ( !CheckWater() )
+		if ( !InWater() )
 		{
 			StartGravity();
 		}
@@ -38,9 +38,8 @@ partial class GameMovement
 
 		CheckVelocity();
 
-		if ( Player.GroundEntity.IsValid() ) 
+		if ( Player.GroundEntity.IsValid() )
 		{
-			Velocity.z = 0;
 			Friction();
 			WalkMove();
 		}
@@ -52,15 +51,33 @@ partial class GameMovement
 		// Set final flags.
 		CategorizePosition();
 
-		// Make sure velocity is valid.
-		CheckVelocity();
-
 		// Add any remaining gravitational component.
-		if ( !CheckWater() )
+		if ( !InWater() )
 		{
 			FinishGravity();
 		}
+
+		// Make sure velocity is valid.
+		CheckVelocity();
+
+		CheckFalling();
 	}
+
+	public void CheckFalling()
+	{
+		if ( Player.IsInAir || Player.FallVelocity <= 0 || !Player.IsAlive )
+			return;
+
+		// let any subclasses know that the player has landed and how hard
+		OnLand( Player.FallVelocity );
+
+		//
+		// Clear the fall velocity so the impact doesn't happen again.
+		//
+		Player.FallVelocity = 0;
+	}
+
+	public virtual void OnLand( float velocity ) { }
 
 	public virtual void WalkMove()
 	{

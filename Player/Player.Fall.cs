@@ -5,7 +5,7 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[ConVar.Replicated] public static bool sv_falldamage { get; set; } = true;
-	public float FallVelocity { get; set; }
+	[Net, Predicted] public float FallVelocity { get; set; }
 
 	public virtual void OnLanded( float velocity )
 	{

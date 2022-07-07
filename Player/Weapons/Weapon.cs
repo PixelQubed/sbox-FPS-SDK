@@ -64,8 +64,6 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnEquip()" );
-
 		SetParent( owner, true );
 		Owner = owner;
 		MoveType = MoveType.None;
@@ -97,8 +95,6 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnDeploy()" );
-
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();
 
@@ -115,8 +111,6 @@ public partial class Source1Weapon : AnimatedEntity
 	{
 		if ( !IsValid )
 			return;
-
-		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnHolster()" );
 
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;

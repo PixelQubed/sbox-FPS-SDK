@@ -8,29 +8,67 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
-	[Net, Predicted] public Source1Weapon LastWeapon { get; set; }
 
-	public virtual void SimulateWeaponSwitch()
+	/// <summary>
+	/// Can this player attack using their weapons?
+	/// </summary>
+	public virtual bool CanAttack() => true;
+
+	public virtual void SimulateActiveWeapon( Client cl )
 	{
-		if ( Input.ActiveChild is Source1Weapon weapon )
-		{
-			SwitchToWeapon( weapon );
-			Input.ActiveChild = null;
-		}
+		if ( Input.ActiveChild is Source1Weapon newWeapon )
+			SwitchToWeapon( newWeapon );
+
+		if ( !ActiveWeapon.IsValid() )
+			return;
+
+		if ( ActiveWeapon.IsAuthority )
+			ActiveWeapon.Simulate( cl );
 	}
 
-	public virtual void SimulateActiveWeapon( Client cl, Source1Weapon weapon )
+	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
 	{
 		if ( !weapon.IsValid() )
-			return;
+			return false;
 
-		if ( !weapon.IsAuthority )
-			return;
+		// Cant switch to something we don't have equipped.
+		if ( !IsEquipped( weapon ) )
+			return false;
 
-		weapon.Simulate( cl );
+		// Check if we can switch to this weapon.
+		if ( !CanSwitchTo( weapon ) )
+			return false;
+
+		// TODO:
+		// Check if weapon allows us to switch to it.
+		// if( !weapon.CanDeploy() )
+		// return false;
+
+		// We already have some weapon out.
+		if ( ActiveWeapon.IsValid() )
+		{
+			// Check if we can switch from this weapon.
+			if ( !CanSwitchFrom( ActiveWeapon ) )
+				return false;
+
+			// TODO:
+			// Check if weapon allows us to be switched from.
+			// if( !ActiveWeapon.CanHolster() )
+			// return false;
+
+			ActiveWeapon.OnHolster( this );
+		}
+
+		ActiveWeapon = weapon;
+		ActiveWeapon.OnDeploy( this );
+
+		return true;
 	}
 
-	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
+	//
+	// Unfixed
+	//
+
 	public virtual bool EquipWeapon( Source1Weapon weapon, bool makeActive = false )
 	{
 		Host.AssertServer();
@@ -44,14 +82,10 @@ partial class Source1Player
 		if ( !weapon.CanEquip( this ) )
 			return false;
 
-		OnPreEquipWeapon( weapon );
-
 		weapon.OnEquip( this );
 
 		weapon.Parent = this;
 		weapon.Owner = this;
-
-		OnPostEquipWeapon( weapon );
 
 		if ( makeActive )
 			SwitchToWeapon( weapon );
@@ -59,8 +93,8 @@ partial class Source1Player
 		return true;
 	}
 
-	public virtual void OnPreEquipWeapon( Source1Weapon weapon ) { }
-	public virtual void OnPostEquipWeapon( Source1Weapon weapon ) { }
+	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
+
 
 	public virtual bool IsEquipped( Source1Weapon weapon ) => Children.Contains( weapon );
 
@@ -81,80 +115,11 @@ partial class Source1Player
 		}
 	}
 
-	/// <summary>
-	/// Can this player attack using their weapons?
-	/// </summary>
-	public virtual bool CanAttack() => true;
-
-	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
-	{
-		if ( weapon == null )
-			return false;
-
-		// We already have some weapon out.
-		if ( ActiveWeapon.IsValid() )
-		{
-			// We already are using this weapon.
-			if ( ActiveWeapon == weapon )
-				return false;
-
-			// We can't switch from this weapon.
-			if ( !CanSwitchFrom( ActiveWeapon ) )
-				return false;
-		}
-
-		// We can't switch to this weapon.
-		if ( !CanSwitchTo( weapon ) )
-			return false;
-
-		var lastWeapon = ActiveWeapon;
-		ActiveWeapon = weapon;
-
-		if ( IsServer )
-		{
-			lastWeapon?.OnHolster( this );
-			ActiveWeapon?.OnDeploy( this );
-		}
-
-		EquipWeaponHack( lastWeapon, ActiveWeapon );
-
-		if ( rememberLast )
-			LastWeapon = lastWeapon;
-
-		return true;
-	}
-
-	[ClientRpc]
-	public void EquipWeaponHack( Source1Weapon last, Source1Weapon newweap )
-	{
-		if ( !IsLocalPawn )
-			return;
-
-		if ( IsEquipped( last ) ) 
-			last?.OnHolster( this );
-
-		newweap?.OnDeploy( this );
-	}
-
 	public bool CanSwitchTo( Source1Weapon weapon ) => true;
 	public bool CanSwitchFrom( Source1Weapon weapon ) => true;
 
-	public virtual void SwitchToPreviousWeapon()
-	{
-		if ( !LastWeapon.IsValid() )
-			return;
-
-		SwitchToWeapon( LastWeapon );
-	}
-
 	public virtual void SwitchToNextBestWeapon()
 	{
-		if ( LastWeapon.IsValid() )
-		{
-			SwitchToWeapon( LastWeapon );
-			return;
-		}
-
 		var weapons = Children.OfType<Source1Weapon>()
 			.Where( x => x != ActiveWeapon && CanSwitchTo( x ) );
 

@@ -45,7 +45,6 @@ partial class Source1Player
 
 	[Net, Predicted] public float m_nJumpTimeMsecs { get; set; }
 	public float m_flStepSize => 18;
-	[Net, Predicted] public float m_flFallVelocity { get; set; }
 
 	[Net, Predicted] public PlayerFlags Flags { get; set; }
 	
