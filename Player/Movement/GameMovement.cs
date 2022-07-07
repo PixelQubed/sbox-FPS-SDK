@@ -96,6 +96,10 @@ public partial class GameMovement
 			case MoveType.MOVETYPE_NOCLIP:
 				FullNoClipMove(sv_noclip_speed, sv_noclip_accelerate);
 				break;
+
+			case MoveType.MOVETYPE_OBSERVER:
+				FullObserverMove();
+				break;
 		}
 	}
 
