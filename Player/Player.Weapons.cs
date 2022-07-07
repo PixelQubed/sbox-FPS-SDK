@@ -84,9 +84,6 @@ partial class Source1Player
 
 		weapon.OnEquip( this );
 
-		weapon.Parent = this;
-		weapon.Owner = this;
-
 		if ( makeActive )
 			SwitchToWeapon( weapon );
 
