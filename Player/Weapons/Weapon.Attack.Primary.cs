@@ -43,8 +43,8 @@ partial class Source1Weapon
 		}
 
 		LastAttackTime = Time.Now;
-		FinishReload();
 		Fire();
+		FinishReload();
 	}
 
 	public virtual void Fire()

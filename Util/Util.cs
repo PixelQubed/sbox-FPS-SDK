@@ -63,20 +63,17 @@ public static partial class Util
 		}
 	}
 
-	public static float RemapClamped( this float value, float oldLow, float oldHigh, float newLow = 0, float newHigh = 1 )
+	public static float RemapClamped( this float val, float A, float B, float C = 0, float D = 1 )
 	{
-		value = value.Remap( oldLow, oldHigh, newLow, newHigh );
+		if ( A == B )
+			return fsel( val - B, D, C );
+		float cVal = (val - A) / (B - A);
+		cVal = Math.Clamp( cVal, 0.0f, 1.0f );
 
-		if ( newLow < newHigh )
-		{
-			value = Math.Clamp( value, newLow, newHigh );
-		}
-		else
-		{
-			value = Math.Clamp( value, newHigh, newLow );
-		}
-		return value;
+		return C + (D - C) * cVal;
 	}
+
+	private static float fsel( float c, float x, float y ) => c >= 0 ? x : y;
 
 	// hermite basis function for smooth interpolation
 	// Similar to Gain() above, but very cheap to call

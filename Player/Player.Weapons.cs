@@ -238,6 +238,7 @@ partial class Source1Player
 
 		weapon.OnDrop( this );
 		weapon.Position = origin;
+		weapon.Rotation = Rotation.LookAt( force );
 		weapon.ApplyAbsoluteImpulse( force );
 
 		return true;
