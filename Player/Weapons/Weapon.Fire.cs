@@ -84,7 +84,7 @@ partial class Source1Weapon
 		var tr = TraceFireBullet( seedOffset );
 
 		// Create particle from the trace.
-		CreateParticleFromTrace( tr );
+		CreateBulletTracer( tr.EndPosition );
 
 		// If we hit some entity, do some effects on hit.
 		if ( tr.Entity != null )

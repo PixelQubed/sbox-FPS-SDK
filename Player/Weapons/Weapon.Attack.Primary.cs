@@ -67,7 +67,7 @@ partial class Source1Weapon
 			FireBullet( GetDamage(), i );
 		}
 
-		DoMuzzleFlash();
+		CreateMuzzleFlash();
 		DoRecoil();
 
 		CalculateNextAttackTime( GetAttackTime() );

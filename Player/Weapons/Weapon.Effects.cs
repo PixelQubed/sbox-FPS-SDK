@@ -11,13 +11,13 @@ partial class Source1Weapon
 			: this;
 	}
 
-	[ClientRpc]
-	public virtual void DoMuzzleFlash() { }
 	public virtual void DoRecoil() { }
 
 	private static int TracerCount { get; set; }
+	public virtual string GetParticleTracerEffect() => "";
 
-	public void CreateParticleFromTrace( TraceResult tr )
+	[ClientRpc]
+	public void CreateBulletTracer( Vector3 endPos )
 	{
 		// get the tracer particle.
 		string particle = GetParticleTracerEffect();
@@ -39,26 +39,26 @@ partial class Source1Weapon
 		if ( !attachEnt.IsValid() )
 			return;
 
-		// Find the muzzle attachment on the model.
-		var muzzle = attachEnt.GetAttachment( "muzzle" );
-		if ( !muzzle.HasValue )
-			return;
-
-		var startPos = muzzle.Value.Position;
-		var endPos = tr.EndPosition;
-
-		Vector3 toEnd = endPos - startPos;
-		Angles angles = Vector3.VectorAngle( toEnd.Normal );
-		Vector3 forward = Angles.AngleVector( angles );
-
 		// Create the particle effect
-		Particles tracer = Particles.Create( particle );
-		tracer.SetPosition( 0, startPos );
+		Particles tracer = Particles.Create( particle, attachEnt, "muzzle" );
 		tracer.SetPosition( 1, endPos );
-		tracer.SetForward( 0, forward );
-
-	//	DebugOverlay.Line( startPos, endPos, Color.Cyan, 1, false );
 	}
 
-	public virtual string GetParticleTracerEffect() => "";
+	public virtual string GetMuzzleFlashEffect() => "";
+
+	[ClientRpc]
+	public virtual void CreateMuzzleFlash()
+	{
+		// get the tracer particle.
+		string particle = GetMuzzleFlashEffect();
+		if ( string.IsNullOrEmpty( particle ) )
+			return;
+
+		// Grab the entity we're supposed to draw effects from.
+		var attachEnt = GetEffectEntity();
+		if ( !attachEnt.IsValid() )
+			return;
+
+		Particles.Create( particle, attachEnt, "muzzle" );
+	}
 }
