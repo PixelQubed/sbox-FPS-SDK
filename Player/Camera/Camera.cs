@@ -60,23 +60,8 @@ partial class Source1Camera : CameraMode
 		CalculateFieldOfView( player );
 	}
 
-	public void CalculateLerp()
-	{
-		if ( cl_camera_lerp_amount <= 0 )
-			return;
-
-		if ( Position.Distance( LastPosition ) < cl_camera_lerp_max_distance ) 
-			Position = LastPosition.LerpTo( Position, cl_camera_lerp_amount * Time.Delta );
-	}
-
-	[ConVar.Client] public static float cl_camera_lerp_amount { get; set; } = 100;
-	[ConVar.Client] public static float cl_camera_lerp_max_distance { get; set; } = 100;
-
 	public virtual void CalculatePlayerView( Source1Player player )
 	{
-		var punch = player.ViewPunchAngle;
-		Rotation *= Rotation.From( punch.x, punch.y, punch.z );
-
 		if( cl_thirdperson )
 		{
 			Viewer = null;
