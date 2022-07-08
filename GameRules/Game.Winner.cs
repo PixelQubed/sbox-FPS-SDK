@@ -34,7 +34,7 @@ partial class GameRules
 				continue;
 
 			if ( !TeamManager.IsPlayable( index ) )
-				return;
+				continue;
 
 			OnTeamLose( index );
 		}

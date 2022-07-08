@@ -91,4 +91,19 @@ partial class GameRules
 	}
 
 	[ConVar.Server] public static float sv_damageforce_scale { get; set; } = 1;
+
+#if false
+	[ConCmd.Server( "sv_dumpteams" ), ConCmd.Client( "cl_dumpteams" )]
+	public static void Command_DumpTeams()
+	{
+		foreach ( var team in TeamManager.Teams.Values )
+		{
+			Log.Info( $"Team: {team.Name}" );
+			Log.Info( $"- Title: {team.Title}" );
+			Log.Info( $"- Color: {team.Color}" );
+			Log.Info( $"- Is Playable: {team.IsPlayable}" );
+			Log.Info( $"- Is Joinable: {team.IsJoinable}" );
+		}
+	}
+#endif
 }

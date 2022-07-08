@@ -44,11 +44,14 @@ public static class TeamManager
 			IsPlayable = playable,
 			IsJoinable = joinable
 		};
+
+		Log.NetInfo( $"[Teams] Declared {name} (title: \"{title}\") (playable: {playable}) (joinable: {joinable})" );
 	}
 
 	public static void DeleteTeam( int number )
 	{
-		if ( Teams.ContainsKey( number ) ) Teams.Remove( number );
+		if ( Teams.ContainsKey( number ) )
+			Teams.Remove( number );
 	}
 
 	public static bool TeamExists( int number ) => Teams.ContainsKey( number );

@@ -24,6 +24,7 @@ public static class Source1Extensions
 		if ( startsLocked ) door.Lock();
 	}
 
+	public static bool IsValid( this GameResource resource ) => resource != null;
 	public static void NetInfo( this Logger logger, FormattableString message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
 	public static void NetInfo( this Logger logger, object message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
 }
