@@ -36,27 +36,15 @@ partial class Source1Weapon
 
 		// Grab the entity we're supposed to draw effects from.
 		var attachEnt = GetEffectEntity();
-		if ( attachEnt == null )
+		if ( !attachEnt.IsValid() )
 			return;
 
-		var startPos = Vector3.Zero;
-		if ( attachEnt is ViewModel vm )
-		{
-			if ( !vm.MuzzleOrigin.HasValue )
-				return;
+		// Find the muzzle attachment on the model.
+		var muzzle = attachEnt.GetAttachment( "muzzle" );
+		if ( !muzzle.HasValue )
+			return;
 
-			startPos = vm.MuzzleOrigin.Value;
-		}
-		else
-		{
-			// Find the muzzle attachment on the model.
-			var muzzle = attachEnt.GetAttachment( "muzzle" );
-			if ( !muzzle.HasValue )
-				return;
-
-			startPos = muzzle.Value.Position;
-		}
-
+		var startPos = muzzle.Value.Position;
 		var endPos = tr.EndPosition;
 
 		Vector3 toEnd = endPos - startPos;

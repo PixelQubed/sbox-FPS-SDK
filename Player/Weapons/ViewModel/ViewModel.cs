@@ -8,7 +8,6 @@ public partial class ViewModel : BaseViewModel
 	public Source1Weapon Weapon { get; set; }
 	public Vector3? MuzzleOrigin { get; private set; }
 	public virtual string MuzzleAttachment => "muzzle";
-
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -24,18 +23,8 @@ public partial class ViewModel : BaseViewModel
 
 		if ( visible )
 			CalculateView( camSetup );
-
-		UpdateMuzzleOrigin();
 	}
 
-	public void UpdateMuzzleOrigin()
-	{
-		MuzzleOrigin = null;
-
-		var muzzle = GetAttachment( MuzzleAttachment );
-		if ( muzzle.HasValue )
-			MuzzleOrigin = muzzle.Value.Position;
-	}
 
 	public virtual bool ShouldDraw() => true;
 	public virtual void CalculateView( CameraSetup camSetup ) { }
@@ -71,7 +60,7 @@ public partial class ViewModel : BaseViewModel
 
 	public ModelEntity CreateAttachment<T>( string model = "" ) where T : ModelEntity, new()
 	{
-		var attach = new T { Owner = Owner, EnableViewmodelRendering = true };
+		var attach = new T { Owner = Owner, EnableViewmodelRendering = EnableViewmodelRendering };
 		attach.SetParent( this, true );
 		attach.SetModel( model );
 		return attach;
