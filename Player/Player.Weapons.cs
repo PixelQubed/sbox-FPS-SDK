@@ -170,7 +170,7 @@ partial class Source1Player
 
 		if ( index < ViewModels.Count )
 		{
-			if ( ViewModels[index] != null )
+			if ( ViewModels[index].IsValid() )
 				return ViewModels[index];
 		}
 
@@ -184,7 +184,6 @@ partial class Source1Player
 		var vm = CreateViewModel();
 		vm.Position = Position;
 		vm.Owner = this;
-		vm.Parent = this;
 
 		ViewModels[index] = vm;
 		return vm;
