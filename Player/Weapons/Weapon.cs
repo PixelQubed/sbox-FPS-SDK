@@ -105,8 +105,6 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		Log.NetInfo( this + "::OnHolster()" );
-
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;
 
