@@ -61,25 +61,15 @@ partial class Source1Player
 			return false;
 
 		// Check if we can switch to this weapon.
-		if ( !CanSwitchTo( weapon ) )
+		if ( !CanDeploy( weapon ) )
 			return false;
-
-		// TODO:
-		// Check if weapon allows us to switch to it.
-		// if( !weapon.CanDeploy() )
-		// return false;
 
 		// We already have some weapon out.
 		if ( ActiveWeapon.IsValid() )
 		{
 			// Check if we can switch from this weapon.
-			if ( !CanSwitchFrom( ActiveWeapon ) )
+			if ( !CanHolster( ActiveWeapon ) )
 				return false;
-
-			// TODO:
-			// Check if weapon allows us to be switched from.
-			// if( !ActiveWeapon.CanHolster() )
-			// return false;
 		}
 
 		ActiveWeapon = weapon;
@@ -97,16 +87,20 @@ partial class Source1Player
 		if ( weapon.Owner != null )
 			return false;
 
-		if ( !CanEquipWeapon( weapon ) )
-			return false;
-
-		if ( !weapon.CanEquip( this ) )
+		if ( !CanEquip( weapon ) )
 			return false;
 
 		// See if have another weapon in this weapon's slot.
+		// If we have, throw it away.
 		var slotWeapon = GetWeaponInSlot( weapon.SlotNumber );
 		if ( slotWeapon.IsValid() )
+		{
+			// Check if we can drop a weapon.
+			if ( !CanDrop( weapon ) )
+				return false;
+
 			ThrowWeapon( slotWeapon );
+		}
 
 		weapon.OnEquip( this );
 
@@ -116,8 +110,11 @@ partial class Source1Player
 		return true;
 	}
 
-	public virtual bool CanEquipWeapon( Source1Weapon weapon ) => true;
+	public virtual bool CanEquip( Source1Weapon weapon ) => weapon.CanEquip( this );
+	public virtual bool CanDrop( Source1Weapon weapon ) => weapon.CanDrop( this );
 
+	public virtual bool CanDeploy( Source1Weapon weapon ) => weapon.CanDeploy( this );
+	public virtual bool CanHolster( Source1Weapon weapon ) => weapon.CanHolster( this );
 
 	public virtual bool IsEquipped( Source1Weapon weapon ) => Children.Contains( weapon );
 
@@ -138,13 +135,10 @@ partial class Source1Player
 		}
 	}
 
-	public bool CanSwitchTo( Source1Weapon weapon ) => true;
-	public bool CanSwitchFrom( Source1Weapon weapon ) => true;
-
 	public virtual void SwitchToNextBestWeapon()
 	{
 		var weapons = Children.OfType<Source1Weapon>()
-			.Where( x => x != ActiveWeapon && CanSwitchTo( x ) )
+			.Where( x => x != ActiveWeapon && CanDeploy( x ) )
 			.OrderBy( x => x.SlotNumber );
 
 		var first = weapons.FirstOrDefault();
@@ -231,18 +225,27 @@ partial class Source1Player
 		if ( !weapon.IsValid() )
 			return false;
 
+		// We can't drop something that we dont have equipped.
 		if ( !IsEquipped( weapon ) )
 			return false;
 
+		// We can't drop this weapon.
+		if ( !CanDrop( weapon ) )
+			return false;
+
+		// This is the weapon we have equipped right now.
 		if ( ActiveWeapon == weapon )
 		{
-			if ( !CanSwitchFrom( weapon ) )
+			// We can't switch away from this weapon right now.
+			if ( !CanHolster( weapon ) )
 				return false;
 
+			// Holster it immediately to negate all effects.
 			ActiveWeapon.OnHolster( this );
 			ActiveWeapon = null;
 		}
 
+		// Drop it.
 		weapon.OnDrop( this );
 		weapon.Position = origin;
 		weapon.Rotation = Rotation.LookAt( force );

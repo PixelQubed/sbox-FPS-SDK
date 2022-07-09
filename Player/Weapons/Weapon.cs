@@ -25,7 +25,12 @@ public partial class Source1Weapon : AnimatedEntity
 		EnableShadowInFirstPerson = true;
 	}
 
+	public virtual bool CanDeploy( Source1Player player ) => true;
+	public virtual bool CanHolster( Source1Player player ) => true;
+
 	public virtual bool CanEquip( Source1Player player ) => true;
+	public virtual bool CanDrop( Source1Player player ) => true;
+
 	public virtual bool RemoveOnRoundRestart() => false;
 
 	public override void Simulate( Client cl )
