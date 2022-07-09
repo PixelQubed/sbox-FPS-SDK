@@ -37,7 +37,15 @@ partial class Source1Player
 	public virtual void OnSwitchedActiveWeapon( Source1Weapon lastWeapon, Source1Weapon newWeapon )
 	{
 		if ( lastWeapon.IsValid() )
-			lastWeapon.OnHolster( this );
+		{
+			if ( IsEquipped( lastWeapon ) )
+				lastWeapon.OnHolster( this );
+
+			// If we change a weapon always clean their viewmodel, as 
+			// a fallback in case OnHolster on client doesn't get called.
+			// i.e. if weapon is removed serverside.
+			lastWeapon?.ClearViewModel();
+		}
 
 		if ( newWeapon.IsValid() )
 			newWeapon.OnDeploy( this );
@@ -231,6 +239,7 @@ partial class Source1Player
 			if ( !CanSwitchFrom( weapon ) )
 				return false;
 
+			ActiveWeapon.OnHolster( this );
 			ActiveWeapon = null;
 		}
 
