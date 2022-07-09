@@ -245,11 +245,15 @@ partial class Source1Player
 			ActiveWeapon = null;
 		}
 
+
 		// Drop it.
 		weapon.OnDrop( this );
 		weapon.Position = origin;
-		weapon.Rotation = Rotation.LookAt( force );
-		weapon.ApplyAbsoluteImpulse( force );
+
+		// Account our own velocity when throwing stuff.
+		var velocity = force + Velocity;
+		weapon.Rotation = Rotation.LookAt( velocity );
+		weapon.ApplyAbsoluteImpulse( velocity );
 
 		return true;
 	}
