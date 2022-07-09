@@ -8,6 +8,7 @@ public partial class Source1Weapon : AnimatedEntity
 	[Net] public int ViewModelIndex { get; set; }
 	[Net] public int AmmoTypeNumber { get; set; }
 	[Net] public int SlotNumber { get; set; }
+	public ViewModel ViewModel { get; set; }
 
 	public override void Spawn()
 	{
@@ -34,15 +35,6 @@ public partial class Source1Weapon : AnimatedEntity
 
 		if ( sv_debug_weapons && IsLocalPawn )
 			DebugScreenText( Time.Delta );
-	}
-
-	/// <summary>
-	/// This simulates weapon's attack abilities.
-	/// </summary>
-	public virtual void SimulateAttack()
-	{
-		SimulatePrimaryAttack();
-		SimulateSecondaryAttack();
 	}
 
 	public virtual bool ShouldAutoReload()
@@ -78,8 +70,6 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
-		// Log.Info( $"[{(IsServer ? "SV" : "CL")}] {this}::OnDrop()" );
-
 		SetParent( null );
 		Owner = null;
 		MoveType = MoveType.Physics;
@@ -110,6 +100,8 @@ public partial class Source1Weapon : AnimatedEntity
 		if ( !IsValid )
 			return;
 
+		Log.NetInfo( this + "::OnHolster()" );
+
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;
 
@@ -118,12 +110,14 @@ public partial class Source1Weapon : AnimatedEntity
 
 	public virtual void SetupViewModel()
 	{
-		GetViewModelEntity()?.SetWeaponModel( GetViewModelPath(), this );
+		ViewModel = GetViewModelEntity();
+		ViewModel?.SetWeaponModel( GetViewModelPath(), this );
 	}
 
 	public virtual void ClearViewModel()
 	{
-		GetViewModelEntity()?.ClearWeapon( this );
+		ViewModel?.ClearWeapon( this );
+		ViewModel = null;
 	}
 
 	public virtual ViewModel GetViewModelEntity()
@@ -213,4 +207,9 @@ public partial class Source1Weapon : AnimatedEntity
 
 	protected virtual void DebugScreenText( float interval ) { }
 	[ConVar.Replicated] public static bool sv_debug_weapons { get; set; }
+
+	public virtual void Regenerate()
+	{
+		Clip = GetClipSize();
+	}
 }

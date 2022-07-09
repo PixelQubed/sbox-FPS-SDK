@@ -15,6 +15,7 @@ partial class Source1Weapon
 	//
 	// Properties
 	//
+
 	public virtual int GetAmmoPerShot() => 1;
 	public virtual int GetBulletsPerShot() => 1;
 	public virtual float GetDamage() => 1;

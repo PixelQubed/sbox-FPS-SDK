@@ -138,7 +138,7 @@ partial class Source1Weapon
 			return false;
 
 		// Don't have any reserve.
-		if ( GetReserveAmmoCount() <= 0 ) 
+		if ( GetAmmoInReserve() <= 0 ) 
 			return false;
 
 		// Our clip is full
@@ -152,7 +152,7 @@ partial class Source1Weapon
 		return true;
 	}
 
-	public virtual int GetReserveAmmoCount()
+	public virtual int GetAmmoInReserve()
 	{
 		if ( Player == null )
 			return 0;

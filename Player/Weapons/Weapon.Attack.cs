@@ -7,6 +7,16 @@ partial class Source1Weapon
 	[Net, Predicted] public float NextAttackTime { get; set; }
 	[Net, Predicted] public float LastAttackTime { get; set; }
 
+
+	/// <summary>
+	/// This simulates weapon's attack abilities.
+	/// </summary>
+	public virtual void SimulateAttack()
+	{
+		SimulatePrimaryAttack();
+		SimulateSecondaryAttack();
+	}
+
 	/// <summary>
 	/// This simulates weapon's secondary attack.
 	/// </summary>

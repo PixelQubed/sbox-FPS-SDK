@@ -7,6 +7,7 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
+	public IEnumerable<Source1Weapon> Weapons => Children.OfType<Source1Weapon>();
 	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
 	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
 
@@ -36,10 +37,7 @@ partial class Source1Player
 	public virtual void OnSwitchedActiveWeapon( Source1Weapon lastWeapon, Source1Weapon newWeapon )
 	{
 		if ( lastWeapon.IsValid() )
-		{
-			if ( IsEquipped( lastWeapon ) )
-				lastWeapon.OnHolster( this );
-		}
+			lastWeapon.OnHolster( this );
 
 		if ( newWeapon.IsValid() )
 			newWeapon.OnDeploy( this );
@@ -242,5 +240,19 @@ partial class Source1Player
 		weapon.ApplyAbsoluteImpulse( force );
 
 		return true;
+	}
+
+	/// <summary>
+	/// Manage weapons on respawn.
+	/// </summary>
+	public virtual void ManageRespawnWeapons() { }
+
+	public virtual void RegenerateWeapons()
+	{
+		foreach ( var weapon in Weapons )
+		{
+			SetAmmo( weapon.AmmoTypeNumber, weapon.GetAmmoInReserve() );
+			weapon.Regenerate();
+		}
 	}
 }

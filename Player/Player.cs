@@ -157,6 +157,19 @@ public partial class Source1Player : AnimatedEntity
 			// let gamerules know that we have respawned.
 			GameRules.Current.PlayerRespawn( this );
 		}
+
+		if ( IsAlive ) 
+			RespawnAlive();
+	}
+
+	/// <summary>
+	/// Called after <see cref="Respawn"/>, but only if the player is guaranteed to be
+	/// alive after it. This is to prevent doing something on respawn if player is, for example, a spectator.
+	/// </summary>
+	public virtual void RespawnAlive()
+	{
+		ManageRespawnWeapons();
+		RegenerateWeapons();
 	}
 
 	public float GetFOV()
