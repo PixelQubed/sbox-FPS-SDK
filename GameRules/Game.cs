@@ -21,7 +21,7 @@ public partial class GameRules : Game
 		base.Spawn();
 
 		DeclareGameTeams();
-		SetupServerVariables();
+		SetupGameVariables();
 	}
 
 	public override void ClientSpawn()
@@ -29,7 +29,7 @@ public partial class GameRules : Game
 		base.ClientSpawn();
 
 		DeclareGameTeams();
-		SetupClientVariables();
+		SetupGameVariables();
 	}
 
 	public virtual void DeclareGameTeams()
@@ -85,8 +85,7 @@ public partial class GameRules : Game
 		}
 	}
 
-	public virtual void SetupServerVariables() { }
-	public virtual void SetupClientVariables() { }
+	public virtual void SetupGameVariables() { }
 
 	public override void PostLevelLoaded()
 	{
