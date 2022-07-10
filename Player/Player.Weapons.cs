@@ -258,17 +258,9 @@ partial class Source1Player
 		return true;
 	}
 
-	/// <summary>
-	/// Manage weapons on respawn.
-	/// </summary>
-	public virtual void ManageRespawnWeapons() { }
-
-	public virtual void RegenerateWeapons()
+	public virtual void RegenerateAllWeapons()
 	{
 		foreach ( var weapon in Weapons )
-		{
-			SetAmmo( weapon.AmmoTypeNumber, weapon.GetAmmoInReserve() );
 			weapon.Regenerate();
-		}
 	}
 }
