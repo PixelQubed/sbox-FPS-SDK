@@ -73,6 +73,13 @@ public static partial class Util
 		return C + (D - C) * cVal;
 	}
 
+	public static float RemapVal( this float val, float A, float B, float C = 0, float D = 1 )
+	{
+		if ( A == B )
+			return fsel( val - B, D, C );
+		return C + (D - C) * (val - A) / (B - A);
+	}
+
 	private static float fsel( float c, float x, float y ) => c >= 0 ? x : y;
 
 	// hermite basis function for smooth interpolation
