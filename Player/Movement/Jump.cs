@@ -5,8 +5,8 @@ namespace Amper.Source1;
 partial class GameMovement
 {
 	public virtual float JumpImpulse => 268;
-	public bool WishJump() => Input.Pressed( InputButton.Jump );
-	public bool CanJump() => Player.CanJump();
+	public virtual bool WishJump() => Input.Pressed( InputButton.Jump );
+	public virtual bool CanJump() => Player.CanJump();
 
 	/// <summary>
 	/// Returns true if any other buttons did anything.

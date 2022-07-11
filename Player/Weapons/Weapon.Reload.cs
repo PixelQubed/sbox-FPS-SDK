@@ -54,7 +54,7 @@ partial class Source1Weapon
 		{
 			// If we can't reload, and we're reloading now. Finish our reloading.
 			if ( IsReloading )
-				FinishReload();
+				StopReload();
 
 			// Then prevent reloading from happening again, until we can reload again.
 			return;
@@ -86,7 +86,7 @@ partial class Source1Weapon
 			return;
 		}
 
-		var addedClips = ConsumeAmmoFromReserve( neededClips );
+		var addedClips = TakeFromReserve( neededClips );
 		Clip += addedClips;
 	}
 
@@ -112,7 +112,7 @@ partial class Source1Weapon
 		NextReloadCycleTime = Time.Now + GetReloadStartTime();
 	}
 
-	public virtual void FinishReload()
+	public virtual void StopReload()
 	{
 		if ( !IsReloading )
 			return;
@@ -138,7 +138,7 @@ partial class Source1Weapon
 			return false;
 
 		// Don't have any reserve.
-		if ( GetAmmoInReserve() <= 0 ) 
+		if ( Reserve <= 0 ) 
 			return false;
 
 		// Our clip is full
@@ -152,16 +152,4 @@ partial class Source1Weapon
 		return true;
 	}
 
-	public virtual int GetAmmoInReserve()
-	{
-		if ( Player == null )
-			return 0;
-
-		return Player.GetAmmoCount( AmmoTypeNumber );
-	}
-
-	public virtual int ConsumeAmmoFromReserve( int ammoNeeded )
-	{
-		return Player.TakeAmmo( AmmoTypeNumber, ammoNeeded );
-	}
 }

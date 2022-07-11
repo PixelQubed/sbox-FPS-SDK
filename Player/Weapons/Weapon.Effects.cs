@@ -61,4 +61,16 @@ partial class Source1Weapon
 
 		Particles.Create( particle, attachEnt, "muzzle" );
 	}
+	
+	/// <summary>
+	/// This will play an unprecited sound. If you're playing a sound serverside on a predicted 
+	/// entity (like weapons on pawns) it will not be played on the client because it will be culled by prediction. 
+	/// This function solves this.
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	public Sound PlayUnpredictedSound( string name )
+	{
+		using ( Prediction.Off() ) return PlaySound( name );
+	}
 }

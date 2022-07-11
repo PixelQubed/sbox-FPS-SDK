@@ -120,8 +120,6 @@ partial class Source1Player
 
 	public virtual void DeleteAllWeapons()
 	{
-		Ammo.Clear();
-
 		var weapons = Children.OfType<Source1Weapon>().ToArray();
 		foreach ( var child in weapons )
 		{

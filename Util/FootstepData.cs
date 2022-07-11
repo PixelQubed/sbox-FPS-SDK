@@ -30,7 +30,7 @@ public class FootstepData : GameResource
 		if ( surface == null )
 			return false;
 
-		var result = All.FirstOrDefault( x => x.SurfacePath == surface.Path );
+		var result = All.FirstOrDefault( x => x.SurfacePath == surface.ResourcePath );
 		if ( result == null )
 		{
 			sounds = FootstepSounds.FromSurface( surface );

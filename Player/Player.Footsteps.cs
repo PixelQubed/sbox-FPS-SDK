@@ -92,7 +92,7 @@ partial class Source1Player
 		if ( sv_debug_footstep_surfaces )
 		{
 			DebugOverlay.Sphere( origin, 3, Color.Yellow, 5, true );
-			DebugOverlay.Text( surface.Name, origin, 5 );
+			DebugOverlay.Text( surface.ResourceName, origin, 5 );
 		}
 
 		if ( !FootstepData.GetSoundsForSurface( surface, out var sounds ) )

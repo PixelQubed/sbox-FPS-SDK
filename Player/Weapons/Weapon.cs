@@ -6,7 +6,6 @@ public partial class Source1Weapon : AnimatedEntity
 {
 	public Source1Player Player => Owner as Source1Player;
 	[Net] public int ViewModelIndex { get; set; }
-	[Net] public int AmmoTypeNumber { get; set; }
 	[Net] public int SlotNumber { get; set; }
 	public ViewModel ViewModel { get; set; }
 
@@ -177,10 +176,6 @@ public partial class Source1Weapon : AnimatedEntity
 	public virtual void SendViewModelAnimParameter( string name, Rotation value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
 	public virtual void SendViewModelAnimParameter( string name, Transform value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
 
-	[Net, Predicted] public int Clip { get; set; }
-	public virtual bool HasAmmo() => Clip > 0 || !NeedsAmmo();
-	public virtual bool NeedsAmmo() => true;
-
 	protected override void OnDestroy()
 	{
 		ClearViewModel();
@@ -210,9 +205,4 @@ public partial class Source1Weapon : AnimatedEntity
 
 	protected virtual void DebugScreenText( float interval ) { }
 	[ConVar.Replicated] public static bool sv_debug_weapons { get; set; }
-
-	public virtual void Regenerate()
-	{
-		Clip = GetClipSize();
-	}
 }

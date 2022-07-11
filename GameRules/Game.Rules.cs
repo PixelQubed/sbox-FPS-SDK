@@ -6,7 +6,7 @@ namespace Amper.Source1;
 partial class GameRules
 {
 	#region Teams
-
+	public virtual bool AreTeamChangesAllowed() => State != GameState.GameOver;
 	/// <summary>
 	/// Is this player allowed to change their team?
 	/// </summary>
@@ -27,6 +27,9 @@ partial class GameRules
 	{
 		// We're already on this team.
 		if ( player.TeamNumber == newTeam )
+			return false;
+
+		if ( AreTeamChangesAllowed() )
 			return false;
 
 		// This player is not allowed to change their team.
