@@ -21,8 +21,7 @@ partial class Source1Player
 	[Net, Predicted] public int AirDuckCount { get; set; }
 	[Net, Predicted] public float LastDuckTime { get; set; }
 	public bool IsDucking => DuckTime > 0;
-	public float DuckProgress => Math.Clamp( DuckTime / TimeToDuck, 0, 1 );
-	public virtual float TimeToDuck => .2f;
+	public float DuckProgress => Math.Clamp( DuckTime / GameRules.Current.TimeToDuck, 0, 1 );
 
 	//
 	// Water

@@ -35,7 +35,7 @@ public partial class GameMovement
 		SetupMoveData( player );
 
 		// Do movement.
-		Update();
+		ProcessMovement();
 		ShowDebugOverlay();
 		ApplyMoveData( player );
 	}
@@ -68,7 +68,12 @@ public partial class GameMovement
 		player.Velocity = Velocity;
 	}
 
-	public virtual void Update()
+	public virtual void ProcessMovement()
+	{
+		PlayerMove();
+	}
+
+	public virtual void PlayerMove()
 	{
 		CheckParameters();
 		ReduceTimers();

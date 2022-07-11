@@ -27,6 +27,7 @@ partial class GameMovement
 
 		SetGroundEntity( null );
 
+		PreventBunnyJumping();
 		Player.DoJumpSound( Position, Player.SurfaceData, 1 );
 		Player.SetAnimParameter( "b_jump", true );
 
@@ -45,6 +46,25 @@ partial class GameMovement
 
 		return true;
 	}
+
+	public virtual void PreventBunnyJumping()
+	{
+		// Speed at which bunny jumping is limited
+		float maxscaledspeed = MaxSpeed;
+		if ( maxscaledspeed <= 0.0f )
+			return;
+
+		// Current player speed
+		float spd = Velocity.Length;
+		if ( spd <= maxscaledspeed )
+			return;
+
+		// Apply this cropping fraction to velocity
+		float fraction = (maxscaledspeed / spd);
+
+		Velocity *= fraction;
+	}
+
 
 	public virtual void OnJump(float impulse ) { }
 }

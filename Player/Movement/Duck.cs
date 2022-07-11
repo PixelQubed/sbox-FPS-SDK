@@ -8,6 +8,7 @@ partial class GameMovement
 	public virtual float AirDuckBodyShiftModifier => 1;
 	public virtual int MaxAirDucks => 1;
 	public virtual float IdealDuckSpeed => 1;
+	public virtual float TimeToDuck => .2f;
 	public virtual float TimeBetweenDucks => 0;
 
 	public virtual float DuckingSpeedModifier => 1;
@@ -57,9 +58,9 @@ partial class GameMovement
 			return;
 
 		var speed = CalculateDuckSpeed( true );
-		Player.DuckTime = Player.DuckTime.Approach( Player.TimeToDuck, Time.Delta * speed );
+		Player.DuckTime = Player.DuckTime.Approach( TimeToDuck, Time.Delta * speed );
 
-		if ( Player.DuckTime >= Player.TimeToDuck || Player.IsInAir )
+		if ( Player.DuckTime >= TimeToDuck || Player.IsInAir )
 			FinishDuck();
 	}
 
@@ -131,7 +132,7 @@ partial class GameMovement
 			return;
 
 		Player.IsDucked = true;
-		Player.DuckTime = Player.TimeToDuck;
+		Player.DuckTime = TimeToDuck;
 		Player.LastDuckTime = Time.Now;
 
 		if ( Player.IsGrounded )
