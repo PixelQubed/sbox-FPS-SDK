@@ -6,6 +6,7 @@ namespace Amper.Source1;
 public partial class ViewModel : BaseViewModel
 {
 	public Source1Weapon Weapon { get; set; }
+	public Source1Player Player => Weapon?.Player;
 	public Vector3? MuzzleOrigin { get; private set; }
 	public virtual string MuzzleAttachment => "muzzle";
 	public override void Spawn()

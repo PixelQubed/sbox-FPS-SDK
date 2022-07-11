@@ -5,7 +5,7 @@ namespace Amper.Source1;
 
 public partial class PlayerAnimator : BaseNetworkable
 {
-	Source1Player Player;
+	protected Source1Player Player;
 
 	public void Simulate( Source1Player player ) 
 	{	
@@ -70,5 +70,6 @@ public partial class PlayerAnimator : BaseNetworkable
 	{
 		SetAnimParameter( "f_duck", Player.DuckProgress );
 		SetAnimParameter( "b_ducked", Player.IsDucked );
+		SetAnimParameter( "b_crouch", Player.IsDucked );
 	}
 }

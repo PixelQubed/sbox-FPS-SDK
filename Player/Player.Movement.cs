@@ -99,6 +99,9 @@ partial class Source1Player
 		if ( IsGrounded )
 			return false;
 
+		if ( AirDashCount >= MaxAirDashes )
+			return false;
+
 		return true;
 	}
 
@@ -109,6 +112,12 @@ partial class Source1Player
 
 		if ( ActiveWeapon.IsValid() && !ActiveWeapon.CanOwnerDuck() )
 			return false;
+
+		if ( IsInAir )
+		{
+			if ( AirDuckCount >= MaxAirDucks )
+				return false;
+		}
 
 		return true;
 	}

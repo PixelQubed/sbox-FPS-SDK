@@ -211,7 +211,8 @@ public partial class Source1Player : AnimatedEntity
 		MoveType = lastMoveType;
 		EnableHitboxes = lastEnableHitboxes;
 
-		if ( IsServer ) SetCollisionBoundsClient( mins, maxs );
+		using ( Prediction.Off() ) 
+			if ( IsServer ) SetCollisionBoundsClient( mins, maxs );
 	}
 
 	[ClientRpc]

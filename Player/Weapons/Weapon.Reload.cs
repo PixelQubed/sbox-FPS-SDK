@@ -105,7 +105,9 @@ partial class Source1Weapon
 		if ( !CanReload() )
 			return;
 
+		SendAnimParameter( "b_reload_start" );
 		SendAnimParameter( "b_reload" );
+
 		IsReloading = true;
 		FullReloadCycle = false;
 
@@ -118,6 +120,7 @@ partial class Source1Weapon
 			return;
 
 		SendAnimParameter( "b_reload_end" );
+		SendAnimParameter( "b_reload", false );
 		IsReloading = false;
 	}
 
