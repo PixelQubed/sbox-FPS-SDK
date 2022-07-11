@@ -19,6 +19,7 @@ partial class GameMovement
 			$"GroundEntity          {Player.GroundEntity}\n" +
 			$"MoveType              {Player.MoveType}\n" +
 			$"Flags                 {Player.Flags}\n" +
+			$"Team                  {Player.TeamNumber}\n" +
 			$"\n" +
 
 			$"[MOVEMENT]\n" +

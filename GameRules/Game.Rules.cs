@@ -29,7 +29,7 @@ partial class GameRules
 		if ( player.TeamNumber == newTeam )
 			return false;
 
-		if ( AreTeamChangesAllowed() )
+		if ( !AreTeamChangesAllowed() )
 			return false;
 
 		// This player is not allowed to change their team.
