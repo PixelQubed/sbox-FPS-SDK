@@ -264,22 +264,6 @@ public partial class Source1Player : AnimatedEntity
 
 	public virtual bool IsReadyToPlay() => TeamManager.IsPlayable( TeamNumber );
 
-	[ConVar.Replicated] public static bool mp_freeze_on_round_start { get; set; } = true;
-
-	public virtual bool CanMove()
-	{
-		if ( GameRules.Current.IsWaitingForPlayers )
-			return true;
-
-		if ( mp_freeze_on_round_start )
-		{
-			if ( GameRules.Current.IsRoundStarting )
-				return false;
-		}
-
-		return true;
-	}
-
 	public virtual void CommitSuicide( bool explode = false )
 	{
 		if ( !IsAlive )

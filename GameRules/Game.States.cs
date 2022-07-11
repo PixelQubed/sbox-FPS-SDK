@@ -52,7 +52,7 @@ partial class GameRules
 
 	public virtual void StartedPreGame()
 	{
-		Event.Run( "Game_Restart" );
+		EventDispatcher.InvokeEvent<GameRestartEvent>();
 	}
 
 	public virtual void EndedPreGame() { }
@@ -79,7 +79,7 @@ partial class GameRules
 
 	public virtual void StartedPreRound()
 	{
-		Event.Run( "Round_Restart" );
+		EventDispatcher.InvokeEvent<RoundRestartEvent>();
 	}
 
 	public virtual void EndedPreRound() { }
@@ -91,7 +91,7 @@ partial class GameRules
 
 	public virtual void StartedGameplay()
 	{
-		Event.Run( "Round_Active" );
+		EventDispatcher.InvokeEvent<RoundActiveEvent>();
 	}
 
 	public virtual void SimulateGameplay() { }
@@ -104,14 +104,12 @@ partial class GameRules
 	public virtual void SimulateRoundEnd()
 	{
 		if ( TimeSinceStateChange > mp_chattime )
-		{
 			RestartRound();
-		}
 	}
 
 	public virtual void StartedRoundEnd()
 	{
-		Event.Run( "Round_End" );
+		EventDispatcher.InvokeEvent<RoundEndEvent>();
 	}
 
 	public virtual void EndedRoundEnd() { }
@@ -122,7 +120,7 @@ partial class GameRules
 
 	public virtual void StartedGameOver()
 	{
-		Event.Run( "Game_Over" );
+		EventDispatcher.InvokeEvent<GameOverEvent>();
 	}
 
 	public virtual void SimulateGameOver() { }
@@ -141,15 +139,6 @@ partial class GameRules
 			case GameState.RoundEnd: SimulateRoundEnd(); break;
 			case GameState.GameOver: SimulateGameOver(); break;
 		}
-	}
-
-	/// <summary>
-	/// Gamemode state has been updated.
-	/// </summary>
-	/// <param name="previous"></param>
-	/// <param name="current"></param>
-	public virtual void OnStateChanged( GameState previous, GameState current )
-	{
 	}
 
 	/// <summary>

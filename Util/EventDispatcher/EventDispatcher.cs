@@ -215,6 +215,11 @@ public partial class EventDispatcher
 		InvokeEvent( args, eventAttribute.dispatchTypes );
 	}
 
+	public static void InvokeEvent<T>() where T : DispatchableEventBase, new()
+	{
+		InvokeEvent( new T() );
+	}
+
 	/// <summary>
 	/// Invoke this dispatchable event with the provided data, using the provided dispatch types.
 	/// </summary>

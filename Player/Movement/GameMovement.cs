@@ -165,28 +165,7 @@ public partial class GameMovement
 		}
 	}
 
-	public virtual void ReduceTimers()
-	{
-		float frame_msec = 1000.0f * Time.Delta;
-		int nFrameMsec = (int)frame_msec;
-
-		if ( Player.m_nJumpTimeMsecs > 0 )
-		{
-			Player.m_nJumpTimeMsecs -= nFrameMsec;
-			if ( Player.m_nJumpTimeMsecs < 0 )
-				Player.m_nJumpTimeMsecs = 0;
-		}
-	}
-
-	protected void ReduceTimer( ref int timer, int delta )
-	{
-		if ( timer > 0 )
-		{
-			timer -= delta;
-			if ( timer < 0 )
-				timer = 0;
-		}
-	}
+	public virtual void ReduceTimers() { }
 
 	/// <summary>
 	/// Add our wish direction and speed onto our velocity

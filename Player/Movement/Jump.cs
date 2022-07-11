@@ -4,27 +4,39 @@ namespace Amper.Source1;
 
 partial class GameMovement
 {
+	public virtual float JumpImpulse => 268;
 	public bool WishJump() => Input.Pressed( InputButton.Jump );
+	public bool CanJump() => Player.CanJump();
 
-	public bool CanJump()
+	/// <summary>
+	/// Returns true if any other buttons did anything.
+	/// </summary>
+	public virtual bool CheckOtherJumpButtons()
 	{
-		if ( !Player.IsAlive )
-			return false;
+		if ( CheckWaterJumpButton() )
+			return true;
 
-		if ( !Player.GroundEntity.IsValid() )
-			return false;
+		if ( CheckAirDashButton() )
+			return true;
 
-		return true;
+		return false;
 	}
 
 	public virtual bool CheckJumpButton()
 	{
-		if ( !CheckWaterJumpButton() )
+		// Check if any other effects on jump wish to be executed.
+		if ( CheckOtherJumpButtons() )
 			return false;
 
 		if ( !CanJump() )
 			return false;
 
+		Jump();
+		return true;
+	}
+
+	public virtual void Jump()
+	{
 		SetGroundEntity( null );
 
 		PreventBunnyJumping();
@@ -33,18 +45,12 @@ partial class GameMovement
 
 		var startz = Velocity[2];
 		if ( Player.IsDucked )
-		{
-			Velocity[2] = JumpImpulse;
-		}
+			Velocity.z = JumpImpulse;
 		else
-		{
-			Velocity[2] += JumpImpulse;
-		}
+			Velocity.z += JumpImpulse;
 
 		FinishGravity();
 		OnJump( Velocity.z - startz );
-
-		return true;
 	}
 
 	public virtual void PreventBunnyJumping()
@@ -64,7 +70,6 @@ partial class GameMovement
 
 		Velocity *= fraction;
 	}
-
 
 	public virtual void OnJump(float impulse ) { }
 }

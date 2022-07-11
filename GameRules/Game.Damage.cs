@@ -175,12 +175,3 @@ partial class GameRules
 	/// </summary>
 	public virtual void ApplyOnDamageModifyRules( ref DamageInfo info, Entity victim ) { }
 }
-
-public static class DamageInfoExtensions
-{
-	public static DamageInfo WithoutFlag( this ref DamageInfo info, DamageFlags flag )
-	{
-		info.Flags &= ~flag;
-		return info;
-	}
-}

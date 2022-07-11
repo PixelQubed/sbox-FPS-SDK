@@ -6,22 +6,29 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[Net, Predicted] public float MaxSpeed { get; set; }
-
-	public Vector3 ViewOffset { get => EyeLocalPosition; set => EyeLocalPosition = value; }
 	public float SurfaceFriction { get; set; } = 1;
 	public Surface SurfaceData { get; set; }
+
+	//
+	// Jumps and Air Dash
+	//
+
+	[Net, Predicted] public int AirDashCount { get; set; }
+	public virtual int MaxAirDashes => 0;
+
 
 	//
 	// Ducking
 	//
 
+	public virtual int MaxAirDucks => 1;
+	public bool IsDucking => DuckTime > 0;
+	public float DuckProgress => Math.Clamp( DuckTime / GameRules.Current.Movement.TimeToDuck, 0, 1 );
 	[Net, Predicted] public float DuckTime { get; set; }
 	[Net, Predicted] public float DuckSpeed { get; set; }
 	[Net, Predicted] public bool IsDucked { get; set; }
 	[Net, Predicted] public int AirDuckCount { get; set; }
 	[Net, Predicted] public float LastDuckTime { get; set; }
-	public bool IsDucking => DuckTime > 0;
-	public float DuckProgress => Math.Clamp( DuckTime / GameRules.Current.TimeToDuck, 0, 1 );
 
 	//
 	// Water
@@ -42,7 +49,6 @@ partial class Source1Player
 	public float[] LastStuckCheckTime { get; set; } = new float[2];
 
 
-	[Net, Predicted] public float m_nJumpTimeMsecs { get; set; }
 	public float m_flStepSize => 18;
 
 	[Net, Predicted] public PlayerFlags Flags { get; set; }
@@ -50,6 +56,70 @@ partial class Source1Player
 	public void AddFlags( PlayerFlags flag ) { Flags |= flag; }
 	public void RemoveFlag( PlayerFlags flag ) { Flags &= ~flag; }
 
+
+	[ConVar.Replicated] public static bool mp_freeze_on_round_start { get; set; } = true;
+
+	public virtual bool CanMove()
+	{
+		if ( GameRules.Current.IsWaitingForPlayers )
+			return true;
+
+		if ( mp_freeze_on_round_start )
+		{
+			if ( GameRules.Current.IsRoundStarting )
+				return false;
+		}
+
+		return true;
+	}
+
+	public virtual bool CanJump()
+	{
+		if ( !IsAlive )
+			return false;
+
+		if ( ActiveWeapon.IsValid() && !ActiveWeapon.CanOwnerJump() )
+			return false;
+
+		if ( IsInAir )
+			return false;
+
+		return true;
+	}
+
+	public virtual bool CanAirDash()
+	{
+		if ( !IsAlive )
+			return false;
+
+		if ( ActiveWeapon.IsValid() && !ActiveWeapon.CanOwnerAirDash() )
+			return false;
+
+		// Air dash can only be executed in air.
+		if ( IsGrounded )
+			return false;
+
+		return true;
+	}
+
+	public virtual bool CanDuck()
+	{
+		if ( !IsAlive )
+			return false;
+
+		if ( ActiveWeapon.IsValid() && !ActiveWeapon.CanOwnerDuck() )
+			return false;
+
+		return true;
+	}
+
+	public virtual bool CanUnduck()
+	{
+		if ( !IsAlive )
+			return false;
+
+		return true;
+	}
 }
 
 [Flags]

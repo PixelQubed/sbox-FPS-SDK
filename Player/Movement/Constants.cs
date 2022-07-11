@@ -11,7 +11,6 @@ partial class GameMovement
 	//
 	// Jumping
 	//
-	public virtual float JumpImpulse => 268.3281572999747f;
 	public virtual float WaterJumpHeight => 8;
 
 

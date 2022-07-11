@@ -177,7 +177,7 @@ partial class GameMovement
 				Player.WaterJumpTime = 0;
 			}
 
-			return false;
+			return true;
 		}
 
 		// In water above our waist.
@@ -197,9 +197,9 @@ partial class GameMovement
 				Player.OnWaterWade();
 			}
 
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 }

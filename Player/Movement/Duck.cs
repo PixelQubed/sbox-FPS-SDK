@@ -1,12 +1,10 @@
 ﻿using Sandbox;
-using System;
 
 namespace Amper.Source1;
 
 partial class GameMovement
 {
 	public virtual float AirDuckBodyShiftModifier => 1;
-	public virtual int MaxAirDucks => 1;
 	public virtual float IdealDuckSpeed => 1;
 	public virtual float TimeToDuck => .2f;
 	public virtual float TimeBetweenDucks => 0;
@@ -41,17 +39,6 @@ partial class GameMovement
 		HandleDuckingSpeedCrop();
 	}
 
-	public virtual bool CanDuck()
-	{
-		if ( Player.IsInAir )
-		{
-			if ( Player.AirDuckCount >= MaxAirDucks )
-				return false;
-		}
-
-		return true;
-	}
-
 	public virtual void OnDucking()
 	{
 		if ( !CanDuck() )
@@ -76,8 +63,13 @@ partial class GameMovement
 			FinishUnDuck();
 	}
 
+	public virtual bool CanDuck() => Player.CanDuck();
+
 	public virtual bool CanUnduck()
 	{
+		if ( !Player.CanUnduck() )
+			return false;
+
 		var newOrigin = Position;
 
 		if ( Player.GroundEntity.IsValid() )

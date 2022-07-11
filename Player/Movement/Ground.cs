@@ -32,13 +32,27 @@ partial class GameMovement
 		if ( newGround.IsValid() ) 
 		{
 			CategorizeGroundSurface( pm.Value );
-
-			// Then we are not in water jump sequence
-			Player.AirDuckCount = 0;
-			Player.WaterJumpTime = 0;
-
 			Velocity.z = 0;
+
+			OnLandOnGround( newGround );
 		}
+		else
+		{
+			OnLeaveGround( oldGround );
+		}
+	}
+
+	public virtual void OnLandOnGround( Entity newGround )
+	{
+		// Then we are not in water jump sequence
+		Player.WaterJumpTime = 0;
+		Player.AirDuckCount = 0;
+		Player.AirDashCount = 0;
+	}
+
+	public virtual void OnLeaveGround( Entity oldGround )
+	{
+
 	}
 
 	public virtual void CategorizeGroundSurface( TraceResult pm )

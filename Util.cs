@@ -27,4 +27,9 @@ public static class Source1Extensions
 	public static bool IsValid( this GameResource resource ) => resource != null;
 	public static void NetInfo( this Logger logger, FormattableString message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
 	public static void NetInfo( this Logger logger, object message ) => logger.Info( $"[{(Host.IsServer ? "SV" : "CL")}] {message}" );
+	public static DamageInfo WithoutFlag( this ref DamageInfo info, DamageFlags flag )
+	{
+		info.Flags &= ~flag;
+		return info;
+	}
 }
