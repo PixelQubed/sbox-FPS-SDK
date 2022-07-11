@@ -80,6 +80,9 @@ partial class Source1Player
 	{
 		Host.AssertServer();
 
+		if ( !weapon.IsValid() )
+			return false;
+
 		if ( weapon.Owner != null )
 			return false;
 
