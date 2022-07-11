@@ -76,10 +76,6 @@ partial class Source1Player
 		return true;
 	}
 
-	//
-	// Unfixed
-	//
-
 	public virtual bool EquipWeapon( Source1Weapon weapon, bool makeActive = false )
 	{
 		Host.AssertServer();
@@ -90,6 +86,22 @@ partial class Source1Player
 		if ( !CanEquip( weapon ) )
 			return false;
 
+		if ( !PreEquipWeapon( weapon, makeActive ) )
+			return false;
+
+		weapon.OnEquip( this );
+
+		if ( makeActive )
+			SwitchToWeapon( weapon );
+
+		return true;
+	}
+
+	/// <summary>
+	/// Prepare weapon to being equipped. Return false to prevent from being equipped.
+	/// </summary>
+	protected virtual bool PreEquipWeapon( Source1Weapon weapon, bool makeActive )
+	{
 		// See if have another weapon in this weapon's slot.
 		// If we have, throw it away.
 		var slotWeapon = GetWeaponInSlot( weapon.SlotNumber );
@@ -101,11 +113,6 @@ partial class Source1Player
 
 			ThrowWeapon( slotWeapon );
 		}
-
-		weapon.OnEquip( this );
-
-		if ( makeActive )
-			SwitchToWeapon( weapon );
 
 		return true;
 	}
