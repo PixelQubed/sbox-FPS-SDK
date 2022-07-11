@@ -53,6 +53,8 @@ public partial class GameRules : Game
 		NextTickTime = Time.Now + 0.1f;
 	}
 
+	[ConVar.Replicated] public static float audio_reverb_amount { get; set; } = .3f;
+
 	public virtual void Tick()
 	{
 		SimulateStates();
@@ -62,6 +64,9 @@ public partial class GameRules : Game
 			CheckWaitingForPlayers();
 			UpdateAllClientsData();
 		}
+
+		Audio.ReverbVolume = audio_reverb_amount;
+		Audio.ReverbScale = audio_reverb_amount;
 	}
 
 	[ConVar.Client] public static bool cl_show_prediction_errors { get; set; }
