@@ -16,7 +16,7 @@ partial class GameMovement
 		if ( mode == ObserverMode.InEye || mode == ObserverMode.Chase )
 		{
 			var target = Player.ObserverTarget;
-			if ( target != null )
+			if ( target.IsValid() )
 			{
 				Position = target.Position;
 				ViewAngles = target.Rotation;

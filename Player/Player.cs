@@ -279,7 +279,7 @@ public partial class Source1Player : AnimatedEntity
 			flags |= DamageFlags.Blast;
 		}
 
-		var info = DamageInfo.Generic( 1000 )
+		var info = DamageInfo.Generic( 1 )
 			.WithAttacker( this )
 			.WithPosition( Position )
 			.WithFlag( flags );
