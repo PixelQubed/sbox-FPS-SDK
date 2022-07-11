@@ -277,6 +277,7 @@ public partial class Source1Player : AnimatedEntity
 		{
 			// If we set to explode ourselves, gib!
 			flags |= DamageFlags.Blast;
+			flags |= DamageFlags.AlwaysGib;
 		}
 
 		var info = DamageInfo.Generic( 1 )
