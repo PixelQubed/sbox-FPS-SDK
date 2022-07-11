@@ -4,7 +4,9 @@ namespace Amper.Source1;
 
 public partial class Source1Weapon : AnimatedEntity
 {
+	[Net] public Client OriginalOwner { get; set; }
 	public Source1Player Player => Owner as Source1Player;
+
 	[Net] public int ViewModelIndex { get; set; }
 	[Net] public int SlotNumber { get; set; }
 	public ViewModel ViewModel { get; set; }
@@ -57,6 +59,9 @@ public partial class Source1Weapon : AnimatedEntity
 	{
 		if ( !IsValid )
 			return;
+
+		if ( !OriginalOwner.IsValid() )
+			OriginalOwner = owner.Client;
 
 		SetParent( owner, true );
 		Owner = owner;
