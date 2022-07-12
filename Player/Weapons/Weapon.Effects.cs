@@ -74,6 +74,11 @@ partial class Source1Weapon
 		using ( Prediction.Off() ) return PlaySound( name );
 	}
 
+	public new Sound PlaySound( string soundName )
+	{
+		return PlaySound( soundName, null );
+	}
+
 	public override Sound PlaySound( string soundName, string attachment )
 	{
 		return Owner?.PlaySound( soundName, attachment ) ?? default;

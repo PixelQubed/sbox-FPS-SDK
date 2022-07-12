@@ -45,6 +45,8 @@ partial class Source1Weapon
 		return true;
 	}
 
+	public float CalculateNextAttackTime() => CalculateNextAttackTime( GetAttackTime() );
+
 	public virtual float CalculateNextAttackTime( float attackTime )
 	{
 		// Fixes:
@@ -88,13 +90,9 @@ partial class Source1Weapon
 		return CanPrimaryAttack();
 	}
 
-	public virtual void DoPlayerModelAnimation()
+	public virtual void SendAnimParametersOnAttack()
 	{
 		SendPlayerAnimParameter( "b_fire" );
-	}
-
-	public virtual void DoViewModelAnimation()
-	{
 		SendViewModelAnimParameter( "b_fire" );
 	}
 

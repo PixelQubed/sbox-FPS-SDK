@@ -35,8 +35,8 @@ partial class Source1Weapon
 	/// </summary>
 	public virtual void FireBullet( float damage, int seedOffset = 0 )
 	{
-		FireBulletClient( damage, seedOffset );
 		if ( IsServer ) FireBulletServer( damage, seedOffset );
+		FireBulletClient( damage, seedOffset );
 	}
 
 	//
@@ -55,6 +55,8 @@ partial class Source1Weapon
 		var entity = tr.Entity;
 		if ( entity == null )
 			return tr;
+
+		OnHitEntity( tr.Entity, tr );
 
 		var info = SetupDamageInfo( tr, damage );
 		ApplyDamageModifications( entity, ref info, tr );
@@ -87,7 +89,7 @@ partial class Source1Weapon
 		CreateBulletTracer( tr.EndPosition );
 
 		// If we hit some entity, do some effects on hit.
-		if ( tr.Entity != null )
+		if ( tr.Entity.IsValid() ) 
 			OnHitEntity( tr.Entity, tr );
 
 		return tr;

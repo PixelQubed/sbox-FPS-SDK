@@ -49,13 +49,10 @@ partial class Source1Weapon
 
 	public virtual void Fire()
 	{
-		PlayShootSound();
-
-		DoPlayerModelAnimation();
-		DoViewModelAnimation();
+		PlayAttackSound();
+		SendAnimParametersOnAttack();
 
 		// Drain ammo.
-
 		if ( NeedsAmmo() )
 		{
 			if( !sv_infinite_ammo )
@@ -75,5 +72,5 @@ partial class Source1Weapon
 
 	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
 
-	public virtual void PlayShootSound() { }
+	public virtual void PlayAttackSound() { }
 }
