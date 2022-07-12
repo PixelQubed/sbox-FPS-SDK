@@ -36,29 +36,47 @@ partial class Source1Weapon
 	public virtual void PrimaryAttack()
 	{
 		// Handle dry fire, if we don't have any ammo.
-		if ( !HasAmmo() )
+		if ( !HasEnoughAmmoToAttack() )
 		{
 			OnDryFire();
 			return;
 		}
 
 		LastAttackTime = Time.Now;
-		Fire();
+		PlayAttackSound();
+		SendAnimParametersOnAttack();
+		ConsumeAmmoOnAttack();
 		StopReload();
+
+		Fire();
+	}
+
+	public virtual bool HasEnoughAmmoToAttack()
+	{
+		if ( !NeedsAmmo() )
+			return true;
+
+		var ammoPerAttack = GetAmmoPerShot();
+		if ( Clip < ammoPerAttack )
+			return false;
+
+		return true;
+	}
+
+	public virtual void ConsumeAmmoOnAttack()
+	{
+		if ( !NeedsAmmo() )
+			return;
+
+		if ( sv_infinite_ammo )
+			return;
+
+		// Drain ammo.
+		TakeAmmo( GetAmmoPerShot() );
 	}
 
 	public virtual void Fire()
 	{
-		PlayAttackSound();
-		SendAnimParametersOnAttack();
-
-		// Drain ammo.
-		if ( NeedsAmmo() )
-		{
-			if( !sv_infinite_ammo )
-				Clip -= GetAmmoPerShot();
-		}
-
 		for ( var i = 0; i < GetBulletsPerShot(); i++ )
 		{
 			FireBullet( GetDamage(), i );

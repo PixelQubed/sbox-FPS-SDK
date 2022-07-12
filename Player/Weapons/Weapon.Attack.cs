@@ -137,4 +137,10 @@ partial class Source1Weapon
 		dir = dir.Normal;
 		return dir;
 	}
+
+	public virtual Vector3 GetAttackDirectionWithSpread( float spread )
+	{
+		var spreadVec = Vector2.Random * spread;
+		return GetAttackDirectionWithSpread( spreadVec );
+	}
 }

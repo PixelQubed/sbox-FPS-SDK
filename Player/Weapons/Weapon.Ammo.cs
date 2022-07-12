@@ -23,6 +23,13 @@ partial class Source1Weapon
 		return taken;
 	}
 
+	public virtual int TakeAmmo( int amount )
+	{
+		var taken = Math.Min( amount, Clip );
+		Clip -= taken;
+		return taken;
+	}
+
 	public virtual bool HasAmmo() => Clip > 0 || !NeedsAmmo();
 	public virtual bool NeedsAmmo() => true;
 }
