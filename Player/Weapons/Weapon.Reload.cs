@@ -134,7 +134,7 @@ partial class Source1Weapon
 		NextReloadCycleTime = Time.Now + GetReloadTime();
 	}
 
-	public bool CanReload()
+	public virtual bool CanReload()
 	{
 		// If we don't need ammo, we can't reload.
 		if ( !NeedsAmmo() )
