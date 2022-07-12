@@ -10,8 +10,6 @@ partial class Source1Weapon
 
 	public virtual void Regenerate()
 	{
-		StopReload();
-
 		Clip = GetClipSize();
 		Reserve = GetReserveSize();
 	}
