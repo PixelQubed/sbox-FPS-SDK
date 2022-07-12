@@ -47,6 +47,7 @@ partial class Source1Weapon
 		SendAnimParametersOnAttack();
 		ConsumeAmmoOnAttack();
 		StopReload();
+		CalculateNextAttackTime();
 
 		Fire();
 	}

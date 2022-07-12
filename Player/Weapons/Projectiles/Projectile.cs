@@ -127,6 +127,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		if ( !IsValid )
 			return;
 
+		if ( !IsAuthority )
+			return;
+
 		if ( MoveType == MoveType.MOVETYPE_FLY )
 			FlyMoveSimulate();
 	}
