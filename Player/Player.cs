@@ -171,6 +171,7 @@ public partial class Source1Player : AnimatedEntity
 
 	public override void OnKilled()
 	{
+		ActiveWeapon?.OnHolster( this );
 		DeleteAllWeapons();
 
 		UseAnimGraph = false;
@@ -306,12 +307,16 @@ public partial class Source1Player : AnimatedEntity
 	/// <summary>
 	/// Called from the gamemode, clientside only.
 	/// </summary>
+	[Event.BuildInput]
 	public override void BuildInput( InputBuilder input )
 	{
 		if ( input.StopProcessing )
 			return;
 
 		ActiveWeapon?.BuildInput( input );
+
+		if ( input.StopProcessing )
+			return;
 	}
 
 	public virtual void AttemptRespawn()
