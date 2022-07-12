@@ -174,12 +174,12 @@ public partial class Source1Weapon : AnimatedEntity
 	public virtual void SendPlayerAnimParameter( string name, Rotation value ) => Player?.SetAnimParameter( name, value );
 	public virtual void SendPlayerAnimParameter( string name, Transform value ) => Player?.SetAnimParameter( name, value );
 
-	public virtual void SendViewModelAnimParameter( string name, bool value = true ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
-	public virtual void SendViewModelAnimParameter( string name, int value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
-	public virtual void SendViewModelAnimParameter( string name, float value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
-	public virtual void SendViewModelAnimParameter( string name, Vector3 value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
-	public virtual void SendViewModelAnimParameter( string name, Rotation value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
-	public virtual void SendViewModelAnimParameter( string name, Transform value ) => Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value );
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, bool value = true ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, int value ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, float value ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, Vector3 value ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, Rotation value ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
+	[ClientRpc] public virtual void SendViewModelAnimParameter( string name, Transform value ) { Player?.GetViewModel( ViewModelIndex )?.SetAnimParameter( name, value ); }
 
 	protected override void OnDestroy()
 	{
