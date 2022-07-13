@@ -4,15 +4,14 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	public float ForcedFieldOfView { get; private set; }
-	public Entity ForcedFieldOfViewRequester { get; private set; }
-	public float ForcedFieldOfViewChangeTime { get; set; }
-	public float? ForcedFieldOfViewStartWith { get; set; }
+	[Net, Predicted] public float ForcedFieldOfView { get; private set; }
+	[Net, Predicted] public Entity ForcedFieldOfViewRequester { get; private set; }
+	[Net, Predicted] public float ForcedFieldOfViewChangeTime { get; set; }
+	[Net, Predicted] public float? ForcedFieldOfViewStartWith { get; set; }
 
-	[ClientRpc]
 	public void SetFieldOfView( Entity requester, float fov, float speed = 0, float startWith = -1 )
 	{
-		if ( fov > 0 && (requester == null || !requester.IsValid) )
+		if ( fov > 0 && !requester.IsValid() )
 		{
 			Log.Error( "SetFieldOfView - requester must be set to a valid entity." );
 			return;
