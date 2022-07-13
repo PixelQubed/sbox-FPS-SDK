@@ -22,11 +22,11 @@ partial class Source1Player
 		if ( !CanTakeDamage( attacker, info ) ) 
 			return;
 
-		// Apply all global damage modifications.
-		GameRules.Current.ApplyOnDamageModifyRules( ref info, this );
-
 		// Apply damage modifications that are exclusive to the Player.
 		ApplyOnPlayerDamageModifyRules( ref info );
+
+		// Apply all global damage modifications.
+		GameRules.Current.ApplyOnDamageModifyRules( ref info, this );
 
 		// Do all the reactions to this damage.
 		OnTakeDamageReaction( info );

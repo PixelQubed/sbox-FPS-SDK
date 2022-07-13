@@ -217,9 +217,11 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	{
 		DoExplosionEffect( Position, trace.Normal );
 
-		if ( Owner != null ) 
+		if ( Owner.IsValid() ) 
 		{
 			var damage = SetupDamageInfo();
+			ApplyOnDamageModifyRules( ref damage );
+
 			var radius = new RadiusDamageInfo( damage, Radius, this, AttackerRadius, Enemy );
 			GameRules.Current.ApplyRadiusDamage( radius );
 		}
@@ -228,7 +230,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Delete();
 	}
 
-	public virtual DamageInfo SetupDamageInfo()
+	public DamageInfo SetupDamageInfo()
 	{
 		var info = DamageInfo.Generic( Damage )
 			.WithAttacker( Owner )
@@ -238,6 +240,8 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 		return info;
 	}
+
+	public virtual void ApplyOnDamageModifyRules( ref DamageInfo info ) { }
 
 	/// <summary>
 	/// Default damage flag of this projectile, 
