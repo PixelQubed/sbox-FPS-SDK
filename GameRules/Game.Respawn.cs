@@ -24,10 +24,6 @@ partial class GameRules
 		var up = origin + Vector3.Up * 64;
 		var down = origin + Vector3.Down * 64;
 
-		var controller = Movement;
-		if ( controller == null )
-			return true;
-
 		// 
 		// Land the player on the ground
 		//
@@ -36,7 +32,7 @@ partial class GameRules
 		var maxs = player.GetPlayerMaxsScaled( false );
 
 		// Trace down so maybe we can find a spot to land on.
-		var tr = controller.SetupBBoxTrace( up, down, mins, maxs ).Run();
+		var tr = SetupSpawnTrace( player, up, down, mins, maxs ).Run();
 
 		// we landed on something, update our transform position.
 		if ( tr.Hit )
@@ -49,8 +45,21 @@ partial class GameRules
 		// Check if nothing occupies our spawn space.
 		//
 
-		tr = controller.SetupBBoxTrace( origin, origin, mins, maxs ).Run();
+		tr = SetupSpawnTrace( player, origin, origin, mins, maxs ).Run();
 		return !tr.Hit;
+	}
+
+	private Trace SetupSpawnTrace( Source1Player player, Vector3 from, Vector3 to, Vector3 mins, Vector3 maxs )
+	{
+		return Trace.Ray( from, to )
+			.Size( mins, maxs )
+			.HitLayer( CollisionLayer.All, false )
+			.HitLayer( CollisionLayer.Solid, true )
+			.HitLayer( CollisionLayer.GRATE, true )
+			.HitLayer( CollisionLayer.PLAYER_CLIP, true )
+			.HitLayer( CollisionLayer.WINDOW, true )
+			.HitLayer( CollisionLayer.SKY, true )
+			.Ignore( player );
 	}
 
 	public virtual void MoveToSpawnpoint( Source1Player player )
