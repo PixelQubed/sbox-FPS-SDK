@@ -131,9 +131,14 @@ partial class Source1Weapon
 		var tr = Trace.Ray( Origin, Target )
 			.Ignore( this )
 			.Ignore( Owner )
-			.HitLayer( CollisionLayer.Solid )
-			.HitLayer( CollisionLayer.WINDOW )
-			.HitLayer( CollisionLayer.Water, false )
+
+			// Collides with:
+			.WithAnyTags( CollisionTags.Solid )
+			.WithAnyTags( CollisionTags.BulletClip )
+			
+			// Doesn't colide with:
+			.WithoutTags( CollisionTags.NotSolid )
+
 			.UseHitboxes();
 
 		return tr;

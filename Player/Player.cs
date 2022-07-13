@@ -91,8 +91,9 @@ public partial class Source1Player : AnimatedEntity
 		//
 		// Tags
 		//
-		RemoveAllTags();
-		Tags.Add( "player" );
+		Tags.Clear();
+		Tags.Add( CollisionTags.Solid );
+		Tags.Add( CollisionTags.Player );
 		Tags.Add( TeamManager.GetTag( TeamNumber ) );
 
 		//
@@ -131,10 +132,6 @@ public partial class Source1Player : AnimatedEntity
 		FallVelocity = 0;
 		BaseVelocity = 0;
 		UpdateMaxSpeed();
-
-		CollisionGroup = CollisionGroup.Player;
-		AddCollisionLayer( CollisionLayer.Player );
-		SetInteractsAs( CollisionLayer.Player );
 
 		EnableHitboxes = true;
 		SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
@@ -243,15 +240,6 @@ public partial class Source1Player : AnimatedEntity
 	/// I.e. if we're sprinting.
 	/// </summary>
 	public virtual float CalculateMaxSpeed() => GameMovement.sv_maxspeed;
-
-	public void RemoveAllTags()
-	{
-		var list = Tags.List.ToList();
-		foreach ( var tag in list )
-		{
-			Tags.Remove( tag );
-		}
-	}
 
 	public virtual void SimulatePassiveChildren( Client client )
 	{
@@ -374,10 +362,4 @@ public static class PlayerTags
 	/// Take all the damage, but don't die.
 	/// </summary>
 	public const string Buddha = "buddha";
-}
-
-public static class Source1Team
-{
-	public const int Unassigned = 0;
-	public const int Spectator = 1;
 }

@@ -11,8 +11,8 @@ partial class Source1Player
 	{
 		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * 5000 )
 			.Ignore( this )
-			.HitLayer( CollisionLayer.Solid )
-			.HitLayer( CollisionLayer.Debris )
+			.WithAnyTags( CollisionTags.Solid )
+			.WithAnyTags( CollisionTags.Interactable )
 			.Run();
 
 		if ( !tr.Entity.IsValid() ) 

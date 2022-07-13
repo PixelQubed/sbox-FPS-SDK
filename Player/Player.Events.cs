@@ -50,7 +50,7 @@ partial class Source1Player
 			vecEnd.z -= 20; // roughly thigh deep
 
 			var tr = Trace.Ray( vecStart, vecEnd )
-				.HitLayer( CollisionLayer.Solid, true )
+				.WithAnyTags( CollisionTags.Solid )
 				.Ignore( this )
 				.Run();
 

@@ -46,7 +46,7 @@ partial class Source1Camera
 		var target = Position + -toKiller * posLerp * ChaseDistanceMax * Easing.QuadraticInOut( posLerp );
 
 		var tr = Trace.Ray( Position, target )
-			.HitLayer( CollisionLayer.Solid, true )
+			.WithAnyTags( CollisionTags.Solid )
 			.Run();
 
 		target = tr.EndPosition;

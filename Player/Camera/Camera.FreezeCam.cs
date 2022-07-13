@@ -49,7 +49,7 @@ partial class Source1Camera
 		//
 
 		var tr = Trace.Ray( killerPos, targetPos )
-			.HitLayer( CollisionLayer.Solid, true )
+			.WithAnyTags( CollisionTags.Solid )
 			.Ignore( killer )
 			.Run();
 

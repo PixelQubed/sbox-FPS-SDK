@@ -56,11 +56,12 @@ partial class Projectile
 	public virtual Trace SetupCollisionTrace( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 	{
 		var tr = Trace.Ray( start, end )
-			.HitLayer( CollisionLayer.Solid, true )
-			.HitLayer( CollisionLayer.Player, true )
-			.HitLayer( CollisionLayer.Water, false )
-			.HitLayer( CollisionLayer.PLAYER_CLIP, false )
-			.HitLayer( CollisionLayer.WINDOW, true )
+
+			// Collides with:
+			.WithAnyTags( CollisionTags.Solid )
+			.WithAnyTags( CollisionTags.Clip )
+			.WithAnyTags( CollisionTags.ProjectileClip )
+
 			.Ignore( this )
 			.Ignore( Owner );
 

@@ -16,8 +16,8 @@ public partial class Source1Weapon : AnimatedEntity
 		base.Spawn();
 
 		MoveType = MoveType.Physics;
-		CollisionGroup = CollisionGroup.Weapon;
-		SetInteractsAs( CollisionLayer.Debris );
+		Tags.Add( CollisionTags.Solid );
+		Tags.Add( CollisionTags.Weapon );
 
 		PhysicsEnabled = true;
 		UsePhysicsCollision = true;

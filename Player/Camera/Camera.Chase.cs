@@ -25,7 +25,7 @@ partial class Source1Camera
 
 		var tr = Trace.Ray( target.EyePosition, specPos )
 			.Ignore( target )
-			.HitLayer( CollisionLayer.Solid, true )
+			.WithAnyTags( CollisionTags.Solid )
 			.Run();
 
 		Position = tr.EndPosition;

@@ -36,12 +36,21 @@ partial class GameMovement
 	{
 		return Trace.Ray( start, end )
 			.Size( mins, maxs )
-			.HitLayer( CollisionLayer.All, false )
-			.HitLayer( CollisionLayer.Solid, true )
-			.HitLayer( CollisionLayer.GRATE, true )
-			.HitLayer( CollisionLayer.PLAYER_CLIP, true )
-			.HitLayer( CollisionLayer.WINDOW, true )
-			.HitLayer( CollisionLayer.SKY, true )
+
+			// Collides with:
+			.WithAnyTags( CollisionTags.Solid )
+			.WithAnyTags( CollisionTags.Ladder )
+			.WithAnyTags( CollisionTags.Player )
+			.WithAnyTags( CollisionTags.Trigger )
+			.WithAnyTags( CollisionTags.Clip )
+			.WithAnyTags( CollisionTags.PlayerClip )
+
+			// Doesn't collide with:
+			.WithoutTags( CollisionTags.NotSolid )
+			.WithoutTags( CollisionTags.Debris )
+			.WithoutTags( CollisionTags.Weapon )
+			.WithoutTags( CollisionTags.Projectile )
+
 			.Ignore( Player );
 	}
 

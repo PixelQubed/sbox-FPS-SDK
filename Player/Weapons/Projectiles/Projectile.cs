@@ -28,8 +28,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	{
 		base.Spawn();
 
-		SetInteractsAs( CollisionLayer.Debris );
-		CollisionGroup = CollisionGroup.Weapon;
+		Tags.Add( CollisionTags.Solid );
+		Tags.Add( CollisionTags.Projectile );
+
 		TimeSinceCreated = 0;
 		Damage = 0;
 		Gravity = 0;
@@ -38,7 +39,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = false;
 
-		Tags.Add( "projectile" );
 		AutoDestroyTime = 30;
 	}
 

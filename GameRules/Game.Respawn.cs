@@ -49,16 +49,14 @@ partial class GameRules
 		return !tr.Hit;
 	}
 
-	private Trace SetupSpawnTrace( Source1Player player, Vector3 from, Vector3 to, Vector3 mins, Vector3 maxs )
+	public virtual Trace SetupSpawnTrace( Source1Player player, Vector3 from, Vector3 to, Vector3 mins, Vector3 maxs )
 	{
 		return Trace.Ray( from, to )
 			.Size( mins, maxs )
-			.HitLayer( CollisionLayer.All, false )
-			.HitLayer( CollisionLayer.Solid, true )
-			.HitLayer( CollisionLayer.GRATE, true )
-			.HitLayer( CollisionLayer.PLAYER_CLIP, true )
-			.HitLayer( CollisionLayer.WINDOW, true )
-			.HitLayer( CollisionLayer.SKY, true )
+			.WithAnyTags( CollisionTags.Solid )			// Not inside a solid object
+			.WithAnyTags( CollisionTags.Clip )			// General clip brush
+			.WithAnyTags( CollisionTags.PlayerClip )	// Player movement clip brush
+			.WithAnyTags( CollisionTags.Player )		// In another player.
 			.Ignore( player );
 	}
 
