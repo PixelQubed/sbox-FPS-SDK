@@ -39,6 +39,7 @@ public partial class Source1Player : AnimatedEntity
 	{
 		base.FrameSimulate( cl );
 		GameRules.Current.Movement.FrameSimulate( this );
+		ActiveWeapon?.FrameSimulate( cl );
 	}
 
 	public override void Simulate( Client cl )
@@ -171,7 +172,6 @@ public partial class Source1Player : AnimatedEntity
 
 	public override void OnKilled()
 	{
-		ActiveWeapon?.OnHolster( this );
 		DeleteAllWeapons();
 
 		UseAnimGraph = false;

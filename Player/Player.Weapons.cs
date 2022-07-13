@@ -48,7 +48,9 @@ partial class Source1Player
 		}
 
 		if ( newWeapon.IsValid() )
+		{
 			newWeapon.OnDeploy( this );
+		}
 	}
 
 	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
@@ -136,9 +138,10 @@ partial class Source1Player
 			if ( !child.IsValid() ) 
 				continue;
 
-			child.Parent = null;
-			child.SetParent( null );
+			if ( ActiveWeapon == child )
+				child?.OnHolster( this );
 
+			child.OnDrop( this );
 			child.Delete();
 		}
 	}
@@ -252,7 +255,6 @@ partial class Source1Player
 			ActiveWeapon.OnHolster( this );
 			ActiveWeapon = null;
 		}
-
 
 		// Drop it.
 		weapon.OnDrop( this );
