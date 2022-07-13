@@ -76,11 +76,7 @@ partial class Source1Weapon
 
 	public new Sound PlaySound( string soundName )
 	{
-		return PlaySound( soundName, null );
-	}
-
-	public override Sound PlaySound( string soundName, string attachment )
-	{
-		return Owner?.PlaySound( soundName, attachment ) ?? default;
+		var originEnt = Owner ?? this;
+		return Sound.FromEntity( soundName, originEnt );
 	}
 }

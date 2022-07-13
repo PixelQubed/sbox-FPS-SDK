@@ -7,8 +7,10 @@ public partial class Source1Weapon : AnimatedEntity
 	[Net] public Client OriginalOwner { get; set; }
 	public Source1Player Player => Owner as Source1Player;
 
+	[Net, Predicted] public bool IsDeployed { get; set; }
 	[Net] public int ViewModelIndex { get; set; }
 	[Net] public int SlotNumber { get; set; }
+
 	public ViewModel ViewModel { get; set; }
 
 	public override void Spawn()
@@ -94,6 +96,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		EnableDrawing = true;
 		NextAttackTime = Time.Now + GetDeployTime();
+		IsDeployed = true;
 
 		SetupViewModel();
 		SetupAnimParameters();
@@ -111,6 +114,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		EnableDrawing = false;
 		NextAttackTime = Time.Now;
+		IsDeployed = false;
 
 		ClearViewModel();
 	}

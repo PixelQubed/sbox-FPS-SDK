@@ -70,7 +70,6 @@ partial class Source1Player
 
 			var tr = Trace.Ray( start, end )
 				.Size( GetPlayerMins( false ), GetPlayerMaxs( false ) )
-				.HitLayer( CollisionLayer.Solid, true )
 				.WithAnyTags( CollisionTags.Solid )
 				.Run();
 
