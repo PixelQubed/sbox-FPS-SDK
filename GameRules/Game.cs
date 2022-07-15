@@ -8,12 +8,14 @@ public partial class GameRules : Game
 	public new static GameRules Current { get; set; }
 
 	public GameMovement Movement { get; set; }
+	public PostProcessingManager PostProcessingManager { get; set; }
 
 	public GameRules()
 	{
 		Current = this;
 
-		Movement = new GameMovement();
+		Movement = new();
+		PostProcessingManager = new();
 	}
 
 	public override void Spawn()
@@ -22,6 +24,12 @@ public partial class GameRules : Game
 
 		DeclareGameTeams();
 		SetupGameVariables();
+	}
+
+	public override void FrameSimulate( Client cl )
+	{
+		base.FrameSimulate( cl );
+		PostProcessingManager?.FrameSimulate();
 	}
 
 	public override void ClientSpawn()
