@@ -41,7 +41,6 @@ partial class GameMovement
 			.WithAnyTags( CollisionTags.Solid )
 			.WithAnyTags( CollisionTags.Ladder )
 			.WithAnyTags( CollisionTags.Player )
-			.WithAnyTags( CollisionTags.Trigger )
 			.WithAnyTags( CollisionTags.Clip )
 			.WithAnyTags( CollisionTags.PlayerClip )
 

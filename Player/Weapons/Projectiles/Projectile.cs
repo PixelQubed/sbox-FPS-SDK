@@ -45,6 +45,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Event.Tick.Server]
 	public virtual void Tick()
 	{
+		if ( MoveType == MoveType.MOVETYPE_FLY )
+			FlyMoveSimulate();
+
 		if ( ShouldSimulateCollisions() )
 		{
 			UpdateFaceRotation();
@@ -121,24 +124,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		CreateTrails();
 	}
 
-	[Event.Physics.PostStep]
-	public virtual void PostPhysicsStep()
-	{
-		if ( !IsValid )
-			return;
-
-		if ( !IsAuthority )
-			return;
-
-		if ( MoveType == MoveType.MOVETYPE_FLY )
-			FlyMoveSimulate();
-	}
-
 	public void FlyMoveSimulate()
 	{
-		if ( Gravity != 0 )
-			Velocity += Map.Physics.Gravity * Gravity * Time.Delta;
-
+		Velocity += Map.Physics.Gravity * Gravity * Time.Delta;
 		Position += Velocity * Time.Delta;
 	}
 

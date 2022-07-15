@@ -273,4 +273,11 @@ partial class Source1Player
 		foreach ( var weapon in Weapons )
 			weapon.Regenerate();
 	}
+
+	public Entity GetRenderedWeaponModel()
+	{
+		return IsFirstPersonMode
+			? GetViewModel()
+			: ActiveWeapon;
+	}
 }

@@ -4,7 +4,7 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
-	[Net] public Entity HoveredEntity { get; private set; }
+	public Entity HoveredEntity { get; private set; }
 	[Net] public Entity Using { get; protected set; }
 
 	protected virtual Entity FindHovered()

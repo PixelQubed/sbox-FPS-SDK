@@ -13,8 +13,8 @@ partial class Source1Player
 	// Jumps and Air Dash
 	//
 
-	[Net, Predicted] public int AirDashCount { get; set; }
 	public virtual int MaxAirDashes => 0;
+	[Net, Predicted] public int AirDashCount { get; set; }
 
 
 	//
