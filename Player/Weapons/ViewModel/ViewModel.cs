@@ -53,6 +53,7 @@ public partial class ViewModel : BaseViewModel
 
 		ClearAttachments();
 
+
 		Model = null;
 		Weapon = null;
 	}

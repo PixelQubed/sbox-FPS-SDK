@@ -33,12 +33,12 @@ partial class Source1Weapon
 		return particle;
 	}
 
-	public void DisposePersistentParticle( Particles effect )
+	public void DisposePersistentParticle( Particles effect, bool immediate = false )
 	{
 		if ( effect == null )
 			return;
 
-		effect.Destroy();
+		effect.Destroy( immediate );
 		PersistentParticles.Remove( effect );
 	}
 
@@ -47,7 +47,7 @@ partial class Source1Weapon
 	{
 		if ( ShouldAutoDisposePersistentParticles() )
 		{
-			DisposeAllPesistentParticles();
+			DisposeAllPesistentParticles( true );
 			return;
 		}
 
@@ -87,9 +87,9 @@ partial class Source1Weapon
 		return false;
 	}
 
-	public void DisposeAllPesistentParticles()
+	public void DisposeAllPesistentParticles( bool immediate = false )
 	{
 		foreach ( var pair in PersistentParticles ) 
-			DisposePersistentParticle( pair.Key );
+			DisposePersistentParticle( pair.Key, immediate );
 	}
 }

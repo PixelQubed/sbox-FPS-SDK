@@ -137,11 +137,6 @@ public partial class Source1Player : AnimatedEntity
 		SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
 
 		//
-		// Weapons
-		//
-		ActiveWeapon = null;
-
-		//
 		// Misc
 		//
 		TimeSinceSprayed = sv_spray_cooldown + 1;

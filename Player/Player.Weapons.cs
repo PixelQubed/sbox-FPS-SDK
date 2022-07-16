@@ -134,16 +134,7 @@ partial class Source1Player
 	{
 		var weapons = Children.OfType<Source1Weapon>().ToArray();
 		foreach ( var child in weapons )
-		{
-			if ( !child.IsValid() ) 
-				continue;
-
-			if ( ActiveWeapon == child )
-				child?.OnHolster( this );
-
-			child.OnDrop( this );
 			child.Delete();
-		}
 	}
 
 	public virtual void SwitchToNextBestWeapon()

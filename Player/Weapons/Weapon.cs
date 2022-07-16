@@ -187,7 +187,12 @@ public partial class Source1Weapon : AnimatedEntity
 
 	protected override void OnDestroy()
 	{
+		if ( Player.IsValid() && Player.ActiveWeapon == this ) 
+			OnHolster( Player );
+
 		ClearViewModel();
+		DisposeAllPesistentParticles( true );
+
 		base.OnDestroy();
 	}
 
