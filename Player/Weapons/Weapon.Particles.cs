@@ -43,7 +43,7 @@ partial class Source1Weapon
 	}
 
 	[Event.Frame]
-	public virtual void EffectThink()
+	public void InternalFrameUpdate()
 	{
 		if ( ShouldAutoDisposePersistentParticles() )
 		{
@@ -64,7 +64,11 @@ partial class Source1Weapon
 				PersistentParticles[particle] = data;
 			}
 		}
+
+		FrameUpdate();
 	}
+
+	public virtual void FrameUpdate() { }
 
 	private bool ShouldAutoDisposePersistentParticles()
 	{
