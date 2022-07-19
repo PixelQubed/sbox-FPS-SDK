@@ -66,6 +66,9 @@ public partial class GameMovement
 		player.Position = Position;
 		player.EyeRotation = ViewAngles;
 		player.Velocity = Velocity;
+
+		// TODO: Sort out basevelocity
+		player.BaseVelocity = 0;
 	}
 
 	public virtual void ProcessMovement()
