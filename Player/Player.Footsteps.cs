@@ -12,7 +12,7 @@ partial class Source1Player
 	public virtual bool CanPlayFootsteps()
 	{
 		// dont play footstep sounds if we're in noclip or in observer mode.
-		if ( MoveType == MoveType.MOVETYPE_NOCLIP || MoveType == MoveType.MOVETYPE_OBSERVER )
+		if ( MoveType == NativeMoveType.NoClip || MoveType == NativeMoveType.Observer )
 			return false;
 
 		// always cool down footsteps for at least .3 seconds.

@@ -96,3 +96,23 @@ public static class CollisionTags
 	public const string NPCClip = "npcclip";
 }
 
+/// <summary>
+/// This class allows the Source 1 codebase use the original movetype entries names 
+/// by aliasing the names of the managed movetypes that garry renamed to unused for whatever reason.
+/// We're referencing managed movetype entries by casting an int to that enum value
+/// because only gman himself knows if any of these are gonna be renamed ever again.
+/// </summary>
+public static class NativeMoveType
+{
+	public const MoveType None = 0;                             // None
+	public const MoveType Isometric = (MoveType)1;              // MOVETYPE_UNUSED1
+	public const MoveType Walk = (MoveType)2;                   // MOVETYPE_WALK
+	public const MoveType Step = (MoveType)3;                   // MOVETYPE_STEP
+	public const MoveType Fly = (MoveType)4;                    // MOVETYPE_UNUSED2
+	public const MoveType FlyGravity = (MoveType)5;             // MOVETYPE_UNUSED3
+	public const MoveType Physics = (MoveType)6;                // Physics
+	public const MoveType Push = (MoveType)7;                   // Push
+	public const MoveType NoClip = (MoveType)8;                 // MOVETYPE_UNUSED4
+	public const MoveType Ladder = (MoveType)9;                 // MOVETYPE_UNUSED5
+	public const MoveType Observer = (MoveType)10;              // MOVETYPE_UNUSED6
+}

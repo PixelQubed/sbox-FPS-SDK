@@ -128,7 +128,7 @@ public partial class Source1Player : AnimatedEntity
 		// Movement
 		//
 		Velocity = Vector3.Zero;
-		MoveType = MoveType.MOVETYPE_WALK;
+		MoveType = NativeMoveType.Walk;
 		FallVelocity = 0;
 		BaseVelocity = 0;
 		UpdateMaxSpeed();
@@ -345,10 +345,6 @@ public static class PlayerTags
 	/// Is currently performing a water jump.
 	/// </summary>
 	public const string WaterJump = "waterjump";
-	/// <summary>
-	/// Is currently in cheat activated noclip mode.
-	/// </summary>
-	public const string Noclipped = "noclipped";
 	/// <summary>
 	/// Does not accept any damage.
 	/// </summary>

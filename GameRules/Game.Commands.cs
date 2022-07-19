@@ -25,17 +25,15 @@ partial class GameRules
 			return;
 
 		// If player is not in noclip, enable it.
-		if ( player.MoveType != MoveType.MOVETYPE_NOCLIP )
+		if ( player.MoveType != NativeMoveType.NoClip )
 		{
 			player.SetParent( null );
-			player.MoveType = MoveType.MOVETYPE_NOCLIP;
-			player.Tags.Add( PlayerTags.Noclipped );
+			player.MoveType = NativeMoveType.NoClip;
 			Log.Info( $"noclip ON for {client.Name}" );
 			return;
 		}
 
-		player.Tags.Remove( PlayerTags.Noclipped );
-		player.MoveType = MoveType.MOVETYPE_WALK;
+		player.MoveType = NativeMoveType.Walk;
 		Log.Info( $"noclip OFF for {client.Name}" );
 	}
 

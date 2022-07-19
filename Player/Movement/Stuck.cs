@@ -15,10 +15,10 @@ partial class GameMovement
 
 	public bool CanStuck()
 	{
-		return Player.MoveType != MoveType.MOVETYPE_NOCLIP &&
-			Player.MoveType != MoveType.None &&
-			Player.MoveType != MoveType.MOVETYPE_ISOMETRIC &&
-			Player.MoveType != MoveType.MOVETYPE_OBSERVER;
+		return Player.MoveType != NativeMoveType.NoClip &&
+				Player.MoveType != NativeMoveType.Observer &&
+				Player.MoveType != NativeMoveType.None &&
+				Player.MoveType != NativeMoveType.Isometric;
 	}
 
 	protected void ResetStuckOffsets()

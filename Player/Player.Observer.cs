@@ -214,9 +214,9 @@ partial class Source1Player
 		// update the movetype, depending on whether we are or are not
 		// in observer mode
 		if ( ObserverMode == ObserverMode.None )
-			MoveType = MoveType.None;
+			MoveType = NativeMoveType.None;
 		else
-			MoveType = MoveType.MOVETYPE_OBSERVER;
+			MoveType = NativeMoveType.Observer;
 	}
 
 	public virtual float DeathAnimationTime => 3;

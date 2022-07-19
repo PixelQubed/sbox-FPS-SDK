@@ -45,7 +45,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Event.Tick.Server]
 	public virtual void Tick()
 	{
-		if ( MoveType == MoveType.MOVETYPE_FLY )
+		if ( MoveType == NativeMoveType.Fly )
 			FlyMoveSimulate();
 
 		if ( ShouldSimulateCollisions() )
@@ -67,7 +67,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		}
 	}
 
-	public virtual bool ShouldSimulateCollisions() => MoveType == MoveType.MOVETYPE_FLY || MoveType == MoveType.Physics;
+	public virtual bool ShouldSimulateCollisions() => MoveType == NativeMoveType.Fly || MoveType == NativeMoveType.Physics;
 
 	public virtual void OnTraceTouch( Entity other, TraceResult result ) { }
 
@@ -77,7 +77,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 		if ( !Touched )
 		{
-			var other = eventData.Entity;
+			var other = eventData.This.Entity;
 			if ( other != null && other.IsWorld )
 			{
 				Touched = true;
