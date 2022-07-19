@@ -100,7 +100,7 @@ partial class Source1Player
 			if ( !CanObserveTarget( ObserverTarget ) )
 			{
 				var target = FindNextObserverTarget( false );
-				if ( target != null )
+				if ( target.IsValid() )
 				{
 					IsForcedObserverMode = false;
 					SetObserverMode( LastObserverMode );
@@ -193,6 +193,7 @@ partial class Source1Player
 	/// </summary>
 	public void StartObserverMode( ObserverMode mode )
 	{
+		Tags.Remove( CollisionTags.Solid );
 		UsePhysicsCollision = false;
 		EnableDrawing = false;
 

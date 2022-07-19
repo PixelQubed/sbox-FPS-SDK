@@ -68,6 +68,9 @@ partial class Source1Player
 
 	public virtual bool CanUse( Entity entity )
 	{
+		if ( !IsAlive )
+			return false;
+
 		if ( entity is not IUse use )
 			return false;
 
@@ -82,6 +85,9 @@ partial class Source1Player
 
 	public virtual bool CanContinueUsing( Entity entity )
 	{
+		if ( !CanUse( entity ) )
+			return false;
+
 		if ( HoveredEntity != entity )
 			return false;
 
