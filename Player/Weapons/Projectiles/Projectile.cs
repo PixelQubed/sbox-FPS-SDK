@@ -94,61 +94,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Rotation = Rotation.LookAt( Velocity.Normal );
 	}
 
-	public virtual void Initialize( Entity launcher, Vector3 start, Vector3 velocity, Entity owner, float damage )
-	{
-		Launcher = launcher;
-		OriginalLauncher = launcher;
-		Owner = owner;
-
-		Velocity = velocity;
-		InitialVelocity = velocity;
-		Position = start;
-		StartPosition = start;
-		Damage = damage;
-		EnableDrawing = true;
-
-		// get the team of the owner entity.
-		if ( Owner is ITeam iteam )
-			TeamNumber = iteam.TeamNumber;
-
-		UpdateFaceRotation();
-	}
-
-	protected Particles Trail { get; set; }
-	protected Particles CriticalTrail { get; set; }
-
-	/// <summary>
-	/// Display clientside particle effects on detonation.
-	/// </summary>
-	[ClientRpc]
-	public virtual void DoExplosionEffect( Vector3 position, Vector3 normal )
-	{
-		Host.AssertClient();
-
-		var boom = Particles.Create( ExplosionParticleName, position );
-		boom.SetForward( 0, normal );
-		Sound.FromWorld( "weapon.explosion", Position );
-	}
-
-	[ClientRpc]
-	public void DoScorchTrace( Vector3 position, Vector3 normal )
-	{
-		var tr = Trace.Ray( position + normal * 10, position - normal * 10 )
-			.Ignore( this )
-			.WorldOnly()
-			.Run();
-
-		if ( tr.Hit )
-		{
-			DecalSystem.PlaceOnWorld(
-				Material.Load( "materials/decals/scorch.vmat" ),
-				tr.EndPosition,
-				Rotation.LookAt( tr.Normal ),
-				new Vector3( 128, 128, 3 )
-			);
-		}
-	}
-
 	public virtual void Explode()
 	{
 		Explode( Position );
@@ -223,9 +168,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	public virtual bool IsDestroyable => false;
 	public virtual bool FaceVelocity => true;
-
-	public virtual string TrailParticleName => "";
-	public virtual string ExplosionParticleName => "";
 }
 
 public enum ProjectileMoveType
