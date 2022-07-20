@@ -58,10 +58,11 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		}
 	}
 
-	public virtual void OnInitialized( Source1Weapon launcher )
+	public virtual void OnInitialized( Entity launcher )
 	{
 		EnableDrawing = true;
 		UpdateFaceRotation();
+		CreateTrails();
 	}
 
 	public virtual void OnTraceTouch( Entity other, TraceResult result ) { }
@@ -73,7 +74,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		if ( !Touched )
 		{
 			var other = eventData.This.Entity;
-			if ( other != null && other.IsWorld )
+			if ( other.IsValid() && other.IsWorld ) 
 			{
 				Touched = true;
 				Damage *= TouchedDamageMultiplier;
