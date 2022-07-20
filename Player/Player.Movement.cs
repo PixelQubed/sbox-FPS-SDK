@@ -6,6 +6,7 @@ namespace Amper.Source1;
 partial class Source1Player
 {
 	[Net, Predicted] public float MaxSpeed { get; set; }
+	[Net, Predicted] public new NativeMoveType MoveType { get; set; }
 	public float SurfaceFriction { get; set; } = 1;
 	public Surface SurfaceData { get; set; }
 
@@ -137,4 +138,19 @@ public enum PlayerFlags
 	FL_FROZEN = 1 << 0,
 	FL_ONTRAIN = 1 << 1,
 	FL_WATERJUMP = 1 << 2
+}
+
+public enum NativeMoveType
+{
+	None,
+	Isometric,
+	Walk,
+	Step,
+	Fly,
+	FlyGravity,
+	Physics,
+	Push,
+	NoClip,
+	Ladder,
+	Observer
 }

@@ -17,7 +17,6 @@ public partial class Source1Weapon : AnimatedEntity
 	{
 		base.Spawn();
 
-		MoveType = NativeMoveType.Physics;
 		Tags.Add( CollisionTags.Solid );
 		Tags.Add( CollisionTags.Weapon );
 
@@ -67,7 +66,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		SetParent( owner, true );
 		Owner = owner;
-		MoveType = NativeMoveType.None;
+		MoveType = MoveType.None;
 
 		EnableAllCollisions = false;
 		EnableDrawing = false;
@@ -83,7 +82,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		SetParent( null );
 		Owner = null;
-		MoveType = NativeMoveType.Physics;
+		MoveType = MoveType.Physics;
 
 		EnableDrawing = true;
 		EnableAllCollisions = true;

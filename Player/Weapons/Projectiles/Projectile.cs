@@ -2,9 +2,6 @@
 
 namespace Amper.Source1;
 
-/// <summary>
-/// Base Team Fortress projectile 
-/// </summary>
 public abstract partial class Projectile : ModelEntity, ITeam
 {
 	[Net] public int TeamNumber { get; set; }
@@ -22,7 +19,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public float? AutoExplodeTime { get; set; }
 
 	[Net] public TimeSince TimeSinceCreated { get; set; }
-	[Net] public bool IsCritical { get; set; }
+	[Net] public new ProjectileMoveType MoveType { get; set; }
 
 	public override void Spawn()
 	{
@@ -34,6 +31,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		TimeSinceCreated = 0;
 		Damage = 0;
 		Gravity = 0;
+		MoveType = ProjectileMoveType.None;
 
 		EnableDrawing = false;
 		EnableHideInFirstPerson = true;
@@ -45,14 +43,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Event.Tick.Server]
 	public virtual void Tick()
 	{
-		if ( MoveType == NativeMoveType.Fly )
-			FlyMoveSimulate();
-
-		if ( ShouldSimulateCollisions() )
-		{
-			UpdateFaceRotation();
-			SimulateCollisions();
-		}
+		SimulateMoveType();
+		UpdateFaceRotation();
+		SimulateCollisions();
 
 		if ( AutoExplodeTime.HasValue )
 		{
@@ -67,7 +60,11 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		}
 	}
 
-	public virtual bool ShouldSimulateCollisions() => MoveType == NativeMoveType.Fly || MoveType == NativeMoveType.Physics;
+	public virtual void OnInitialized( Source1Weapon launcher )
+	{
+		EnableDrawing = true;
+		UpdateFaceRotation();
+	}
 
 	public virtual void OnTraceTouch( Entity other, TraceResult result ) { }
 
@@ -99,7 +96,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Rotation = Rotation.LookAt( Velocity.Normal );
 	}
 
-	public virtual void Initialize( Entity launcher, Vector3 start, Vector3 velocity, Entity owner, float damage, bool critical )
+	public virtual void Initialize( Entity launcher, Vector3 start, Vector3 velocity, Entity owner, float damage )
 	{
 		Launcher = launcher;
 		OriginalLauncher = launcher;
@@ -110,47 +107,17 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Position = start;
 		StartPosition = start;
 		Damage = damage;
-		IsCritical = critical;
 		EnableDrawing = true;
 
 		// get the team of the owner entity.
 		if ( Owner is ITeam iteam )
-		{
 			TeamNumber = iteam.TeamNumber;
-			SetMaterialGroup( TeamNumber == 3 ? 1 : 0 );
-		}
 
 		UpdateFaceRotation();
-		CreateTrails();
-	}
-
-	public void FlyMoveSimulate()
-	{
-		Velocity += Map.Physics.Gravity * Gravity * Time.Delta;
-		Position += Velocity * Time.Delta;
 	}
 
 	protected Particles Trail { get; set; }
 	protected Particles CriticalTrail { get; set; }
-
-	[ClientRpc]
-	public virtual void CreateTrails()
-	{
-		DeleteTrails( true );
-
-		if ( !string.IsNullOrEmpty( TrailParticleName ) )
-			Trail = Particles.Create( TrailParticleName, this, "trail" );
-
-		if ( IsCritical && !string.IsNullOrEmpty( CriticalTrailParticleName ) )
-			CriticalTrail = Particles.Create( CriticalTrailParticleName, this, "criticaltrail" );
-	}
-
-	[ClientRpc]
-	public virtual void DeleteTrails( bool immediate = false )
-	{
-		Trail?.Destroy( true );
-		CriticalTrail?.Destroy( true );
-	}
 
 	/// <summary>
 	/// Display clientside particle effects on detonation.
@@ -208,7 +175,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		if ( Owner.IsValid() ) 
 		{
 			var damage = SetupDamageInfo();
-			ApplyOnDamageModifyRules( ref damage );
+			ApplyDamageModifyRules( ref damage );
 
 			var radius = new RadiusDamageInfo( damage, Radius, this, AttackerRadius, Enemy );
 			GameRules.Current.ApplyRadiusDamage( radius );
@@ -229,7 +196,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		return info;
 	}
 
-	public virtual void ApplyOnDamageModifyRules( ref DamageInfo info ) { }
+	public virtual void ApplyDamageModifyRules( ref DamageInfo info ) { }
 
 	/// <summary>
 	/// Default damage flag of this projectile, 
@@ -260,6 +227,12 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public virtual bool FaceVelocity => true;
 
 	public virtual string TrailParticleName => "";
-	public virtual string CriticalTrailParticleName => "";
 	public virtual string ExplosionParticleName => "";
 }
+
+public enum ProjectileMoveType
+{
+	None,
+	Fly,
+	Physics
+};
