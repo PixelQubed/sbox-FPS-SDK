@@ -238,10 +238,6 @@ partial class Source1Player
 		// This is the weapon we have equipped right now.
 		if ( ActiveWeapon == weapon )
 		{
-			// We can't switch away from this weapon right now.
-			if ( !CanHolster( weapon ) )
-				return false;
-
 			// Holster it immediately to negate all effects.
 			ActiveWeapon.OnHolster( this );
 			ActiveWeapon = null;
