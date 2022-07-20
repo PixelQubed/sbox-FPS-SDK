@@ -4,10 +4,27 @@ namespace Amper.Source1;
 
 partial class Projectile
 {
+	[Net] ProjectileMoveType _moveType { get; set; }
+	public new ProjectileMoveType MoveType { get => _moveType; set => UpdateMoveType( value ); }
+
+	private void UpdateMoveType( ProjectileMoveType type )
+	{
+		if ( !IsServer )
+			return;
+
+		// Movetype didn't change.
+		if ( _moveType == type )
+			return;
+
+		_moveType = type;
+
+		var physicsEnabled = MoveType == ProjectileMoveType.Physics;
+		PhysicsEnabled = physicsEnabled;
+		UsePhysicsCollision = physicsEnabled;
+	}
+
 	public virtual void SimulateMoveType()
 	{
-		UpdatePhysicsEnabled();
-
 		switch (MoveType)
 		{
 			case ProjectileMoveType.None:
@@ -18,13 +35,6 @@ partial class Projectile
 				FlyMoveSimulate();
 				break;
 		}
-	}
-
-	public void UpdatePhysicsEnabled()
-	{
-		var physicsEnabled = MoveType == ProjectileMoveType.Physics;
-		if ( physicsEnabled != PhysicsEnabled )
-			PhysicsEnabled = physicsEnabled;
 	}
 
 	public void FlyMoveSimulate()

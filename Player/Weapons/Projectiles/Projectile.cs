@@ -5,6 +5,7 @@ namespace Amper.Source1;
 public abstract partial class Projectile : ModelEntity, ITeam
 {
 	[Net] public int TeamNumber { get; set; }
+	[Net] public TimeSince TimeSinceCreated { get; set; }
 
 	public Vector3 InitialVelocity { get; set; }
 	public Vector3 StartPosition { get; set; }
@@ -17,9 +18,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	public float? AutoDestroyTime { get; set; }
 	public float? AutoExplodeTime { get; set; }
-
-	[Net] public TimeSince TimeSinceCreated { get; set; }
-	[Net] public new ProjectileMoveType MoveType { get; set; }
 
 	public override void Spawn()
 	{
