@@ -1,19 +1,16 @@
-﻿using System;
+﻿using Sandbox;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using Sandbox;
 
 namespace Amper.Source1;
 
 public partial class ResponseData<Concepts, Contexts> : GameResource where Concepts : Enum where Contexts : Enum
 {
-	public Dictionary<string, CriterionData> Criteria { get; set; }
+	public virtual string Base { get; set; }
+	public Dictionary<string, Criterion> Criteria { get; set; }
 	public List<Response> Responses { get; set; }
 
-	public struct CriterionData
+	public struct Criterion
 	{
 		public Contexts Context { get; set; }
 		public string Value { get; set; }
