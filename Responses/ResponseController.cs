@@ -10,7 +10,7 @@ public interface IResponseSpeaker<Concepts, Contexts> where Concepts : Enum wher
 	public ResponseController<Concepts, Contexts> ResponseController { get; set; }
 	public void SpeakConceptIfAllowed( Concepts concept );
 	public void ModifyResponseCriteria( ResponseCriteria<Contexts> criteriaSet );
-	public void PlayResponseSound( string soundEvent );
+	public void PlayResponse( ResponseController<Concepts, Contexts>.Response response );
 }
 
 public class ResponseController<Concepts, Contexts> where Concepts : Enum where Contexts : Enum
@@ -184,7 +184,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		}
 	}
 
-	struct Criterion
+	public struct Criterion
 	{
 		public string Name;
 		public Contexts Context;
@@ -192,7 +192,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		public string Value;
 	}
 
-	struct Response
+	public struct Response
 	{
 		public Concepts Concept;
 		public List<string> Criteria { get; set; }
@@ -200,7 +200,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		public int CriteriaCount => Criteria?.Count ?? 0;
 	}
 
-	enum CompareSign
+	public enum CompareSign
 	{
 		Equal,
 		NotEqual,
@@ -221,7 +221,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		if ( !TryFindMatchingResponse( concept, criteriaSet, out var response ) )
 			return;
 
-		Me.PlayResponseSound( soundEvent: response.SoundEvent );
+		Me.PlayResponse( response );
 	}
 
 	bool TryFindMatchingResponse( Concepts concept, ResponseCriteria<Contexts> criteriaSet, out Response response )
@@ -264,7 +264,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 
 			if ( !CompareContextValue( criteria, criterionContext, compareSign, compareValue ) )
 			{
-				Log.Info( $"{criterionName} doesn't match" );
+				// Log.Info( $"{criterionName} doesn't match" );
 				return false;
 			}
 		}
@@ -281,8 +281,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		// The following compares can be done without casting to number.
 		//
 		var compareInt = contextValue.CompareTo( compareValue );
-
-		Log.Info( $"{context}: {compareValue} / {contextValue} - {compareInt}" );
+		// Log.Info( $"{context}: {compareValue} / {contextValue} - {compareInt}" );
 
 		switch(sign)
 		{
