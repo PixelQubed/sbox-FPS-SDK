@@ -8,20 +8,15 @@ using Sandbox;
 
 namespace Amper.Source1;
 
-public partial class ResponseData<T, U> : GameResource where T : Enum where U : Enum
+public partial class ResponseData<Concepts, Contexts> : GameResource where Concepts : Enum where Contexts : Enum
 {
 
 	public Dictionary<string, CriterionData> Criteria { get; set; }
 	public List<Response> Responses { get; set; }
 
-	public void Cringe()
-	{
-		
-	}
-
 	public struct CriterionData
 	{
-		public U Context { get; set; }
+		public Contexts Context { get; set; }
 		public string Value { get; set; }
 		public override string ToString()
 		{
@@ -31,7 +26,7 @@ public partial class ResponseData<T, U> : GameResource where T : Enum where U : 
 
 	public struct Response
 	{
-		public T Concept { get; set; }
+		public Concepts Concept { get; set; }
 		public List<string> Criteria { get; set; }
 		[ResourceType( "sound" )] public string SoundEvent { get; set; }
 
