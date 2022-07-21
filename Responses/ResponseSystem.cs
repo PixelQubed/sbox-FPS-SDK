@@ -37,7 +37,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 				ParseLoadData( responseData );
 		}
 
-		ParseCriteriaFromData( data.Criteria );
+		ParseCriteriaFromData( data );
 		LoadedData.Add( data );
 	}
 
@@ -57,9 +57,9 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 		{">=",	CompareSign.GreaterOrEqual }
 	};
 
-	void ParseCriteriaFromData( Dictionary<string, ResponseData<Concepts, Contexts>.Criterion> dictionary )
+	void ParseCriteriaFromData( ResponseData<Concepts, Contexts> data )
 	{
-		foreach ( var pair in dictionary )
+		foreach ( var pair in data.Criteria )
 		{
 			var criterionData = pair.Value;
 
@@ -85,8 +85,19 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 			if ( substrCount > 0 )
 				rawValue = rawValue.Substring( substrCount );
 
+			var parsedData = new Criterion
+			{
+				Name = name,
+				Context = context,
+				Sign = sign,
+				Value = rawValue
+			};
+
 			Log.Info( $"<Responses> Parsed Criterion \"{name}\" (\"{context}\" {sign} {rawValue})" );
+			CriterionDictionary.Add( name, parsedData );
 		}
+
+		Log.Info( $"Finished loading criterions for \"{data.ResourceName}\"" );
 	}
 
 	struct Criterion
