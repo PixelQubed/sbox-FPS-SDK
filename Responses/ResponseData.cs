@@ -10,7 +10,6 @@ namespace Amper.Source1;
 
 public partial class ResponseData<Concepts, Contexts> : GameResource where Concepts : Enum where Contexts : Enum
 {
-
 	public Dictionary<string, CriterionData> Criteria { get; set; }
 	public List<Response> Responses { get; set; }
 
