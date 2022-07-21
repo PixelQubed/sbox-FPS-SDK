@@ -245,6 +245,10 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 
 	bool CriterionsMatchCriteria( List<string> criterions, ResponseCriteria<Contexts> criteria )
 	{
+		// No criterions for this.
+		if ( criterions == null )
+			return true;
+
 		foreach ( var criterionName in criterions )
 		{
 			// Provided criterion not found in the dictionary, skip it.
@@ -254,11 +258,43 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 				continue;
 			}
 
+			var criterionContext = criterion.Context;
+			var compareSign = criterion.Sign;
+			var compareValue = criterion.Value;
 
-
+			if ( !CompareContextValue( criteria, criterionContext, compareSign, compareValue ) )
+			{
+				Log.Info( $"{criterionName} doesn't match" );
+				return false;
+			}
 		}
 
 		return true;
+	}
+
+	bool CompareContextValue( ResponseCriteria<Contexts> criteria, Contexts context, CompareSign sign, string compareValue )
+	{
+		if ( !criteria.Table.TryGetValue( context, out var contextValue ) ) 
+			return false;
+
+		//
+		// The following compares can be done without casting to number.
+		//
+		var compareInt = contextValue.CompareTo( compareValue );
+
+		Log.Info( $"{context}: {compareValue} / {contextValue} - {compareInt}" );
+
+		switch(sign)
+		{
+			case CompareSign.Equal: return compareInt == 0;
+			case CompareSign.NotEqual: return compareInt != 0;
+			case CompareSign.Less: return compareInt < 0;
+			case CompareSign.Greater: return compareInt > 0;
+			case CompareSign.LessOrEqual: return compareInt <= 0;
+			case CompareSign.GreaterOrEqual: return compareInt >= 0;
+		}
+
+		return false;
 	}
 }
 
@@ -266,8 +302,6 @@ public class ResponseCriteria<Contexts> where Contexts : Enum
 {
 	public Dictionary<Contexts, string> Table { get; set; } = new();
 
-	public void Set( Contexts context, string value )
-	{
-		Table[context] = value;
-	}
+	public void Set( Contexts context, string value ) => Table[context] = value;
+	public void Set( Contexts context, bool value ) => Set( context, value ? "1" : "0" );
 }
