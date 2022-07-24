@@ -78,6 +78,9 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 	{
 		var loadedCount = 0;
 
+		if ( data.Criteria == null )
+			return;
+
 		foreach ( var pair in data.Criteria )
 		{
 			var name = pair.Key;
