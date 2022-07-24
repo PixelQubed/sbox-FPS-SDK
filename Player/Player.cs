@@ -254,7 +254,7 @@ public partial class Source1Player : AnimatedEntity
 		if ( !IsAlive )
 			return;
 
-		Health = 1;
+		Health = 0;
 		var flags = DamageFlags.Generic;
 
 		if ( explode )
