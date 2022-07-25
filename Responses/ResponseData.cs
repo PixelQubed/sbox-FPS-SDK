@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Amper.Source1;
 
@@ -34,6 +35,12 @@ public partial class ResponseData<Concepts, Contexts> : GameResource where Conce
 			{
 				name += " while ";
 				name += string.Join( ", ", Criteria );
+			}
+
+			if ( !string.IsNullOrEmpty( SoundEvent ) )
+			{
+				var soundName = System.IO.Path.GetFileNameWithoutExtension( SoundEvent );
+				name += $" ({soundName})";
 			}
 
 			return name;
