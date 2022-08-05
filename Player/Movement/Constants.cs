@@ -24,6 +24,6 @@ partial class GameMovement
 
 	public virtual float GetCurrentGravity()
 	{
-		return sv_gravity2 * GameRules.Current.GetGravityMultiplier();
+		return sv_gravity * GameRules.Current.GetGravityMultiplier();
 	}
 }
