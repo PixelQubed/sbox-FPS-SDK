@@ -279,7 +279,7 @@ public partial class GameMovement
 	public virtual void CategorizePosition()
 	{
 		Player.SurfaceFriction = 1.0f;
-		// CheckWater();
+		CheckWater();
 
 		if ( Player.IsObserver )
 			return;

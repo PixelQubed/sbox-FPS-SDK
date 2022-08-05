@@ -42,7 +42,8 @@ partial class GameMovement
 
 			$"[WATER]\n" +
 			$"Water Level           {Player.WaterLevelType}\n" +
-			$"WaterJumpTime         {Player.WaterJumpTime}\n";
+			$"WaterJumpTime         {Player.WaterJumpTime}\n" +
+			$"WaterLevel            {Player.WaterLevel}\n";
 
 		return str;
 	}
