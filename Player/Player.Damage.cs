@@ -100,14 +100,7 @@ partial class Source1Player
 	/// </summary>
 	public virtual void ApplyOnPlayerDamageModifyRules( ref DamageInfo info ) { }
 
-	public virtual void ApplyDamageViewPunch( DamageInfo info )
-	{
-		// We need to punch our view a little bit.
-		var maxPunch = 5;
-		var maxDamage = 100;
-		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		// PunchViewAngles( -punchAngle, 0, 0 );
-	}
+	public virtual void ApplyDamageViewPunch( DamageInfo info ) { }
 
 	/// <summary>
 	/// How will the player react to taking damage? By default this applies abs velocity to the player,
@@ -121,6 +114,11 @@ partial class Source1Player
 		// Apply view kick.
 		ApplyDamageViewPunch( info );
 
+		PlayFlunchFromDamage( info );
+	}
+
+	public virtual void PlayFlunchFromDamage( DamageInfo info )
+	{
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
 	}
