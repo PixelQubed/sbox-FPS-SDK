@@ -122,12 +122,6 @@ public partial class Source1Player : AnimatedEntity
 		UseAnimGraph = true;
 
 		//
-		// Teamplay
-		// 
-		if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
-		else StartObserverMode( LastObserverMode );
-
-		//
 		// Movement
 		//
 		Velocity = Vector3.Zero;
@@ -135,6 +129,12 @@ public partial class Source1Player : AnimatedEntity
 		FallVelocity = 0;
 		BaseVelocity = 0;
 		UpdateMaxSpeed();
+
+		//
+		// Teamplay
+		// 
+		if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
+		else StartObserverMode( LastObserverMode );
 
 		EnableHitboxes = true;
 		SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
