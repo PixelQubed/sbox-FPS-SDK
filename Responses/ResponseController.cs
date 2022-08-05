@@ -182,7 +182,7 @@ public class ResponseController<Concepts, Contexts> where Concepts : Enum where 
 			foreach ( var response in ResponseDictionary[key] )
 			{
 				i++;
-				Log.Info( $"{i}: {response.Concept} ({response.CriteriaCount})" );
+				// Log.Info( $"{i}: {response.Concept} ({response.CriteriaCount})" );
 			}
 		}
 	}
