@@ -14,7 +14,7 @@ partial class Source1Player
 		if ( !IsServer )
 			return;
 
-		// Call pre event hook.
+		// We have been attacked by someone.
 		OnAttackedBy( info.Attacker, info );
 
 		// Check if player can receive damage from attacker.
@@ -34,18 +34,22 @@ partial class Source1Player
 		// Remember this damage as the one we taken last.
 		// This is NOT networked!
 		LastDamageInfo = info;
-
 		LastAttacker = info.Attacker;
 		LastAttackerWeapon = info.Weapon;
-
 		TimeSinceTakeDamage = 0;
 
+		//
 		// Actually deal damage!
+		//
+
 		Health -= info.Damage;
+
+		// We might want to avoid dying, do so.
+		if ( ShouldPreventDeath( info ) ) 
+			PreventDeath( info );
+
 		if ( Health <= 0f )
-		{
 			OnKilled();
-		}
 
 		// Make an rpc to do stuff clientside.
 		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
@@ -119,6 +123,11 @@ partial class Source1Player
 
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
+	}
+
+	public virtual bool ShouldPreventDeath( DamageInfo info )
+	{
+		return IsInBuddhaMode;
 	}
 
 }

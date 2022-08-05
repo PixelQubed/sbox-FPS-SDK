@@ -39,8 +39,8 @@ public partial class Source1Player : AnimatedEntity
 	{
 		base.FrameSimulate( cl );
 
-		GameRules.Current.Movement?.FrameSimulate( this );
 		Animator?.Simulate( this );
+		GameRules.Current.Movement?.FrameSimulate( this );
 
 		ActiveWeapon?.FrameSimulate( cl );
 	}
@@ -336,24 +336,4 @@ public partial class Source1Player : AnimatedEntity
 	{
 		ActiveWeapon?.RenderHud( screenSize );
 	}
-}
-
-public static class PlayerTags
-{
-	/// <summary>
-	/// Is currently ducking.
-	/// </summary>
-	public const string Ducked = "ducked";
-	/// <summary>
-	/// Is currently performing a water jump.
-	/// </summary>
-	public const string WaterJump = "waterjump";
-	/// <summary>
-	/// Does not accept any damage.
-	/// </summary>
-	public const string GodMode = "god";
-	/// <summary>
-	/// Take all the damage, but don't die.
-	/// </summary>
-	public const string Buddha = "buddha";
 }

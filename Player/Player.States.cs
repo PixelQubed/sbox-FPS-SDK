@@ -13,6 +13,6 @@ partial class Source1Player
 	public bool IsAlive => LifeState == LifeState.Alive;
 	public bool IsDead => !IsAlive;
 
-	public bool IsInGodMode => Tags.Has( PlayerTags.GodMode );
-	public bool IsInBuddha => Tags.Has( PlayerTags.Buddha );
+	[Net] public bool IsInGodMode { get; set; }
+	[Net] public bool IsInBuddhaMode { get; set; }
 }
