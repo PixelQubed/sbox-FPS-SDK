@@ -7,22 +7,14 @@ public partial class GameMovement
 {
 	protected Source1Player Player;
 
-	public virtual void FrameSimulate( Source1Player player )
-	{
-		// Check if we've supplied proper player.
-		if ( !player.IsValid() )
-			return;
+	public float MaxSpeed;
+	public Vector3 Position;
+	public Vector3 Velocity;
+	public QAngle ViewAngles;
 
-		// Store variables.
-		Player = player;
-		SetupMoveData( player );
-
-		// Do frame updates
-		FrameUpdate();
-		ApplyMoveData( player );
-	}
-
-	public virtual void FrameUpdate() { }
+	public float ForwardMove;
+	public float SideMove;
+	public float UpMove;
 
 	public virtual void Simulate( Source1Player player )
 	{
@@ -40,14 +32,26 @@ public partial class GameMovement
 		ApplyMoveData( player );
 	}
 
-	public float MaxSpeed;
-	public Vector3 Position;
-	public Vector3 Velocity;
-	public QAngle ViewAngles;
+	public virtual void FrameSimulate( Source1Player player )
+	{
+		// Check if we've supplied proper player.
+		if ( !player.IsValid() )
+			return;
 
-	public float ForwardMove;
-	public float SideMove;
-	public float UpMove;
+		// Store variables.
+		Player = player;
+		SetupMoveData( player );
+
+		// Do frame updates
+		FrameUpdate();
+		ApplyMoveData( player );
+	}
+
+	public virtual void FrameUpdate()
+	{
+		Host.AssertClient();
+		ViewAngles = Input.Rotation;
+	}
 
 	public virtual void SetupMoveData( Source1Player player )
 	{
