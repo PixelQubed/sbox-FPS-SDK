@@ -38,7 +38,10 @@ public partial class Source1Player : AnimatedEntity
 	public override void FrameSimulate( Client cl )
 	{
 		base.FrameSimulate( cl );
-		GameRules.Current.Movement.FrameSimulate( this );
+
+		GameRules.Current.Movement?.FrameSimulate( this );
+		Animator?.Simulate( this );
+
 		ActiveWeapon?.FrameSimulate( cl );
 	}
 
