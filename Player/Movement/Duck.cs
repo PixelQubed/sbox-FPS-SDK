@@ -203,14 +203,18 @@ partial class GameMovement
 		if ( Player.ObserverMode == ObserverMode.Roaming )
 			return;
 
-		if ( Player.IsDucking )
-		{
-			float frac = GetDuckSpeedModifier( Player.DuckProgress );
-			ForwardMove *= frac;
-			SideMove *= frac;
-			UpMove *= frac;
-			MaxSpeed *= frac;
-		}
+		if ( Player.IsInAir )
+			return;
+
+		if ( !Player.IsDucking )
+			return;
+
+		float frac = GetDuckSpeedModifier( Player.DuckProgress );
+		ForwardMove *= frac;
+		SideMove *= frac;
+		UpMove *= frac;
+
+		MaxSpeed *= frac;
 	}
 
 	public virtual bool IsDuckingEnabled()
