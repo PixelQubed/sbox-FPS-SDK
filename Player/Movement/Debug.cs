@@ -20,6 +20,7 @@ partial class GameMovement
 			$"MoveType              {Player.MoveType}\n" +
 			$"Flags                 {Player.Flags}\n" +
 			$"Team                  {Player.TeamNumber}\n" +
+			$"ObserverMode          {Player.ObserverMode}\n" +
 			$"\n" +
 
 			$"[MOVEMENT]\n" +
@@ -41,7 +42,8 @@ partial class GameMovement
 
 			$"[WATER]\n" +
 			$"Water Level           {Player.WaterLevelType}\n" +
-			$"WaterJumpTime         {Player.WaterJumpTime}\n";
+			$"WaterJumpTime         {Player.WaterJumpTime}\n" +
+			$"WaterLevel            {Player.WaterLevel}\n";
 
 		return str;
 	}

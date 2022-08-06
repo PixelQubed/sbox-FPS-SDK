@@ -7,8 +7,7 @@ public partial class ViewModel : BaseViewModel
 {
 	public Source1Weapon Weapon { get; set; }
 	public Source1Player Player => Weapon?.Player;
-	public Vector3? MuzzleOrigin { get; private set; }
-	public virtual string MuzzleAttachment => "muzzle";
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -23,12 +22,12 @@ public partial class ViewModel : BaseViewModel
 		EnableDrawing = visible;
 
 		if ( visible )
-			CalculateView( camSetup );
+			CalculateView( ref camSetup );
 	}
 
 
 	public virtual bool ShouldDraw() => true;
-	public virtual void CalculateView( CameraSetup camSetup ) { }
+	public virtual void CalculateView( ref CameraSetup camSetup ) { }
 
 	public virtual void SetWeaponModel( string viewmodel, Source1Weapon weapon )
 	{

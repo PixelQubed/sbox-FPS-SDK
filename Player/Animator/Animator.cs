@@ -16,6 +16,7 @@ public partial class PlayerAnimator : BaseNetworkable
 	public virtual void Update()
 	{
 		SetAnimParameter( "b_grounded", Player.IsGrounded );
+		SetAnimParameter( "b_swimming", Player.IsUnderwater );
 
 		UpdateMovement();
 		UpdateRotation();

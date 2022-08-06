@@ -38,7 +38,10 @@ public partial class Source1Player : AnimatedEntity
 	public override void FrameSimulate( Client cl )
 	{
 		base.FrameSimulate( cl );
-		GameRules.Current.Movement.FrameSimulate( this );
+
+		Animator?.Simulate( this );
+		GameRules.Current.Movement?.FrameSimulate( this );
+
 		ActiveWeapon?.FrameSimulate( cl );
 	}
 
@@ -119,12 +122,6 @@ public partial class Source1Player : AnimatedEntity
 		UseAnimGraph = true;
 
 		//
-		// Teamplay
-		// 
-		if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
-		else StartObserverMode( LastObserverMode );
-
-		//
 		// Movement
 		//
 		Velocity = Vector3.Zero;
@@ -132,6 +129,12 @@ public partial class Source1Player : AnimatedEntity
 		FallVelocity = 0;
 		BaseVelocity = 0;
 		UpdateMaxSpeed();
+
+		//
+		// Teamplay
+		// 
+		if ( TeamManager.IsPlayable( TeamNumber ) ) StopObserverMode();
+		else StartObserverMode( LastObserverMode );
 
 		EnableHitboxes = true;
 		SetCollisionBounds( GetPlayerMins( false ), GetPlayerMaxs( false ) );
@@ -332,24 +335,4 @@ public partial class Source1Player : AnimatedEntity
 	{
 		ActiveWeapon?.RenderHud( screenSize );
 	}
-}
-
-public static class PlayerTags
-{
-	/// <summary>
-	/// Is currently ducking.
-	/// </summary>
-	public const string Ducked = "ducked";
-	/// <summary>
-	/// Is currently performing a water jump.
-	/// </summary>
-	public const string WaterJump = "waterjump";
-	/// <summary>
-	/// Does not accept any damage.
-	/// </summary>
-	public const string GodMode = "god";
-	/// <summary>
-	/// Take all the damage, but don't die.
-	/// </summary>
-	public const string Buddha = "buddha";
 }

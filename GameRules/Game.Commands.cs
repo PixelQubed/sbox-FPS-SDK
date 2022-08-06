@@ -62,16 +62,23 @@ partial class GameRules
 		if ( player == null )
 			return;
 
-		if ( player.IsInGodMode )
-		{
-			player.Tags.Remove( PlayerTags.GodMode );
-			Log.Info( $"Disabled god for {client.Name}" );
-		}
-		else
-		{
-			player.Tags.Add( PlayerTags.GodMode );
-			Log.Info( $"Enabled god for {client.Name}" );
-		}
+		player.IsInGodMode = !player.IsInGodMode;
+		Log.Info( $"God Mode {(player.IsInGodMode ? "enabled" : "disabled")} for {client.Name}" );
+	}
+
+	[ConCmd.Admin( "buddha" )]
+	public static void Command_Buddha()
+	{
+		var client = ConsoleSystem.Caller;
+		if ( client == null )
+			return;
+
+		var player = client.Pawn as Source1Player;
+		if ( player == null )
+			return;
+
+		player.IsInBuddhaMode = !player.IsInBuddhaMode;
+		Log.Info( $"Buddha Mode {(player.IsInBuddhaMode ? "enabled" : "disabled")} for {client.Name}" );
 	}
 
 	[ConCmd.Admin( "respawn" )]

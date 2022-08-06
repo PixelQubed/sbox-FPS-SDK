@@ -14,7 +14,7 @@ partial class Source1Player
 		if ( !IsServer )
 			return;
 
-		// Call pre event hook.
+		// We have been attacked by someone.
 		OnAttackedBy( info.Attacker, info );
 
 		// Check if player can receive damage from attacker.
@@ -34,18 +34,22 @@ partial class Source1Player
 		// Remember this damage as the one we taken last.
 		// This is NOT networked!
 		LastDamageInfo = info;
-
 		LastAttacker = info.Attacker;
 		LastAttackerWeapon = info.Weapon;
-
 		TimeSinceTakeDamage = 0;
 
+		//
 		// Actually deal damage!
+		//
+
 		Health -= info.Damage;
+
+		// We might want to avoid dying, do so.
+		if ( ShouldPreventDeath( info ) ) 
+			PreventDeath( info );
+
 		if ( Health <= 0f )
-		{
 			OnKilled();
-		}
 
 		// Make an rpc to do stuff clientside.
 		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
@@ -96,14 +100,7 @@ partial class Source1Player
 	/// </summary>
 	public virtual void ApplyOnPlayerDamageModifyRules( ref DamageInfo info ) { }
 
-	public virtual void ApplyDamageViewPunch( DamageInfo info )
-	{
-		// We need to punch our view a little bit.
-		var maxPunch = 5;
-		var maxDamage = 100;
-		var punchAngle = info.Damage.Remap( 0, maxDamage, 0, maxPunch );
-		// PunchViewAngles( -punchAngle, 0, 0 );
-	}
+	public virtual void ApplyDamageViewPunch( DamageInfo info ) { }
 
 	/// <summary>
 	/// How will the player react to taking damage? By default this applies abs velocity to the player,
@@ -117,8 +114,18 @@ partial class Source1Player
 		// Apply view kick.
 		ApplyDamageViewPunch( info );
 
+		PlayFlunchFromDamage( info );
+	}
+
+	public virtual void PlayFlunchFromDamage( DamageInfo info )
+	{
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
+	}
+
+	public virtual bool ShouldPreventDeath( DamageInfo info )
+	{
+		return IsInBuddhaMode;
 	}
 
 }
