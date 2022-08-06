@@ -209,4 +209,13 @@ public partial class GameRules : Game
 			player.RenderHud( screenSize );
 		}
 	}
+
+	public override void BuildInput( InputBuilder input )
+	{
+		Event.Run( "buildinput", input );
+
+		Local.Pawn?.BuildInput( input );
+
+		LastCamera?.BuildInput( input );
+	}
 }

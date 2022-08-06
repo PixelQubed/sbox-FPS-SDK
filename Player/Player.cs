@@ -293,7 +293,6 @@ public partial class Source1Player : AnimatedEntity
 	/// <summary>
 	/// Called from the gamemode, clientside only.
 	/// </summary>
-	[Event.BuildInput]
 	public override void BuildInput( InputBuilder input )
 	{
 		if ( input.StopProcessing )
