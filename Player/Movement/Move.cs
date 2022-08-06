@@ -1,4 +1,6 @@
-﻿namespace Amper.Source1;
+﻿using Sandbox;
+
+namespace Amper.Source1;
 
 partial class GameMovement
 {
