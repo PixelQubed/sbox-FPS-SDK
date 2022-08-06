@@ -10,7 +10,7 @@ public enum ChatType
 
 partial class GameRules
 {
-	[ConCmd.Server( "say" )]
+	[ConCmd.Server( "say_all" )]
 	public static void Command_SendMessage( string message )
 	{
 		Current.OnChatMessageSent( ConsoleSystem.Caller, message, ChatType.Global );
