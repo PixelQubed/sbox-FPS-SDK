@@ -193,7 +193,6 @@ partial class Source1Player
 	/// </summary>
 	public void StartObserverMode( ObserverMode mode )
 	{
-		Log.Info( $"StartObserverMode( {mode} )" );
 		Tags.Remove( CollisionTags.Solid );
 		UsePhysicsCollision = false;
 		EnableDrawing = false;
