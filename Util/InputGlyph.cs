@@ -7,7 +7,6 @@ public class InputGlyph : Image
 {
 	public InputButton Button { get; set; }
 	public InputGlyphSize Size { get; set; }
-	GlyphStyle GlyphStyle { get; set; } = default;
 
 	static Texture UnboundTexture = Texture.Load( FileSystem.Mounted, "/ui/unbound.png" );
 
@@ -17,8 +16,10 @@ public class InputGlyph : Image
 		if ( string.IsNullOrEmpty( Input.GetButtonOrigin( Button ) ) )
 			return UnboundTexture;
 
+		var style = GlyphStyle.Knockout;
+
 		// texture doesnt exist, or can't be generated
-		var texture = Input.GetGlyph( Button, Size, GlyphStyle );
+		var texture = Input.GetGlyph( Button, Size, style );
 		if ( texture == null )
 			return UnboundTexture;
 
