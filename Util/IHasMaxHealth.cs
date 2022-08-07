@@ -1,6 +1,8 @@
-﻿namespace Amper.Source1;
+﻿using Sandbox;
 
-public interface IHasMaxHealth
+namespace Amper.Source1;
+
+public interface IHasMaxHealth : IValid
 {
 	public float Health { get; set; }
 	public float MaxHealth { get; set; }

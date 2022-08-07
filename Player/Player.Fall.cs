@@ -19,7 +19,7 @@ partial class Source1Player
 		if ( fallDamage <= 0 )
 			return;
 
-		Sound.FromWorld( "player.fallpain", Position );
+		PlaySound( "player.fallpain" );
 
 		if ( sv_falldamage )
 		{

@@ -72,10 +72,6 @@ partial class GameRules
 		if ( victim.LifeState != LifeState.Alive )
 			return false;
 
-		// We dealt no damage, ignore it.
-		if ( info.Damage <= 0 )
-			return false;
-
 		// Attacker can always damage themselves.
 		if ( attacker == victim )
 			return true;
