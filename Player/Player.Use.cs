@@ -34,11 +34,7 @@ partial class Source1Player
 		// If we pressed use button.
 		if ( Input.Pressed( InputButton.Use ) )
 		{
-			if ( CanUse( HoveredEntity ) )
-			{
-				// Start using the hovered entity.
-				StartUsing( HoveredEntity );
-			}
+			AttemptUse();
 		}
 
 		// If we stopped pressing use key, stop using.
@@ -54,6 +50,18 @@ partial class Source1Player
 
 		if ( !CanContinueUsing( Using ) ) 
 			StopUsing();
+	}
+
+	public virtual bool AttemptUse()
+	{
+		if ( CanUse( HoveredEntity ) )
+		{
+			// Start using the hovered entity.
+			StartUsing( HoveredEntity );
+			return true;
+		}
+
+		return false;
 	}
 
 	protected void StopUsing()
