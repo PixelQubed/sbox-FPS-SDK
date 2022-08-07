@@ -267,8 +267,9 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 			flags |= DamageFlags.AlwaysGib;
 		}
 
-		var info = DamageInfo.Generic( 1 )
+		var info = ExtendedDamageInfo.Create( 1 )
 			.WithAttacker( this )
+			.WithInflictor( this )
 			.WithPosition( Position )
 			.WithFlag( flags );
 
