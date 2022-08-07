@@ -135,6 +135,7 @@ partial class Source1Weapon
 			// Collides with:
 			.WithAnyTags( CollisionTags.Solid )
 			.WithAnyTags( CollisionTags.BulletClip )
+			.WithAnyTags( CollisionTags.Debris )
 			
 			// Doesn't colide with:
 			.WithoutTags( CollisionTags.NotSolid )
