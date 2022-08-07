@@ -23,8 +23,9 @@ partial class Source1Player
 
 		if ( sv_falldamage )
 		{
-			var fallDmgInfo = DamageInfo.Generic( fallDamage )
+			var fallDmgInfo = ExtendedDamageInfo.Create( fallDamage )
 				.WithFlag( DamageFlags.Fall )
+				.WithInflictor( this )
 				.WithPosition( Position );
 
 			TakeDamage( fallDmgInfo );

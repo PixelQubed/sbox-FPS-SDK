@@ -56,6 +56,18 @@ partial class Source1Player
 
 		// Let gamerules know about this.
 		GameRules.Current.PlayerHurt( this, info );
+		DrawDebugDamage( info );
+	}
+
+	[ConVar.Replicated] public static bool sv_debug_take_damage { get; set; }
+
+	private void DrawDebugDamage( ExtendedDamageInfo info )
+	{
+		if ( !sv_debug_take_damage )
+			return;
+
+		DebugOverlay.Sphere( info.Position, 4, Color.Yellow, 3 );
+		DebugOverlay.Sphere( info.Inflictor.WorldSpaceBounds.Center, 4, Color.Red, 3 );
 	}
 
 	[ClientRpc]
@@ -114,10 +126,14 @@ partial class Source1Player
 		// Apply view kick.
 		ApplyDamageViewPunch( info );
 
-		PlayFlunchFromDamage( info );
+		PlayFlinchFromDamage( info );
+
+		SendBloodDispatchRPC( info );
 	}
 
-	public virtual void PlayFlunchFromDamage( ExtendedDamageInfo info )
+	public virtual void DispatchBloodEffects( Vector3 origin, Vector3 normal ) { }
+
+	public virtual void PlayFlinchFromDamage( ExtendedDamageInfo info )
 	{
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
@@ -128,4 +144,22 @@ partial class Source1Player
 		return IsInBuddhaMode;
 	}
 
+	private void SendBloodDispatchRPC( ExtendedDamageInfo info )
+	{
+		var inflictor = info.Inflictor;
+		if ( !inflictor.IsValid() )
+			return;
+
+		var inflictorPos = inflictor.WorldSpaceBounds.Center - Vector3.Up * 10;
+		var dir = inflictorPos - WorldSpaceBounds.Center;
+		dir = dir.Normal;
+
+		DispatchBloodRPC( info.Position, -dir );
+	}
+
+	[ClientRpc]
+	private void DispatchBloodRPC( Vector3 origin, Vector3 normal )
+	{
+		DispatchBloodEffects( origin, normal );
+	}
 }
