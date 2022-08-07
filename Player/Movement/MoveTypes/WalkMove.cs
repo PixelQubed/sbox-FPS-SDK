@@ -77,7 +77,11 @@ partial class GameMovement
 		Player.FallVelocity = 0;
 	}
 
-	public virtual void OnLand( float velocity ) { }
+	public virtual void OnLand( float velocity )
+	{
+		// Take specified amount of fall damage when landed.
+		Player.OnLanded( velocity );
+	}
 
 	public virtual void WalkMove()
 	{
