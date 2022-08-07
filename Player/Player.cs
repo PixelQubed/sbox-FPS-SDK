@@ -4,7 +4,7 @@ using System.Linq;
 namespace Amper.Source1;
 
 [Title( "Player" ), Icon( "emoji_people" )]
-public partial class Source1Player : AnimatedEntity
+public partial class Source1Player : AnimatedEntity, IHasMaxHealth
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
