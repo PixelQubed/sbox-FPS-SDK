@@ -28,9 +28,6 @@ partial class Source1Player
 		// Apply all global damage modifications.
 		GameRules.Current.ApplyOnDamageModifyRules( ref info, this );
 
-		// Do all the reactions to this damage.
-		OnTakeDamageReaction( info );
-
 		// Remember this damage as the one we taken last.
 		// This is NOT networked!
 		LastDamageInfo = info;
@@ -50,6 +47,9 @@ partial class Source1Player
 
 		if ( Health <= 0f )
 			OnKilled();
+
+		// Do all the reactions to this damage.
+		OnTakeDamageReaction( info );
 
 		// Make an rpc to do stuff clientside.
 		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
