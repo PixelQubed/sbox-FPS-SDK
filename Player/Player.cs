@@ -4,7 +4,7 @@ using System.Linq;
 namespace Amper.Source1;
 
 [Title( "Player" ), Icon( "emoji_people" )]
-public partial class Source1Player : AnimatedEntity, IHasMaxHealth
+public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExtendedDamageInfo
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
@@ -222,7 +222,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth
 	[Net] public TimeSince TimeSinceDeath { get; set; }
 	[Net] public TimeSince TimeSinceTakeDamage { get; set; }
 
-	public DamageInfo LastDamageInfo { get; set; }
+	public ExtendedDamageInfo LastDamageInfo { get; set; }
 
 
 	public void UpdateMaxSpeed()

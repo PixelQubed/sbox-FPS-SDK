@@ -112,14 +112,14 @@ public partial class GameRules : Game
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerDeath( Source1Player player, DamageInfo info ) { }
+	public virtual void PlayerDeath( Source1Player player, ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// This player was just hurt.
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerHurt( Source1Player player, DamageInfo info ) { }
+	public virtual void PlayerHurt( Source1Player player, ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// On player respawned

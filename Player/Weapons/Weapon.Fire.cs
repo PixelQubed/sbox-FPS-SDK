@@ -9,24 +9,23 @@ namespace Amper.Source1;
 
 partial class Source1Weapon
 {
-	public virtual DamageFlags DefaultDamageFlags => DamageFlags.Bullet;
-
 	/// <summary>
 	/// Weapons may modify the damage info if they have a need to do it. 
 	/// </summary>
-	public virtual void ApplyDamageModifications( Entity victim, ref DamageInfo info, TraceResult trace ) { }
+	public virtual void ApplyDamageModifications( Entity victim, ref ExtendedDamageInfo info, TraceResult trace ) { }
 
 	/// <summary>
 	/// Creates the damage info struct that will then be passed to <see cref="ApplyDamageModifications"/>
 	/// </summary>
-	public virtual DamageInfo SetupDamageInfo( TraceResult tr, float damage )
+	public virtual ExtendedDamageInfo SetupDamageInfo( TraceResult tr, float damage )
 	{
-		return DamageInfo.Generic( damage )
+		return ExtendedDamageInfo.Create( damage )
 			.UsingTraceResult( tr )
-			.WithFlag( DefaultDamageFlags )
+			.WithFlag( DamageFlags.Bullet )
 			.WithForce( GameRules.Current.CalculateForceFromDamage( tr.Direction, damage ) )
 			.WithAttacker( Owner )
-			.WithPosition( Owner.EyePosition )
+			.WithInflictor( Owner )
+			.WithPosition( tr.EndPosition )
 			.WithWeapon( this );
 	}
 

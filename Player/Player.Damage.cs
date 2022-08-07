@@ -7,9 +7,9 @@ partial class Source1Player
 	/// <summary>
 	/// This is called before all the calculations are made. Even if the damage doesn't go through!
 	/// </summary>
-	public virtual void OnAttackedBy( Entity attacker, DamageInfo info ) { }
+	public virtual void OnAttackedBy( Entity attacker, ExtendedDamageInfo info ) { }
 
-	public override void TakeDamage( DamageInfo info )
+	public virtual void TakeDamage( ExtendedDamageInfo info )
 	{
 		if ( !IsServer )
 			return;
@@ -66,7 +66,7 @@ partial class Source1Player
 
 	public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, int hitbox, Vector3 force ) { }
 
-	public bool PreventDeath( DamageInfo info )
+	public bool PreventDeath( ExtendedDamageInfo info )
 	{
 		// We take damage, but we dont allow ourselves to die.
 		if ( (Health - info.Damage) <= 0 )
@@ -81,7 +81,7 @@ partial class Source1Player
 	/// <summary>
 	/// Check if this player is allowed to take damage from a given attacker.
 	/// </summary>
-	public virtual bool CanTakeDamage( Entity attacker, DamageInfo info )
+	public virtual bool CanTakeDamage( Entity attacker, ExtendedDamageInfo info )
 	{
 		// Gods take no damage!
 		if ( IsInGodMode )
@@ -93,20 +93,20 @@ partial class Source1Player
 	/// <summary>
 	/// If mod requires us to be pushed by the damage, apply the impulse here.
 	/// </summary>
-	public virtual void ApplyPushFromDamage( DamageInfo info ) { }
+	public virtual void ApplyPushFromDamage( ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// Modify how player accepts damage.
 	/// </summary>
-	public virtual void ApplyOnPlayerDamageModifyRules( ref DamageInfo info ) { }
+	public virtual void ApplyOnPlayerDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
-	public virtual void ApplyDamageViewPunch( DamageInfo info ) { }
+	public virtual void ApplyDamageViewPunch( ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// How will the player react to taking damage? By default this applies abs velocity to the player,
 	/// kicks the view of the player and makes it flinch.
 	/// </summary>
-	public virtual void OnTakeDamageReaction( DamageInfo info )
+	public virtual void OnTakeDamageReaction( ExtendedDamageInfo info )
 	{
 		// Apply velocity to the player from the damage.
 		ApplyPushFromDamage( info );
@@ -117,13 +117,13 @@ partial class Source1Player
 		PlayFlunchFromDamage( info );
 	}
 
-	public virtual void PlayFlunchFromDamage( DamageInfo info )
+	public virtual void PlayFlunchFromDamage( ExtendedDamageInfo info )
 	{
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
 	}
 
-	public virtual bool ShouldPreventDeath( DamageInfo info )
+	public virtual bool ShouldPreventDeath( ExtendedDamageInfo info )
 	{
 		return IsInBuddhaMode;
 	}

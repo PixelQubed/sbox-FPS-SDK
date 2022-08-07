@@ -5,7 +5,7 @@ namespace Amper.Source1;
 
 public struct RadiusDamageInfo
 {
-	public DamageInfo DamageInfo { get; set; }
+	public ExtendedDamageInfo DamageInfo { get; set; }
 	public Entity Target { get; set; }
 	public Entity Ignore { get; set; }
 	public float Radius { get; set; }
@@ -16,7 +16,7 @@ public struct RadiusDamageInfo
 	/// </summary>
 	public float Falloff { get; set; }
 
-	public RadiusDamageInfo( DamageInfo info, float radius, Entity ignore, float attackerRadius, Entity target )
+	public RadiusDamageInfo( ExtendedDamageInfo info, float radius, Entity ignore, float attackerRadius, Entity target )
 	{
 		DamageInfo = info;
 		Radius = radius;
@@ -173,5 +173,5 @@ partial class GameRules
 	/// Modifies dealt damage using global game rules. This is applied to all taken damage,
 	/// regardless or who to where.
 	/// </summary>
-	public virtual void ApplyOnDamageModifyRules( ref DamageInfo info, Entity victim ) { }
+	public virtual void ApplyOnDamageModifyRules( ref ExtendedDamageInfo info, Entity victim ) { }
 }

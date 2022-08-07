@@ -66,7 +66,7 @@ partial class GameRules
 		return damage * player.DamageForFallSpeed;
 	}
 
-	public virtual bool CanEntityTakeDamage( Entity victim, Entity attacker, DamageInfo info )
+	public virtual bool CanEntityTakeDamage( Entity victim, Entity attacker, ExtendedDamageInfo info )
 	{
 		// Dead things can't take damage.
 		if ( victim.LifeState != LifeState.Alive )

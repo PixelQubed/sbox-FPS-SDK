@@ -129,25 +129,19 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Delete();
 	}
 
-	public DamageInfo SetupDamageInfo()
+	public ExtendedDamageInfo SetupDamageInfo()
 	{
-		var info = DamageInfo.Generic( Damage )
+		var info = ExtendedDamageInfo.Create( Damage )
 			.WithAttacker( Owner )
+			.WithInflictor( this )
 			.WithWeapon( Launcher )
 			.WithPosition( Position )
-			.WithFlag( GetDamageFlags() );
+			.WithFlag( DamageFlags.Blast );
 
 		return info;
 	}
 
-	public virtual void ApplyDamageModifyRules( ref DamageInfo info ) { }
-
-	/// <summary>
-	/// Default damage flag of this projectile, 
-	/// </summary>
-	public virtual DamageFlags DefaultDamageFlags => DamageFlags.Blast;
-
-	public virtual DamageFlags GetDamageFlags() => DefaultDamageFlags;
+	public virtual void ApplyDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
 	public virtual void Explode( Entity other, TraceResult trace )
 	{
