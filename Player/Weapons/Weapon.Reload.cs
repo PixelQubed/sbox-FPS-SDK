@@ -63,15 +63,20 @@ partial class Source1Weapon
 		// We have reached a new reload cycle.
 		if ( NextReloadCycleTime <= Time.Now )
 		{
-			// If we have made a full reload cycle, then add clip to the magazine
-			if ( FullReloadCycle )
-				ReloadRefillClip();
+			FinishedReloadCycle();
+		}
+	}
 
-			// If we still can reload, start a new cycle.
-			if ( CanReload() )
-			{
-				StartReloadCycle();
-			}
+	public virtual void FinishedReloadCycle()
+	{
+		// If we have made a full reload cycle, then add clip to the magazine
+		if ( FullReloadCycle )
+			ReloadRefillClip();
+
+		// If we still can reload, start a new cycle.
+		if ( CanReload() )
+		{
+			StartReloadCycle();
 		}
 	}
 
@@ -80,7 +85,7 @@ partial class Source1Weapon
 		var neededClips = GetClipsPerReloadCycle();
 
 		// If we have infinite clips, just fulfill our clip count and early out.
-		if( sv_infinite_clips )
+		if ( sv_infinite_clips )
 		{
 			Clip += neededClips;
 			return;
@@ -141,7 +146,7 @@ partial class Source1Weapon
 			return false;
 
 		// Don't have any reserve.
-		if ( Reserve <= 0 ) 
+		if ( Reserve <= 0 )
 			return false;
 
 		// Our clip is full
