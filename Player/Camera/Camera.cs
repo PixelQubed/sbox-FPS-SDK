@@ -104,7 +104,7 @@ partial class Source1Camera : CameraMode
 
 	float m_flOldPlayerZ;
 	float m_flOldPlayerViewOffsetZ;
-	[ConVar.Client] public static bool cl_smoothstairs { get; set; }
+	[ConVar.Client] public static bool cl_smoothstairs { get; set; } = true;
 
 	public virtual void SmoothViewOnStairs( Source1Player player )
 	{
