@@ -94,8 +94,8 @@ public partial class GameMovement
 		if ( Player.IsInAir )
 			Player.FallVelocity = -Velocity.z;
 
-		UpdateViewOffset();
 		SimulateModifiers();
+		UpdateViewOffset();
 		Player.SimulateFootsteps( Position, Velocity );
 
 		switch ( Player.MoveType )
@@ -124,7 +124,7 @@ public partial class GameMovement
 			return;
 
 		// this updates z offset.
-		SetDuckedEyeOffset( Util.SimpleSpline( Player.DuckProgress ) );
+		SetDuckedEyeOffset( Player.DuckProgress );
 	}
 
 	public virtual void SimulateModifiers()

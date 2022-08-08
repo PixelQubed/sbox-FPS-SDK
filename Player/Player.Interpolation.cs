@@ -1,5 +1,4 @@
 using Sandbox;
-using System.Linq;
 using System;
 
 namespace Amper.Source1;
@@ -40,6 +39,8 @@ partial class Source1Player
 			return;
 
 		ResetInterpolation();
+		InterpolationTime = 0;
+
 		LastPosition = Position;
 		LastEyeLocalPosition = EyeLocalPosition;
 	}
@@ -54,6 +55,5 @@ partial class Source1Player
 
 		NetworkPosition = Position;
 		NetworkEyeLocalPosition = EyeLocalPosition;
-		InterpolationTime = 0;
 	}
 }

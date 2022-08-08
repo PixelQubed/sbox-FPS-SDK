@@ -106,7 +106,7 @@ partial class GameMovement
 		var vDuckHullMin = GetPlayerMins( true );
 		var vStandHullMin = GetPlayerMins( false );
 
-		float fMore = (vDuckHullMin.z - vStandHullMin.z);
+		float fMore = vDuckHullMin.z - vStandHullMin.z;
 
 		var vecDuckViewOffset = GetPlayerViewOffset( true );
 		var vecStandViewOffset = GetPlayerViewOffset( false );
