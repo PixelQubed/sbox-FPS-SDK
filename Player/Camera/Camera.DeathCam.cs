@@ -9,7 +9,6 @@ partial class Source1Camera
 
 	public void CalculateDeathCamView( Source1Player player )
 	{
-		LerpEnabled = false;
 		var killer = player.LastAttacker;
 
 		// if we dont have a killer use chase cam

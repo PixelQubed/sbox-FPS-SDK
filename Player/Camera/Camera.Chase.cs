@@ -7,9 +7,6 @@ partial class Source1Camera
 {
 	public void CalculateChaseCamView( Source1Player player )
 	{
-		// disable position lerp on chase camera 
-		LerpEnabled = false;
-
 		var target = player.ObserverTarget;
 
 		if ( target == null )

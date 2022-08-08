@@ -5,10 +5,6 @@ namespace Amper.Source1;
 
 partial class Source1Camera : CameraMode
 {
-	Vector3 LastPosition { get; set; }
-
-	bool LerpEnabled { get; set; }
-
 	public override void Build( ref CameraSetup camSetup )
 	{
 		var player = Source1Player.LocalPlayer;
@@ -37,12 +33,10 @@ partial class Source1Camera : CameraMode
 		Rotation = player.EyeRotation;
 		ZNear = 1;
 		FieldOfView = 0;
-		LerpEnabled = true;
 		ViewModelFieldOfView = cl_viewmodel_fov;
 
 		CalculateView( player );
 
-		LastPosition = Position;
 		LastFieldOfView = FieldOfView;
 	}
 
@@ -71,7 +65,6 @@ partial class Source1Camera : CameraMode
 		{
 			Viewer = null;
 
-			LerpEnabled = false;
 			Position -= Rotation.Forward * cl_thirdperson_distance;
 		}
 	}
