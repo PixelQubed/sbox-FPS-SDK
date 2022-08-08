@@ -1,5 +1,6 @@
 using Sandbox;
 using System.Linq;
+using System;
 
 namespace Amper.Source1;
 
@@ -35,33 +36,15 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 	public virtual float GetMaxHealth() => 100;
 
-	[ConVar.Client] public static bool cl_use_sbox_player_interpolation { get; set; } = false;
-
-	Vector3 NetworkPosition { get; set; }
-	Vector3 LastPosition { get; set; }
-	float NextTickTime { get; set; }
-
 	public override void FrameSimulate( Client cl )
 	{
 		base.FrameSimulate( cl );
 
 		Animator?.Simulate( this );
 		GameRules.Current.Movement?.FrameSimulate( this );
-
 		ActiveWeapon?.FrameSimulate( cl );
 
-		if ( !cl_use_sbox_player_interpolation )
-		{
-			DebugOverlay.Sphere( NetworkPosition, 5, Color.Green );
-			DebugOverlay.Sphere( LastPosition, 5, Color.Red );
-			DebugOverlay.Sphere( Position, 5, Color.Yellow );
-
-			var lastTickStart = NextTickTime - Global.TickInterval;
-			var elapsedTick = Time.Now - lastTickStart;
-			var lerp = elapsedTick / Global.TickInterval;
-
-			Position = LastPosition.LerpTo( NetworkPosition, lerp );
-		}
+		InterpolateFrame();
 	}
 
 	public override void Simulate( Client cl )
@@ -73,29 +56,22 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		// Movements
 		//
 
-		if ( IsClient )
-		{
-			LastPosition = Position;
-		}
-
 		UpdateMaxSpeed();
-		GameRules.Current.Movement?.Simulate( this );
+		SimulateMovement();
 		Animator?.Simulate( this );
-
-		if ( IsClient )
-		{
-			NetworkPosition = Position;
-			NextTickTime = Time.Now + Global.TickInterval;
-		}
 
 		SimulateActiveWeapon( cl );
 		SimulatePassiveChildren( cl );
 		SimulateHover();
 
-		if ( !cl_use_sbox_player_interpolation ) 
-			ResetInterpolation();
-
 		DrawDebugPredictionHistory();
+	}
+
+	public virtual void SimulateMovement()
+	{
+		StartInterpolating();
+		GameRules.Current.Movement?.Simulate( this );
+		StopInterpolating();
 	}
 
 	public virtual void Respawn()
