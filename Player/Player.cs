@@ -62,7 +62,9 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 		SimulateActiveWeapon( cl );
 		SimulatePassiveChildren( cl );
+
 		SimulateHover();
+		SimulateUse();
 
 		DrawDebugPredictionHistory();
 	}

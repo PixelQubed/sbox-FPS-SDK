@@ -21,6 +21,7 @@ partial class GameMovement
 			$"Flags                 {Player.Flags}\n" +
 			$"Team                  {Player.TeamNumber}\n" +
 			$"ObserverMode          {Player.ObserverMode}\n" +
+			$"HoveredEntity         {Player.HoveredEntity}\n" +
 			$"\n" +
 
 			$"[MOVEMENT]\n" +
