@@ -65,7 +65,13 @@ partial class Source1Camera : CameraMode
 		{
 			Viewer = null;
 
-			Position -= Rotation.Forward * cl_thirdperson_distance;
+			var tpPos = Position - Rotation.Forward * cl_thirdperson_distance;
+			var tr = Trace.Ray( Position, tpPos )
+				.Size( 5 )
+				.WorldOnly()
+				.Run();
+
+			Position = tr.EndPosition;
 		}
 	}
 

@@ -66,7 +66,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		SetParent( owner, true );
 		Owner = owner;
-		MoveType = MoveType.None;
+		PhysicsEnabled = false;
 
 		EnableAllCollisions = false;
 		EnableDrawing = false;
@@ -82,7 +82,7 @@ public partial class Source1Weapon : AnimatedEntity
 
 		SetParent( null );
 		Owner = null;
-		MoveType = MoveType.Physics;
+		PhysicsEnabled = true;
 
 		EnableDrawing = true;
 		EnableAllCollisions = true;
