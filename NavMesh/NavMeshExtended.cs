@@ -29,6 +29,7 @@ public class NavMeshExtended
 
 		Reset();
 
+		Log.Info( "Nav Mesh PrecomputeNavMesh!" );
 		if ( !NavMesh.IsLoaded )
 			return;
 
@@ -97,7 +98,7 @@ public class NavMeshExtended
 
 	bool IsAreaProcessed( NavArea area ) => _areas.ContainsKey( area.ID );
 
-	int MaxAdjacentAttempts => 7;
+	int MaxAdjacentAttempts => 500;
 
 	private void FindAndProcessAdjacentAreas( NavArea area, int depth = 0 )
 	{
