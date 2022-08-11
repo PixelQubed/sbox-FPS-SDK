@@ -48,8 +48,6 @@ public class NavMeshExtended
 			FindAreasNearPoint( point );
 		}
 
-		var finishTime = Time.Now;
-		var elapseTime = finishTime - startTime;
 		Precomputed = true;
 		Log.Info( "Nav Mesh Precomputed!" );
 		OnNavMeshPrecomputed();
@@ -72,7 +70,7 @@ public class NavMeshExtended
 
 		// s&box Spawn Points
 		var sboxPoints = Entity.All.OfType<Sandbox.SpawnPoint>();
-		foreach ( var spawn in spawnPoints )
+		foreach ( var spawn in sboxPoints )
 			yield return spawn.Position;
 	}
 
@@ -99,7 +97,7 @@ public class NavMeshExtended
 
 	bool IsAreaProcessed( NavArea area ) => _areas.ContainsKey( area.ID );
 
-	const int MaxAdjacentAttempts = 5000;
+	int MaxAdjacentAttempts => 7;
 
 	private void FindAndProcessAdjacentAreas( NavArea area, int depth = 0 )
 	{
@@ -108,7 +106,6 @@ public class NavMeshExtended
 			return;
 
 		_areas.Add( area.ID, area );
-		// DebugOverlay.Text( depth.ToString(), area.Center, 30 );
 
 		int countToFound = area.AdjacentCount;
 		if ( countToFound == 0 )
@@ -135,7 +132,6 @@ public class NavMeshExtended
 
 			areasFound++;
 			ids.Add( adjArea.ID );
-			// DebugOverlay.Line( area.Center, adjArea.Center, Color.Magenta, 30, false );
 
 			FindAndProcessAdjacentAreas( adjArea, depth + 1 );
 		}

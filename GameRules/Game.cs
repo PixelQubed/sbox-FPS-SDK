@@ -39,7 +39,6 @@ public partial class GameRules : Game
 	{
 		base.FrameSimulate( cl );
 		PostProcessingManager?.FrameSimulate();
-		NavMesh?.Update();
 	}
 
 	public override void ClientSpawn()
@@ -86,7 +85,7 @@ public partial class GameRules : Game
 
 	public virtual void Upkeep()
 	{
-
+		NavMesh?.Update();
 	}
 
 	[ConVar.Client] public static bool cl_show_prediction_errors { get; set; }
@@ -117,7 +116,7 @@ public partial class GameRules : Game
 		CalculateObjectives();
 		CreateStandardEntities();
 
-		NavMesh?.PrecomputeNavMesh();
+		// NavMesh?.PrecomputeNavMesh();
 	}
 
 	/// <summary>
