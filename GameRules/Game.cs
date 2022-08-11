@@ -9,13 +9,22 @@ public partial class GameRules : Game
 
 	public GameMovement Movement { get; set; }
 	public PostProcessingManager PostProcessingManager { get; set; }
+	public NavMeshExtended NavMesh { get; set; }
 
 	public GameRules()
 	{
 		Current = this;
-
 		Movement = new();
-		PostProcessingManager = new();
+
+		if ( IsClient )
+		{
+			PostProcessingManager = new();
+		}
+
+		if ( IsServer )
+		{
+			NavMesh = new();
+		}
 	}
 
 	public override void Spawn()
@@ -99,6 +108,8 @@ public partial class GameRules : Game
 	{
 		CalculateObjectives();
 		CreateStandardEntities();
+
+		NavMesh?.PrecomputeNavMesh();
 	}
 
 	/// <summary>
