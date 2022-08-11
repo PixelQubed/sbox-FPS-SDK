@@ -39,6 +39,7 @@ public partial class GameRules : Game
 	{
 		base.FrameSimulate( cl );
 		PostProcessingManager?.FrameSimulate();
+		NavMesh?.Update();
 	}
 
 	public override void ClientSpawn()
@@ -62,6 +63,8 @@ public partial class GameRules : Game
 	[Event.Tick]
 	public void TickInternal()
 	{
+		Upkeep();
+
 		if ( Time.Now < NextTickTime )
 			return;
 
@@ -79,6 +82,11 @@ public partial class GameRules : Game
 			CheckWaitingForPlayers();
 			UpdateAllClientsData();
 		}
+	}
+
+	public virtual void Upkeep()
+	{
+
 	}
 
 	[ConVar.Client] public static bool cl_show_prediction_errors { get; set; }

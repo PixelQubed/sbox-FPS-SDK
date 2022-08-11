@@ -13,7 +13,7 @@ public class NavMeshExtended
 		Current = this;
 	}
 
-	bool Precomputed = false;
+	public bool Precomputed = false;
 
 	Dictionary<uint, NavArea> _areas = new();
 	Dictionary<uint, List<uint>> _adjacent = new();
@@ -55,10 +55,7 @@ public class NavMeshExtended
 		OnNavMeshPrecomputed();
 	}
 
-	public virtual void OnNavMeshPrecomputed()
-	{
-
-	}
+	public virtual void OnNavMeshPrecomputed() { }
 
 	public void Reset()
 	{
@@ -184,6 +181,8 @@ public class NavMeshExtended
 
 		return path.TotalLength;
 	}
+
+	public virtual void Update() { }
 }
 
 public static class NavAreaExtensions
