@@ -66,6 +66,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		SimulateHover();
 		SimulateUse();
 
+		UpdateLastKnownArea();
 		DrawDebugPredictionHistory();
 	}
 
@@ -346,5 +347,62 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		{
 			DebugOverlay.Box( this, Color.Red, .1f );
 		}
+	}
+
+	public NavArea LastKnownArea;
+
+	public void UpdateLastKnownArea()
+	{
+		if ( !IsServer )
+			return;
+
+		if ( !NavMesh.IsLoaded )
+		{
+			ClearLastKnownArea();
+			return;
+		}
+
+		var flags = GetNavAreaFlags.CheckLineOfSight | GetNavAreaFlags.CheckGround;
+		var area = NavArea.GetClosestNav( Position, NavAgentHull.Default, flags, 50 );
+		if ( area == null )
+			return;
+
+		if ( !IsAreaTraversable( area ) )
+			return;
+
+		if ( area != LastKnownArea )
+		{
+			if ( LastKnownArea != null )
+			{
+				// m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, entindex() );
+				// m_lastNavArea->OnExit( this, NULL );
+			}
+
+			// RegisteredNavTeam = TeamNumber;
+			// area->IncrementPlayerCount( m_registeredNavTeam, entindex() );
+			// area->OnEnter( this, NULL );
+
+			OnNavAreaChanged( area, LastKnownArea );
+			LastKnownArea = area;
+		}
+	}
+
+	public void ClearLastKnownArea()
+	{
+		OnNavAreaChanged( null, LastKnownArea );
+
+		if ( LastKnownArea != null )
+		{
+			// m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, entindex() );
+			// m_lastNavArea->OnExit( this, NULL );
+			LastKnownArea = null;
+		}
+	}
+
+	public virtual bool IsAreaTraversable( NavArea area ) => true;
+
+	public virtual void OnNavAreaChanged( NavArea enteredArea, NavArea leftArea )
+	{
+
 	}
 }

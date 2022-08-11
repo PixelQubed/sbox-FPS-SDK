@@ -22,6 +22,7 @@ partial class GameMovement
 			$"Team                  {Player.TeamNumber}\n" +
 			$"ObserverMode          {Player.ObserverMode}\n" +
 			$"HoveredEntity         {Player.HoveredEntity}\n" +
+			$"Last Known Area:      {Player.LastKnownArea}\n" +
 			$"\n" +
 
 			$"[MOVEMENT]\n" +
