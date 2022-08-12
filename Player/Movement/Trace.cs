@@ -40,7 +40,6 @@ partial class GameMovement
 			// Collides with:
 			.WithAnyTags( CollisionTags.Solid )
 			.WithAnyTags( CollisionTags.Ladder )
-			.WithAnyTags( CollisionTags.Player )
 			.WithAnyTags( CollisionTags.Clip )
 			.WithAnyTags( CollisionTags.PlayerClip )
 

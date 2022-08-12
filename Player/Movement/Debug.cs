@@ -23,6 +23,7 @@ partial class GameMovement
 			$"ObserverMode          {Player.ObserverMode}\n" +
 			$"HoveredEntity         {Player.HoveredEntity}\n" +
 			$"Last Known Area:      #{(Player.LastKnownArea?.ID.ToString()) ?? "~"}\n" +
+			$"Tags:                 {string.Join( ",", Player.Tags.List )}\n" +
 			$"\n" +
 
 			$"[MOVEMENT]\n" +
