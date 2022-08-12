@@ -7,6 +7,8 @@ public partial class PlayerAnimator : BaseNetworkable
 {
 	protected Source1Player Player;
 
+	Rotation EyeRotation;
+
 	public void Simulate( Source1Player player ) 
 	{	
 		Player = player;
@@ -19,7 +21,13 @@ public partial class PlayerAnimator : BaseNetworkable
 		SetAnimParameter( "b_swimming", Player.IsUnderwater );
 
 		UpdateMovement();
+
+		// Update player's rotation, but also remember and preserve player's
+		// eye rotation so it doesn't spin when rotation is applied.
+		EyeRotation = Player.EyeRotation;
 		UpdateRotation();
+		Player.EyeRotation = EyeRotation;
+
 		UpdateLookAt();
 		UpdateDucking();
 	}

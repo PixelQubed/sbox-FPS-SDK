@@ -50,7 +50,9 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	public override void Simulate( Client cl )
 	{
 		if ( IsObserver )
+		{
 			SimulateObserver();
+		}
 
 		//
 		// Movements
@@ -133,7 +135,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		TimeSinceSprayed = sv_spray_cooldown + 1;
 
 		// move the player to the spawn point
-		GameRules.Current.MoveToSpawnpoint( this );
+		GameRules.Current.FindAndMovePlayerToSpawnPoint( this );
 		ResetInterpolation();
 
 		if ( !IsObserver )
@@ -275,8 +277,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	{
 		Host.AssertClient();
 
-		if ( ActiveWeapon != null )
-			ActiveWeapon.PostCameraSetup( ref setup );
+		ActiveWeapon?.PostCameraSetup( ref setup );
 	}
 
 	/// <summary>
@@ -286,6 +287,13 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	{
 		if ( input.StopProcessing )
 			return;
+
+		if ( _forceViewAngles.HasValue )
+		{
+			Log.Info( _forceViewAngles );
+			input.ViewAngles = _forceViewAngles.Value;
+			_forceViewAngles = null;
+		}
 
 		ActiveWeapon?.BuildInput( input );
 

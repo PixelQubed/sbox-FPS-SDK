@@ -60,7 +60,7 @@ partial class GameRules
 			.Ignore( player );
 	}
 
-	public virtual void MoveToSpawnpoint( Source1Player player )
+	public virtual void FindAndMovePlayerToSpawnPoint( Source1Player player )
 	{
 		// try to find a valid spawn point for this player
 		var team = player.TeamNumber;
@@ -103,6 +103,7 @@ partial class GameRules
 					if ( TryFitOnSpawnpoint( player, point, out var transform ) )
 					{
 						player.Transform = transform;
+						player.ForceViewAngles( new Angles( 0, transform.Rotation.Yaw(), 0 ) );
 						LastSpawnPoint[team] = point;
 						return;
 					}
@@ -115,6 +116,7 @@ partial class GameRules
 			{
 				TryFitOnSpawnpoint( player, firstEligiblePoint, out var transform );
 				player.Transform = transform;
+				player.ForceViewAngles( new Angles( 0, transform.Rotation.Yaw(), 0 ) );
 				LastSpawnPoint[team] = firstEligiblePoint;
 				return;
 			}
@@ -141,6 +143,7 @@ partial class GameRules
 				if ( TryFitOnSpawnpoint( player, point, out var transform ) )
 				{
 					player.Transform = transform;
+					player.ForceViewAngles( new Angles( 0, transform.Rotation.Yaw(), 0 ) );
 					return;
 				}
 			}
@@ -150,6 +153,7 @@ partial class GameRules
 			var rndpoint = Rand.FromList( sboxpoints );
 			TryFitOnSpawnpoint( player, rndpoint, out var transform2 );
 			player.Transform = transform2;
+			player.ForceViewAngles( new Angles( 0, transform2.Rotation.Yaw(), 0 ) );
 			return;
 		}
 
@@ -159,5 +163,6 @@ partial class GameRules
 
 		// Spawn at 0,0,0. There's nothing we can do really.
 		player.Transform = new( 0, Rotation.Identity );
+		player.ForceViewAngles( Angles.Zero );
 	}
 }

@@ -5,6 +5,24 @@ namespace Amper.Source1;
 
 partial class Source1Player
 {
+	//
+	// View Angles
+	//
+	Angles? _forceViewAngles { get; set; }
+
+	public void ForceViewAngles( Angles angles )
+	{
+		EyeRotation = angles.ToRotation();
+		if ( IsServer ) ForceViewAnglesRPC( angles );
+		if ( IsClient ) _forceViewAngles = angles;
+	}
+
+	[ClientRpc]
+	private void ForceViewAnglesRPC( Angles angles )
+	{
+		ForceViewAngles( angles );
+	}
+
 	[Net, Predicted] public float MaxSpeed { get; set; }
 	[Net, Predicted] public new NativeMoveType MoveType { get; set; }
 	public float SurfaceFriction { get; set; } = 1;
