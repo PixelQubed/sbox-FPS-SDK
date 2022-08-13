@@ -95,6 +95,34 @@ partial class GameRules
 		player.Respawn();
 	}
 
+	[ConCmd.Admin( "ent_create" )]
+	public static void Command_Respawn( string entity )
+	{
+		var client = ConsoleSystem.Caller;
+		if ( client == null )
+			return;
+
+		var player = client.Pawn;
+		if ( player == null )
+			return;
+
+		var tr = Trace.Ray( player.EyePosition, player.EyePosition + player.EyeRotation.Forward * 2000 )
+			.Ignore( player )
+			.Run();
+
+		if ( !tr.Hit )
+			return;
+
+		var type = TypeLibrary.GetTypeByName( entity );
+		if ( type == null )
+			return;
+
+		var ent = TypeLibrary.Create<Entity>( type );
+		if ( ent == null )
+			return;
+
+		ent.Position = tr.EndPosition + Vector3.Up * 10;
+	}
 	[ConVar.Server] public static float sv_damageforce_scale { get; set; } = 1;
 
 #if false

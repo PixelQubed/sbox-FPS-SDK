@@ -290,7 +290,6 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 		if ( _forceViewAngles.HasValue )
 		{
-			Log.Info( _forceViewAngles );
 			input.ViewAngles = _forceViewAngles.Value;
 			_forceViewAngles = null;
 		}
