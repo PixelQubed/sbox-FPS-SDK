@@ -48,7 +48,7 @@ public struct ExtendedDamageInfo
 
 	public ExtendedDamageInfo WithoutFlag( DamageFlags flag )
 	{
-		Flags |= flag;
+		Flags &= ~flag;
 		return this;
 	}
 
