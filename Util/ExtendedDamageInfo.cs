@@ -5,15 +5,17 @@ namespace Amper.Source1;
 public struct ExtendedDamageInfo
 {
 	public Entity Attacker { get; set; }
-	public Entity Inflictor { get; set; }
-	public Entity Weapon { get; set; }
-	public Vector3 Position { get; set; }
-	public Vector3 Force { get; set; }
+	public Entity Inflictor { get; set; } 
+	public Entity Weapon { get; set; } 
+	public Vector3 Force { get; set; } 
 	public float Damage { get; set; }
 	public DamageFlags Flags { get; set; }
-	public PhysicsBody Body { get; set; }
-	public int HitboxIndex { get; set; }
-	public int BoneIndex { get; set; }
+	public PhysicsBody Body { get; set; } 
+	public int HitboxIndex { get; set; } 
+	public int BoneIndex { get; set; } 
+	public int KillType { get; set; }
+	public Vector3 HitPosition { get; set; }
+	public Vector3 OriginPosition { get; set; }
 
 	public static ExtendedDamageInfo Create( float damage )
 	{
@@ -70,9 +72,21 @@ public struct ExtendedDamageInfo
 		return this;
 	}
 
-	public ExtendedDamageInfo WithPosition( Vector3 position )
+	public ExtendedDamageInfo WithDamage( float damage )
 	{
-		Position = position;
+		Damage = damage;
+		return this;
+	}
+
+	public ExtendedDamageInfo WithHitPosition( Vector3 position )
+	{
+		HitPosition = position;
+		return this;
+	}
+
+	public ExtendedDamageInfo WithOriginPosition( Vector3 position )
+	{
+		OriginPosition = position;
 		return this;
 	}
 
@@ -84,9 +98,11 @@ public struct ExtendedDamageInfo
 
 	public ExtendedDamageInfo UsingTraceResult( TraceResult result )
 	{
-		Body = result.Body;
+		HitPosition = result.EndPosition;
+		OriginPosition = result.StartPosition;
 		HitboxIndex = result.HitboxIndex;
 		BoneIndex = result.Bone;
+		Body = result.Body;
 		return this;
 	}
 
@@ -96,7 +112,7 @@ public struct ExtendedDamageInfo
 		{
 			Attacker = Attacker,
 			Weapon = Weapon,
-			Position = Position,
+			Position = HitPosition,
 			Force = Force,
 			Damage = Damage,
 			Flags = Flags,
