@@ -5,6 +5,7 @@ namespace Amper.Source1;
 public abstract partial class Projectile : ModelEntity, ITeam
 {
 	[Net] public int TeamNumber { get; set; }
+	[Net] public DamageFlags DamageFlags { get; set; } 
 	[Net] public TimeSince TimeSinceCreated { get; set; }
 
 	public Vector3 InitialVelocity { get; set; }
@@ -16,7 +17,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public float Gravity { get; set; }
 	public Entity Enemy { get; set; }
 	public bool Touched { get; set; }
-	public DamageFlags DamageFlags { get; set; }
 
 	public float? AutoDestroyTime { get; set; }
 	public float? AutoExplodeTime { get; set; }
@@ -136,14 +136,19 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Delete();
 	}
 
+	public virtual DamageFlags DefaultDamageFlags => DamageFlags.Blast;
+
 	public ExtendedDamageInfo SetupDamageInfo()
 	{
+		var flags = DefaultDamageFlags;
+		flags |= DamageFlags;
+
 		var info = ExtendedDamageInfo.Create( Damage )
 			.WithAttacker( Owner )
 			.WithInflictor( this )
 			.WithWeapon( Launcher )
 			.WithPosition( Position )
-			.WithFlag( DamageFlags.Blast );
+			.WithFlag( flags );
 
 		return info;
 	}
