@@ -27,8 +27,10 @@ partial class Projectile
 		if ( MoveType == ProjectileMoveType.None )
 			return;
 
-		var origin = Position;
-		var target = Position + Velocity * Time.Delta;
+		var vecVelocityPerTick = Velocity * Time.Delta;
+
+		var origin = Position - vecVelocityPerTick;
+		var target = Position + vecVelocityPerTick;
 
 		var tr = TraceBBox( origin, target );
 

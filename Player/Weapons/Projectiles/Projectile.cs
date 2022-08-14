@@ -41,9 +41,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Event.Tick.Server]
 	public virtual void Tick()
 	{
+		SimulateCollisions();
 		SimulateMoveType();
 		UpdateFaceRotation();
-		SimulateCollisions();
 
 		if ( AutoExplodeTime.HasValue )
 		{
