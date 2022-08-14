@@ -70,6 +70,10 @@ partial class Projectile
 			.WithAnyTags( CollisionTags.Clip )
 			.WithAnyTags( CollisionTags.ProjectileClip )
 
+			// Except weapons and other projectiles.
+			.WithoutTags( CollisionTags.Projectile )
+			.WithoutTags( CollisionTags.Weapon )
+
 			.Ignore( this )
 			.Ignore( Owner );
 
