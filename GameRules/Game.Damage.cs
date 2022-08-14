@@ -6,17 +6,18 @@ namespace Amper.Source1;
 public struct RadiusDamageInfo
 {
 	public ExtendedDamageInfo DamageInfo { get; set; }
-	public Entity Target { get; set; }
-	public Entity Ignore { get; set; }
-	public float Radius { get; set; }
-	public float AttackerRadius { get; set; }
+	public Entity Target;
+	public Entity Ignore;
+	public float Radius;
+	public float AttackerRadius;
 	/// <summary>
 	/// Multiplier value that defines how much damage, compared to base damage we should deal to entities
 	/// that are on the edge of the explosion radius.
 	/// </summary>
-	public float Falloff { get; set; }
+	public float Falloff;
+	public bool DoLosCheck;
 
-	public RadiusDamageInfo( ExtendedDamageInfo info, float radius, Entity ignore, float attackerRadius, Entity target )
+	public RadiusDamageInfo( ExtendedDamageInfo info, float radius, Entity ignore, float attackerRadius, Entity target, bool losCheck = true )
 	{
 		DamageInfo = info;
 		Radius = radius;
@@ -24,6 +25,7 @@ public struct RadiusDamageInfo
 		AttackerRadius = attackerRadius;
 		Target = target;
 		Falloff = GameRules.Current.GetRadiusDamageFalloff();
+		DoLosCheck = losCheck;
 	}
 
 	public void ApplyToEntity( Entity entity )
@@ -36,7 +38,7 @@ public struct RadiusDamageInfo
 		// Check line of sight between explosion and the entity.
 		//
 
-		var dmgPos = DamageInfo.Position;
+		var dmgPos = DamageInfo.HitPosition;
 		var eyePos = entity.EyePosition;
 
 		var tr = Trace.Ray( dmgPos, eyePos )
@@ -46,7 +48,7 @@ public struct RadiusDamageInfo
 			.Run();
 
 		// If we hit something, we're blocked by world.
-		if ( tr.Hit )
+		if ( DoLosCheck && tr.Hit )
 			return;
 
 		//
@@ -60,8 +62,8 @@ public struct RadiusDamageInfo
 		if ( Target != entity )
 		{
 			// Use whichever is closer, absorigin or worldspacecenter
-			float toWorldSpaceCenter = (DamageInfo.Position - entity.WorldSpaceBounds.Center).Length;
-			float toOrigin = (DamageInfo.Position - entity.Position).Length;
+			float toWorldSpaceCenter = (DamageInfo.HitPosition - entity.WorldSpaceBounds.Center).Length;
+			float toOrigin = (DamageInfo.HitPosition - entity.Position).Length;
 
 			distance = Math.Min( toWorldSpaceCenter, toOrigin );
 		}
@@ -85,18 +87,20 @@ public struct RadiusDamageInfo
 		// Adjust damage info
 		//
 
-		var adjustedInfo = DamageInfo;
-		adjustedInfo.Damage = adjustedDamage;
-
 		var dir = (eyePos - dmgPos).Normal;
-		adjustedInfo.Force = GameRules.Current.CalculateForceFromDamage( dir, adjustedDamage );
+		var force = GameRules.Current.CalculateForceFromDamage( dir, adjustedDamage );
 
-		entity.TakeDamage( adjustedInfo );
+		var info = DamageInfo
+			.UsingTraceResult( tr )
+			.WithDamage( adjustedDamage )
+			.WithForce( force );
+
+		entity.TakeDamage( info );
 
 		if( GameRules.sv_debug_draw_radius_damage )
 		{
 			DebugOverlay.Sphere( entity.Position, 5, Color.Magenta, 5, true );
-			DebugOverlay.Line( DamageInfo.Position, entity.Position, Color.Magenta, 5, true );
+			DebugOverlay.Line( DamageInfo.HitPosition, entity.Position, Color.Magenta, 5, true );
 			DebugOverlay.Text(
 				$"{distance}HU\n" +
 				$"{adjustedDamage}HP\n" +
@@ -125,14 +129,14 @@ public struct RadiusDamageInfo
 					default: color = Color.Red; break;
 				}
 
-				DebugOverlay.Sphere( DamageInfo.Position, Radius * lerp, color, 5, true );
+				DebugOverlay.Sphere( DamageInfo.HitPosition, Radius * lerp, color, 5, true );
 			}
 
 			DebugOverlay.Text(
 				$"{Math.Floor( Radius * lerp )}\n" +
 				$"{Math.Floor( falloff * 100 )}%\n" +
 				$"{Math.Floor( damage )}HP"
-			, DamageInfo.Position + Radius * Vector3.Up * lerp, 5 );
+			, DamageInfo.HitPosition + Radius * Vector3.Up * lerp, 5 );
 
 		}
 	}
@@ -147,7 +151,7 @@ partial class GameRules
 
 		if ( info.Radius > 0 )
 		{
-			var entities = FindInSphere( info.DamageInfo.Position, info.Radius );
+			var entities = FindInSphere( info.DamageInfo.HitPosition, info.Radius );
 			foreach ( var entity in entities )
 			{
 				info.ApplyToEntity( entity );
