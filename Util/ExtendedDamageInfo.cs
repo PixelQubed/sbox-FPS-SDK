@@ -14,8 +14,19 @@ public struct ExtendedDamageInfo
 	public int HitboxIndex { get; set; } 
 	public int BoneIndex { get; set; } 
 	public int KillType { get; set; }
+	/// <summary>
+	/// The position at which this damage has impacted with the victim. I.e. position that bullet has 
+	/// hit in the victim's hitboxes. The blood at the target will appear at this position.
+	/// </summary>
 	public Vector3 HitPosition { get; set; }
+	/// <summary>
+	/// The position from which this damage originated. I.e. the origin of an explosion that damaged the player.
+	/// </summary>
 	public Vector3 OriginPosition { get; set; }
+	/// <summary>
+	/// The position which we will report to the client that received damage.
+	/// </summary>
+	public Vector3 ReportPosition { get; set; }
 
 	public static ExtendedDamageInfo Create( float damage )
 	{
@@ -78,15 +89,31 @@ public struct ExtendedDamageInfo
 		return this;
 	}
 
+	/// <summary>
+	/// The position at which this damage has impacted with the victim. I.e. position that bullet has 
+	/// hit in the victim's hitboxes. The blood at the target will appear at this position.
+	/// </summary>
 	public ExtendedDamageInfo WithHitPosition( Vector3 position )
 	{
 		HitPosition = position;
 		return this;
 	}
 
+	/// <summary>
+	/// The position from which this damage originated. I.e. the origin of an explosion that damaged the player.
+	/// </summary>
 	public ExtendedDamageInfo WithOriginPosition( Vector3 position )
 	{
 		OriginPosition = position;
+		return this;
+	}
+
+	/// <summary>
+	/// The position which we will report to the client that received damage.
+	/// </summary>
+	public ExtendedDamageInfo WithReportPosition( Vector3 position )
+	{
+		ReportPosition = position;
 		return this;
 	}
 
