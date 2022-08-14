@@ -30,6 +30,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Damage = 0;
 		Gravity = 0;
 		MoveType = ProjectileMoveType.None;
+		Predictable = false;
 
 		EnableDrawing = false;
 		EnableHideInFirstPerson = true;
