@@ -2,9 +2,6 @@
 
 namespace Amper.Source1;
 
-/// <summary>
-/// Base Team Fortress projectile 
-/// </summary>
 partial class Projectile
 {
 	protected Vector3 Mins;
@@ -46,7 +43,7 @@ partial class Projectile
 
 	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 	{
-		if( tf_debug_projectile_collisions )
+		if( sv_debug_projectile_collisions )
 		{
 			if ( mins != 0 || maxs != 0 )
 				DebugOverlay.Box( start, mins, maxs, Color.Red, 0, false );
@@ -55,6 +52,11 @@ partial class Projectile
 		}	
 
 		return SetupCollisionTrace( start, end, mins, maxs ).Run();
+	}
+
+	public virtual Trace SetupCollisionTrace( Vector3 start, Vector3 end )
+	{
+		return SetupCollisionTrace( start, end, Mins, Maxs );
 	}
 
 	public virtual Trace SetupCollisionTrace( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
@@ -76,5 +78,5 @@ partial class Projectile
 		return tr;
 	}
 
-	[ConVar.Replicated] public static bool tf_debug_projectile_collisions { get; set; }
+	[ConVar.Replicated] public static bool sv_debug_projectile_collisions { get; set; }
 }

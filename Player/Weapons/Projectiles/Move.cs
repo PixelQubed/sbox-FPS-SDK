@@ -23,9 +23,14 @@ partial class Projectile
 		UsePhysicsCollision = physicsEnabled;
 	}
 
+	public virtual void SimulateMovement()
+	{
+		SimulateMoveType();
+	}
+
 	public virtual void SimulateMoveType()
 	{
-		switch (MoveType)
+		switch ( MoveType )
 		{
 			case ProjectileMoveType.None:
 			case ProjectileMoveType.Physics:
@@ -40,6 +45,11 @@ partial class Projectile
 	public void FlyMoveSimulate()
 	{
 		Velocity += Map.Physics.Gravity * Gravity * Time.Delta;
-		Position += Velocity * Time.Delta;
+		var mover = new MoveHelper( Position, Velocity );
+		mover.Trace = SetupCollisionTrace( 0, 0 );
+		mover.TryMove( Time.Delta );
+
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 	}
 }
