@@ -191,7 +191,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 		return ExtendedDamageInfo.Create( damage )
 			.WithReportPosition( reportPos )
-			.WithOriginPosition( Position )
+			.WithOriginPosition( OriginalPosition )
 			.WithHitPosition( Position )
 			.WithAttacker( Owner )
 			.WithInflictor( this )
