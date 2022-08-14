@@ -98,11 +98,15 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	public virtual void Explode()
 	{
+		Host.AssertServer();
+
 		Explode( Position );
 	}
 
 	public virtual void Explode( Vector3 position )
 	{
+		Host.AssertServer();
+
 		var origin = position + Vector3.Up * 16;
 		var target = position + Vector3.Down * 16;
 
@@ -115,6 +119,8 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	public virtual void Explode( TraceResult trace )
 	{
+		Host.AssertServer();
+
 		DoExplosionEffect( Position, trace.Normal );
 
 		if ( Owner.IsValid() ) 
