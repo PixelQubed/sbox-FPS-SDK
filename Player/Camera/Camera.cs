@@ -52,6 +52,7 @@ partial class Source1Camera : CameraMode
 		}
 
 		CalculateFieldOfView( player );
+		CalculateScreenShake( player );
 	}
 
 
@@ -158,5 +159,62 @@ partial class Source1Camera : CameraMode
 			m_flOldPlayerZ = flCurrentPlayerZ;
 			m_flOldPlayerViewOffsetZ = flCurrentPlayerViewOffsetZ;
 		}
+	}
+
+	public virtual void CalculateScreenShake( Source1Player player )
+	{
+		if ( !Host.IsClient )
+			return;
+
+		var rumbleAngle = 0f;
+		Vector3 shakeAppliedOffset = 0;
+
+		for ( var i = ScreenShake.All.Count - 1; i >= 0; i-- )
+		{
+			var shake = ScreenShake.All[i];
+			if ( shake.EndTime == 0 )
+			{
+				// Shouldn't be any such shakes in the list.
+				Assert.True( false );
+				continue;
+			}
+
+			if ( Time.Now > shake.EndTime
+				|| shake.Duration <= 0 
+				|| shake.Amplitude <= 0 
+				|| shake.Frequency <= 0 )
+			{
+				ScreenShake.All.RemoveAt( i );
+				continue;
+			}
+
+			if ( Time.Now > shake.NextShake )
+			{
+				shake.NextShake = Time.Now + (1f / shake.Frequency);
+				shake.Offset = Vector3.Random * shake.Amplitude;
+			}
+
+			// Ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
+			var fraction = (shake.EndTime - Time.Now) / shake.Duration;
+			// Ramp up frequency over duration
+			var freq = (fraction > 0) ? shake.Frequency / fraction : 0;
+
+			// square fraction to approach zero more quickly
+			fraction *= fraction;
+
+			var angle = Time.Now * freq;
+			if ( angle > float.MaxValue ) 
+				angle = float.MaxValue;
+
+			fraction = fraction * MathF.Sin( angle );
+			shakeAppliedOffset += shake.Offset * fraction;
+
+			shake.Amplitude -= shake.Amplitude * (Time.Delta / (shake.Duration * shake.Frequency));
+		}
+
+		Position += shakeAppliedOffset;
+
+		// TODO:
+		// Controller rumble?
 	}
 }
