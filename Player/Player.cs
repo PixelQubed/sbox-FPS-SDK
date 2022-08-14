@@ -157,7 +157,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 	public override void OnKilled()
 	{
-		DeleteAllWeapons();
+		DeleteAllChildren();
 
 		UseAnimGraph = false;
 		EnableAllCollisions = false;
@@ -171,6 +171,18 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		OnKilledRPC();
 
 		GameRules.Current.PlayerDeath( this, LastDamageInfo );
+	}
+
+	public void DeleteAllChildren()
+	{
+		for ( var i = Children.Count - 1; i >= 0; i-- )
+		{
+			var child = Children[i];
+			if ( !child.IsValid() )
+				continue;
+
+			child.Delete();
+		}
 	}
 
 	[ClientRpc]
@@ -260,7 +272,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		var info = ExtendedDamageInfo.Create( 1 )
 			.WithAttacker( this )
 			.WithInflictor( this )
-			.WithPosition( Position )
+			.WithAllPositions( Position )
 			.WithFlag( flags );
 
 		TakeDamage( info );

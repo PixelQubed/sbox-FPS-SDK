@@ -99,6 +99,14 @@ public struct ExtendedDamageInfo
 		return this;
 	}
 
+	public ExtendedDamageInfo WithAllPositions( Vector3 position )
+	{
+		HitPosition = position;
+		OriginPosition = position;
+		ReportPosition = position;
+		return this;
+	}
+
 	/// <summary>
 	/// The position from which this damage originated. I.e. the origin of an explosion that damaged the player.
 	/// </summary>

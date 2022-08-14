@@ -14,19 +14,19 @@ partial class Source1Weapon
 	/// </summary>
 	public virtual void ApplyDamageModifications( Entity victim, ref ExtendedDamageInfo info, TraceResult trace ) { }
 
-	/// <summary>
-	/// Creates the damage info struct that will then be passed to <see cref="ApplyDamageModifications"/>
-	/// </summary>
-	public virtual ExtendedDamageInfo SetupDamageInfo( TraceResult tr, float damage )
+	public ExtendedDamageInfo CreateDamageInfo( TraceResult tr, float damage )
 	{
+		// If this projectile has an owner, report their position
+		// otherwise fallback to our own position.
+
 		return ExtendedDamageInfo.Create( damage )
 			.UsingTraceResult( tr )
-			.WithFlag( DamageFlags.Bullet )
+			.WithReportPosition( Player.GetAttackPosition() )
 			.WithForce( GameRules.Current.CalculateForceFromDamage( tr.Direction, damage ) )
 			.WithAttacker( Owner )
 			.WithInflictor( Owner )
-			.WithPosition( tr.EndPosition )
-			.WithWeapon( this );
+			.WithWeapon( this )
+			.WithFlag( DamageFlags.Bullet );
 	}
 
 	/// <summary>
@@ -57,7 +57,7 @@ partial class Source1Weapon
 
 		OnHitEntity( tr.Entity, tr );
 
-		var info = SetupDamageInfo( tr, damage );
+		var info = CreateDamageInfo( tr, damage );
 		ApplyDamageModifications( entity, ref info, tr );
 		entity.TakeDamage( info );
 

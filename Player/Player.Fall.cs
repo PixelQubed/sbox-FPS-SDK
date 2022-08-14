@@ -26,7 +26,7 @@ partial class Source1Player
 			var fallDmgInfo = ExtendedDamageInfo.Create( fallDamage )
 				.WithFlag( DamageFlags.Fall )
 				.WithInflictor( this )
-				.WithPosition( Position );
+				.WithAllPositions( Position );
 
 			TakeDamage( fallDmgInfo );
 		}

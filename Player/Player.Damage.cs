@@ -52,7 +52,7 @@ partial class Source1Player
 		OnTakeDamageReaction( info );
 
 		// Make an rpc to do stuff clientside.
-		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.Position, info.HitboxIndex, info.Force );
+		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.HitPosition, info.HitboxIndex, info.Force );
 
 		// Let gamerules know about this.
 		GameRules.Current.PlayerHurt( this, info );
@@ -66,8 +66,10 @@ partial class Source1Player
 		if ( !sv_debug_take_damage )
 			return;
 
-		DebugOverlay.Sphere( info.Position, 4, Color.Yellow, 3 );
-		DebugOverlay.Sphere( info.Inflictor.WorldSpaceBounds.Center, 4, Color.Red, 3 );
+		DebugOverlay.Sphere( info.HitPosition, 4, Color.Red, 3 );
+		DebugOverlay.Sphere( info.OriginPosition, 4, Color.Green, 3 );
+		DebugOverlay.Sphere( info.ReportPosition, 6, Color.Magenta, 3 );
+		DebugOverlay.Line( info.OriginPosition, info.HitPosition, Color.Yellow, 3 );
 	}
 
 	[ClientRpc]
@@ -154,7 +156,7 @@ partial class Source1Player
 		var dir = inflictorPos - WorldSpaceBounds.Center;
 		dir = dir.Normal;
 
-		DispatchBloodRPC( info.Position, -dir );
+		DispatchBloodRPC( info.HitPosition, -dir );
 	}
 
 	[ClientRpc]

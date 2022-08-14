@@ -8,14 +8,42 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Net] public DamageFlags DamageFlags { get; set; } 
 	[Net] public TimeSince TimeSinceCreated { get; set; }
 
-	public Vector3 InitialVelocity { get; set; }
-	public Vector3 InitialPosition { get; set; }
-
-	public Entity OriginalLauncher { get; set; }
+	/// <summary>
+	/// The entity that used a launcher to fire this projectile.
+	/// </summary>
+	public Entity Attacker { get; set; }
+	/// <summary>
+	/// The weapon that launched this projectile.
+	/// </summary>
 	public Entity Launcher { get; set; }
+	/// <summary>
+	/// The velocity at which this projectile was fired.
+	/// </summary>
+	public Vector3 OriginalVelocity { get; set; }
+	/// <summary>
+	/// The position at which this projectile was originally launched.
+	/// </summary>
+	public Vector3 OriginalPosition { get; set; }
+	/// <summary>
+	/// The launcher that launched this projectile originally.
+	/// </summary>
+	public Entity OriginalLauncher { get; set; }
+	public Entity OriginalAttacker { get; set; }
+	/// <summary>
+	/// How much base damage will this projectile deal.
+	/// </summary>
 	public float Damage { get; set; }
+	/// <summary>
+	/// How much this projectile is affected by gravity (only works in Fly movetype.)
+	/// </summary>
 	public float Gravity { get; set; }
+	/// <summary>
+	/// The entity that will receive 100% of damage upon explosion.
+	/// </summary>
 	public Entity Enemy { get; set; }
+	/// <summary>
+	/// Did we touch world geometry?
+	/// </summary>
 	public bool Touched { get; set; }
 
 	public float? AutoDestroyTime { get; set; }
@@ -31,6 +59,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Gravity = 0;
 		MoveType = ProjectileMoveType.None;
 		Predictable = false;
+		DamageFlags = 0;
 
 		EnableDrawing = false;
 		EnableHideInFirstPerson = true;
@@ -62,6 +91,16 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public virtual void OnInitialized( Entity launcher )
 	{
 		EnableDrawing = true;
+
+		// Remember all this.
+		OriginalPosition = Position;
+		OriginalVelocity = Velocity;
+		OriginalLauncher = Launcher;
+		OriginalAttacker = Attacker;
+
+		// Copy base velocity too, some projectile use it
+		BaseVelocity = Velocity;
+
 		UpdateFaceRotation();
 		CreateTrails();
 	}
@@ -70,11 +109,9 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	protected override void OnPhysicsCollision( CollisionEventData eventData )
 	{
-		base.OnPhysicsCollision( eventData );
-
 		if ( !Touched )
 		{
-			var other = eventData.This.Entity;
+			var other = eventData.Other.Entity;
 			if ( other.IsValid() && other.IsWorld ) 
 			{
 				Touched = true;
@@ -125,10 +162,8 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 		if ( Owner.IsValid() ) 
 		{
-			var damage = SetupDamageInfo();
-			ApplyDamageModifyRules( ref damage );
-
-			var radius = new RadiusDamageInfo( damage, Radius, this, AttackerRadius, Enemy );
+			var dmgInfo = CreateDamageInfo();
+			var radius = new RadiusDamageInfo( dmgInfo, Radius, this, AttackerRadius, Enemy );
 			GameRules.Current.ApplyRadiusDamage( radius );
 		}
 
@@ -136,24 +171,33 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		Delete();
 	}
 
-	public virtual DamageFlags DefaultDamageFlags => DamageFlags.Blast;
-
-	public ExtendedDamageInfo SetupDamageInfo()
+	public ExtendedDamageInfo CreateDamageInfo()
 	{
-		var flags = DefaultDamageFlags;
-		flags |= DamageFlags;
+		return CreateDamageInfo( Damage );
+	}
 
-		var info = ExtendedDamageInfo.Create( Damage )
+	public ExtendedDamageInfo CreateDamageInfo( float damage )
+	{
+		return CreateDamageInfo( damage, DamageFlags );
+	}
+
+	public ExtendedDamageInfo CreateDamageInfo( float damage, DamageFlags flags )
+	{
+		// If this projectile has an owner, report their position
+		// otherwise fallback to our own position.
+		var reportPos = Owner.IsValid() 
+			? Owner.EyePosition 
+			: Position;
+
+		return ExtendedDamageInfo.Create( damage )
+			.WithReportPosition( reportPos )
+			.WithOriginPosition( Position )
+			.WithHitPosition( Position )
 			.WithAttacker( Owner )
 			.WithInflictor( this )
 			.WithWeapon( Launcher )
-			.WithPosition( Position )
 			.WithFlag( flags );
-
-		return info;
 	}
-
-	public virtual void ApplyDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
 	public virtual void Explode( Entity other, TraceResult trace )
 	{
