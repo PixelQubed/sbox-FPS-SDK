@@ -13,6 +13,7 @@ partial class Source1Weapon
 
 	/// <summary>
 	/// This simulates weapon's primary attack.
+	/// Override this if need to change the overall logic of how attacks are calculated.
 	/// </summary>
 	public virtual void SimulatePrimaryAttack()
 	{
@@ -25,6 +26,9 @@ partial class Source1Weapon
 		PrimaryAttack();
 	}
 
+	/// <summary>
+	/// Can we do a primary attack right now?
+	/// </summary>
 	public virtual bool CanPrimaryAttack()
 	{
 		if ( !CanAttack() )
@@ -33,23 +37,44 @@ partial class Source1Weapon
 		return NextAttackTime <= Time.Now;
 	}
 
+	/// <summary>
+	/// This is what happens when succefully initiate a primary attack.
+	/// This play the required animations, sounds, consumes ammo and calculates next attack time.
+	/// If you wish to change what the attack actually does (i.e. Fires a Rocket instead of a Bullet), override Attack().
+	/// </summary>
 	public virtual void PrimaryAttack()
 	{
 		// Handle dry fire, if we don't have any ammo.
 		if ( !HasEnoughAmmoToAttack() )
 		{
+			// Play some dry fire effects.
 			OnDryFire();
 			return;
 		}
 
+		// Note when we last fired.
 		LastAttackTime = Time.Now;
-		PlayAttackSound();
-		SendAnimParametersOnAttack();
-		ConsumeAmmoOnAttack();
-		StopReload();
-		CalculateNextAttackTime();
 
-		Fire();
+		// GAMEPLAY
+		// Calculate when we need to attack next.
+		CalculateNextAttackTime();
+		// Consume ammo for this attack.
+		ConsumeAmmoOnAttack();
+		// Stop reloading if we are firing already.
+		StopReload();
+		// Adds recoil after shot.
+		DoRecoil();
+
+		// VISUALS
+		// Play the appropriate attack animations.
+		SendAnimParametersOnAttack();
+		// Creates a muzzle particle effect.
+		CreateMuzzleFlash();
+		// Play the appropriate sound.
+		PlayAttackSound();
+
+		// DO THE SHOOTY THING!
+		Attack();
 	}
 
 	public virtual bool HasEnoughAmmoToAttack()
@@ -64,6 +89,9 @@ partial class Source1Weapon
 		return true;
 	}
 
+	/// <summary>
+	/// Consume ammo for this attack.
+	/// </summary>
 	public virtual void ConsumeAmmoOnAttack()
 	{
 		if ( !NeedsAmmo() )
@@ -76,20 +104,18 @@ partial class Source1Weapon
 		TakeAmmo( GetAmmoPerShot() );
 	}
 
-	public virtual void Fire()
+	/// <summary>
+	/// This summons all the "attack" projectiles that this weapon executes.
+	/// </summary>
+	public virtual void Attack()
 	{
 		for ( var i = 0; i < GetBulletsPerShot(); i++ )
 		{
 			FireBullet( GetDamage(), i );
 		}
-
-		CreateMuzzleFlash();
-		DoRecoil();
-
-		CalculateNextAttackTime( GetAttackTime() );
 	}
 
-	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
-
 	public virtual void PlayAttackSound() { }
+
+	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
 }
