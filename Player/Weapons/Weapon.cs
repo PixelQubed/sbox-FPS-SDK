@@ -2,14 +2,15 @@
 
 namespace Amper.Source1;
 
-public partial class Source1Weapon : AnimatedEntity
+public partial class Source1Weapon : AnimatedEntity, ITeam
 {
-	[Net] public Client OriginalOwner { get; set; }
 	public Source1Player Player => Owner as Source1Player;
 
 	[Net, Predicted] public bool IsDeployed { get; set; }
+	[Net] public Client OriginalOwner { get; set; }
 	[Net] public int ViewModelIndex { get; set; }
 	[Net] public int SlotNumber { get; set; }
+	[Net] public int TeamNumber { get; set; }
 
 	public ViewModel ViewModel { get; set; }
 
@@ -67,6 +68,7 @@ public partial class Source1Weapon : AnimatedEntity
 		SetParent( owner, true );
 		Owner = owner;
 		PhysicsEnabled = false;
+		TeamNumber = owner.TeamNumber;
 
 		EnableAllCollisions = false;
 		EnableDrawing = false;

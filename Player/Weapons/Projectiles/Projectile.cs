@@ -8,13 +8,15 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Net] public TimeSince TimeSinceCreated { get; set; }
 
 	public Vector3 InitialVelocity { get; set; }
-	public Vector3 StartPosition { get; set; }
+	public Vector3 InitialPosition { get; set; }
+
 	public Entity OriginalLauncher { get; set; }
 	public Entity Launcher { get; set; }
 	public float Damage { get; set; }
 	public float Gravity { get; set; }
 	public Entity Enemy { get; set; }
 	public bool Touched { get; set; }
+	public DamageFlags DamageFlags { get; set; }
 
 	public float? AutoDestroyTime { get; set; }
 	public float? AutoExplodeTime { get; set; }
@@ -22,8 +24,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public override void Spawn()
 	{
 		base.Spawn();
-
-		Tags.Add( CollisionTags.Solid );
 		Tags.Add( CollisionTags.Projectile );
 
 		TimeSinceCreated = 0;
@@ -43,7 +43,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public virtual void Tick()
 	{
 		SimulateCollisions();
-		SimulateMoveType();
+		SimulateMovement();
 		UpdateFaceRotation();
 
 		if ( AutoExplodeTime.HasValue )
