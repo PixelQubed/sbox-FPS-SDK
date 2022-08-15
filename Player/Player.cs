@@ -419,9 +419,13 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	}
 
 	public virtual bool IsAreaTraversable( NavArea area ) => true;
+	public virtual void OnNavAreaChanged( NavArea enteredArea, NavArea leftArea ) { }
 
-	public virtual void OnNavAreaChanged( NavArea enteredArea, NavArea leftArea )
+	[Event.Tick]
+	void TickInternal()
 	{
-
+		Tick();
 	}
+
+	public virtual void Tick() { }
 }

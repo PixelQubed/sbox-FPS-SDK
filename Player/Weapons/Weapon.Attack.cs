@@ -5,6 +5,8 @@ namespace Amper.Source1;
 partial class Source1Weapon
 {
 	[Net, Predicted] public float NextAttackTime { get; set; }
+	[Net, Predicted] public float NextPrimaryAttackTime { get; set; }
+	[Net, Predicted] public float NextSecondaryAttackTime { get; set; }
 	[Net, Predicted] public float LastAttackTime { get; set; }
 
 
@@ -15,20 +17,6 @@ partial class Source1Weapon
 	{
 		SimulatePrimaryAttack();
 		SimulateSecondaryAttack();
-	}
-
-	/// <summary>
-	/// This simulates weapon's secondary attack.
-	/// </summary>
-	public virtual void SimulateSecondaryAttack()
-	{
-		if ( !WishSecondaryAttack() )
-			return;
-
-		if ( !CanSecondaryAttack() )
-			return;
-
-		SecondaryAttack();
 	}
 
 	public virtual bool CanAttack()
@@ -42,6 +30,9 @@ partial class Source1Weapon
 		if ( !Player.CanAttack() )
 			return false;
 
+		if ( NextAttackTime >= Time.Now )
+			return false;
+
 		return true;
 	}
 
@@ -52,7 +43,7 @@ partial class Source1Weapon
 		// Fixes:
 		// https://www.youtube.com/watch?v=7puuYqq_rgw
 
-		var curAttack = NextAttackTime;
+		var curAttack = NextPrimaryAttackTime;
 		var deltaAttack = Time.Now - curAttack;
 
 		if ( deltaAttack < 0 || deltaAttack > Global.TickInterval )
@@ -60,7 +51,7 @@ partial class Source1Weapon
 			curAttack = Time.Now;
 		}
 
-		NextAttackTime = curAttack + attackTime;
+		NextPrimaryAttackTime = NextSecondaryAttackTime = curAttack + attackTime;
 		return curAttack;
 	}
 
@@ -81,14 +72,6 @@ partial class Source1Weapon
 	/// Otherwise return false.
 	/// </summary>
 	public virtual bool PlayEmptySound() => false;
-
-	public virtual void SecondaryAttack() { }
-	public virtual bool WishSecondaryAttack() => Input.Down( InputButton.SecondaryAttack );
-
-	public virtual bool CanSecondaryAttack()
-	{
-		return CanPrimaryAttack();
-	}
 
 	public virtual void SendAnimParametersOnAttack()
 	{
@@ -143,4 +126,46 @@ partial class Source1Weapon
 		var spreadVec = Vector2.Random * spread;
 		return GetAttackDirectionWithSpread( spreadVec );
 	}
+
+	public virtual bool HasEnoughAmmoToAttack()
+	{
+		if ( !NeedsAmmo() )
+			return true;
+
+		var ammoPerAttack = GetAmmoPerShot();
+		if ( Clip < ammoPerAttack )
+			return false;
+
+		return true;
+	}
+
+	/// <summary>
+	/// Consume ammo for this attack.
+	/// </summary>
+	public virtual void ConsumeAmmoOnAttack()
+	{
+		if ( !NeedsAmmo() )
+			return;
+
+		if ( sv_infinite_ammo )
+			return;
+
+		// Drain ammo.
+		TakeAmmo( GetAmmoPerShot() );
+	}
+
+	/// <summary>
+	/// This summons all the "attack" projectiles that this weapon executes.
+	/// </summary>
+	public virtual void Attack()
+	{
+		for ( var i = 0; i < GetBulletsPerShot(); i++ )
+		{
+			FireBullet( GetDamage(), i );
+		}
+	}
+
+	public virtual void PlayAttackSound() { }
+
+	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
 }

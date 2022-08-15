@@ -34,7 +34,10 @@ partial class Source1Weapon
 		if ( !CanAttack() )
 			return false;
 
-		return NextAttackTime <= Time.Now;
+		if ( NextPrimaryAttackTime >= Time.Now )
+			return false;
+
+		return true;
 	}
 
 	/// <summary>
@@ -76,46 +79,4 @@ partial class Source1Weapon
 		// DO THE SHOOTY THING!
 		Attack();
 	}
-
-	public virtual bool HasEnoughAmmoToAttack()
-	{
-		if ( !NeedsAmmo() )
-			return true;
-
-		var ammoPerAttack = GetAmmoPerShot();
-		if ( Clip < ammoPerAttack )
-			return false;
-
-		return true;
-	}
-
-	/// <summary>
-	/// Consume ammo for this attack.
-	/// </summary>
-	public virtual void ConsumeAmmoOnAttack()
-	{
-		if ( !NeedsAmmo() )
-			return;
-
-		if ( sv_infinite_ammo )
-			return;
-
-		// Drain ammo.
-		TakeAmmo( GetAmmoPerShot() );
-	}
-
-	/// <summary>
-	/// This summons all the "attack" projectiles that this weapon executes.
-	/// </summary>
-	public virtual void Attack()
-	{
-		for ( var i = 0; i < GetBulletsPerShot(); i++ )
-		{
-			FireBullet( GetDamage(), i );
-		}
-	}
-
-	public virtual void PlayAttackSound() { }
-
-	[ConVar.Replicated] public static bool sv_infinite_ammo { get; set; }
 }

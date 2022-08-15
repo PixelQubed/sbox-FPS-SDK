@@ -95,8 +95,12 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 		if ( !IsValid )
 			return;
 
+		var deployTime = GetDeployTime();
+		NextAttackTime = Time.Now + deployTime;
+		NextPrimaryAttackTime = Time.Now + deployTime;
+		NextSecondaryAttackTime = Time.Now + deployTime;
+
 		EnableDrawing = true;
-		NextAttackTime = Time.Now + GetDeployTime();
 		IsDeployed = true;
 
 		SetupViewModel();
