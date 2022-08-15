@@ -48,14 +48,13 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	}
 
 	/// <summary>
-	/// This runs code clientside for the simulated client and on the server.
+	/// Code runs here on the SERVER and SIMULATED CLIENT ONLY. Use this for code that
+	/// relies on client's input.
 	/// </summary>
 	public override void Simulate( Client cl )
 	{
 		if ( IsObserver )
-		{
 			SimulateObserver();
-		}
 
 		//
 		// Movements
@@ -70,7 +69,15 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 		SimulateHover();
 		SimulateUse();
+	}
 
+	/// <summary>
+	/// Code runs here on BOTH CLIENT AND SERVER for ALL CLIENTS. You want to put here stuff that 
+	/// doesn't rely on client's input.
+	/// </summary>
+	[Event.Tick]
+	public virtual void Tick() 
+	{
 		UpdateLastKnownArea();
 		DrawDebugPredictionHistory();
 	}
@@ -423,15 +430,4 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 	public virtual bool IsAreaTraversable( NavArea area ) => true;
 	public virtual void OnNavAreaChanged( NavArea enteredArea, NavArea leftArea ) { }
-
-	/// <summary>
-	/// This allows to run code on both client and server on everyone's end.
-	/// </summary>
-	[Event.Tick]
-	public virtual void Tick() { }
-	/// <summary>
-	/// This allows to run code on every frame on everyone's end.
-	/// </summary>
-	[Event.Frame]
-	public virtual void Frame() { }
 }
