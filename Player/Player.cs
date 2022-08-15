@@ -47,6 +47,9 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		InterpolateFrame();
 	}
 
+	/// <summary>
+	/// This runs code clientside for the simulated client and on the server.
+	/// </summary>
 	public override void Simulate( Client cl )
 	{
 		if ( IsObserver )
@@ -421,11 +424,14 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	public virtual bool IsAreaTraversable( NavArea area ) => true;
 	public virtual void OnNavAreaChanged( NavArea enteredArea, NavArea leftArea ) { }
 
+	/// <summary>
+	/// This allows to run code on both client and server on everyone's end.
+	/// </summary>
 	[Event.Tick]
-	void TickInternal()
-	{
-		Tick();
-	}
-
 	public virtual void Tick() { }
+	/// <summary>
+	/// This allows to run code on every frame on everyone's end.
+	/// </summary>
+	[Event.Frame]
+	public virtual void Frame() { }
 }
