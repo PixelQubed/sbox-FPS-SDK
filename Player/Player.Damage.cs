@@ -115,6 +115,16 @@ partial class Source1Player
 	public virtual void ApplyOnPlayerDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
 	public virtual void ApplyDamageViewPunch( ExtendedDamageInfo info ) { }
+	public virtual bool ShouldPreventDeath( ExtendedDamageInfo info )
+	{
+		return IsInBuddhaMode;
+	}
+
+
+	public virtual bool ShouldDamageApplyPush( ExtendedDamageInfo info ) => true;
+	public virtual bool ShouldDamageApplyViewPunch( ExtendedDamageInfo info ) => true;
+	public virtual bool ShouldFlinchFromDamage( ExtendedDamageInfo info ) => true;
+	public virtual bool ShouldBleedFromDamage( ExtendedDamageInfo info ) => true;
 
 	/// <summary>
 	/// How will the player react to taking damage? By default this applies abs velocity to the player,
@@ -123,17 +133,19 @@ partial class Source1Player
 	public virtual void OnTakeDamageReaction( ExtendedDamageInfo info )
 	{
 		// Apply velocity to the player from the damage.
-		ApplyPushFromDamage( info );
+		if ( ShouldDamageApplyPush( info ) ) 
+			ApplyPushFromDamage( info );
 
 		// Apply view kick.
-		ApplyDamageViewPunch( info );
+		if ( ShouldDamageApplyViewPunch( info ) ) 
+			ApplyDamageViewPunch( info );
 
-		PlayFlinchFromDamage( info );
+		if ( ShouldFlinchFromDamage( info ) ) 
+			PlayFlinchFromDamage( info );
 
-		SendBloodDispatchRPC( info );
+		if ( ShouldBleedFromDamage( info ) )
+			SendBloodDispatchRPC( info );
 	}
-
-	public virtual void DispatchBloodEffects( Vector3 origin, Vector3 normal ) { }
 
 	public virtual void PlayFlinchFromDamage( ExtendedDamageInfo info )
 	{
@@ -141,10 +153,10 @@ partial class Source1Player
 		SetAnimParameter( "b_flinch", true );
 	}
 
-	public virtual bool ShouldPreventDeath( ExtendedDamageInfo info )
-	{
-		return IsInBuddhaMode;
-	}
+	public virtual void DispatchBloodEffects( Vector3 origin, Vector3 normal ) { }
+
+
+
 
 	private void SendBloodDispatchRPC( ExtendedDamageInfo info )
 	{
