@@ -78,7 +78,7 @@ public class ParticleContainer
 		for ( var i = ParticleEffects.Count - 1; i >= 0; i-- )
 		{
 			var particle = ParticleEffects[i];
-			Delete( particle, immediate );
+			Destroy( particle, immediate );
 		}
 	}
 
@@ -129,7 +129,7 @@ public class ParticleContainer
 		return containedParticle;
 	}
 
-	public void Delete( ContainedParticle particle, bool immediate = false )
+	public void Destroy( ContainedParticle particle, bool immediate = false )
 	{
 		if ( particle == null )
 			return;
@@ -164,8 +164,8 @@ public class ContainedParticle
 		EffectEntity = effectEntity;
 	}
 
-	public void Delete( bool immediate = false )
+	public void Destroy( bool immediate = false )
 	{
-		Container?.Delete( this, immediate );
+		Container?.Destroy( this, immediate );
 	}
 }

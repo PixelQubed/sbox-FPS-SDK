@@ -8,7 +8,7 @@ partial class Source1Player : IHasParticleContainer
 {
 	// IHasParticleContainer
 	public ParticleContainer ParticleContainer { get; set; }
-	public Entity EffectEntity => IsFirstPersonMode ? this : All.OfType<Source1Player>().Where( x => x != this ).FirstOrDefault();
+	public Entity EffectEntity => this;
 
 	[Net, Predicted] public Vector3 ViewPunchAngle { get;  set; }
 	[Net, Predicted] public Vector3 ViewPunchAngleVelocity { get;  set; }
