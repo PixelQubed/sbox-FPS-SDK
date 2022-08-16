@@ -23,6 +23,9 @@ partial class Source1Weapon
 
 	public virtual int TakeAmmo( int amount )
 	{
+		if ( sv_infinite_ammo )
+			return amount;
+
 		var taken = Math.Min( amount, Clip );
 		Clip -= taken;
 		return taken;

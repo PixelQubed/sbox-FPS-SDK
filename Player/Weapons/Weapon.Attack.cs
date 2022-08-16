@@ -149,9 +149,6 @@ partial class Source1Weapon
 		if ( !NeedsAmmo() )
 			return;
 
-		if ( sv_infinite_ammo )
-			return;
-
 		// Drain ammo.
 		TakeAmmo( GetAmmoPerShot() );
 	}
