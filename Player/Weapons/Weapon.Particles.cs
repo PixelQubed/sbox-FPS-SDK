@@ -4,8 +4,15 @@ using Sandbox;
 
 namespace Amper.Source1;
 
-partial class Source1Weapon
+partial class Source1Weapon : IHasParticleContainer
 {
+	public ParticleContainer ParticleContainer { get; set; }
+	Entity IHasParticleContainer.EffectEntity => GetEffectEntity();
+
+	//
+	// OLD SYSTEM
+	//
+
 	struct PersistentParticleData
 	{
 		public Entity Entity;

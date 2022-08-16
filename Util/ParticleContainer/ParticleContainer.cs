@@ -63,9 +63,19 @@ public class ParticleContainer
 			// Check if effect should move to other effect entity.
 			if ( particle.EffectEntity != effectEntity )
 			{
-				particle.EffectEntity = effectEntity;
-				particle.Particle.SetEntity( 0, effectEntity, particle.Follow );
+				particle.EffectEntity = effectEntity;;
+
+				if ( !string.IsNullOrEmpty( particle.Attachment ) )
+				{
+					particle.Particle.SetEntityAttachment( 0, effectEntity, particle.Attachment, particle.Follow );
+				}
+				else
+				{
+					particle.Particle.SetEntity( 0, effectEntity, particle.Follow );
+				}
 			}
+
+			// TODO: Check if particle effect was disposed and remove it from here.
 		}
 	}
 
