@@ -215,7 +215,7 @@ public class EntityParticleManager
 
 	[ConVar.Client] public static bool cl_debug_contained_particles { get; set; }
 
-	public EntityParticle Create( string effect, string attachment, bool follow = true, float lifeTime = -1 )
+	public EntityParticle Create( string effect, string attachment, Vector3 offset, bool follow = true, float lifeTime = -1 )
 	{
 		Assert.NotNull( EffectEntity );
 
@@ -227,13 +227,16 @@ public class EntityParticleManager
 		// Create a container wrapper for this system.
 		var entry = new EntityParticle( this, pcf, effect, lifeTime );
 		// Attach the particle to the effect entity as first control point.
-		SetControlPoint( entry, 0, EffectEntity, attachment, follow );
+		SetControlPoint( entry, 0, EffectEntity, offset, attachment, follow );
 
 		// Add particle to the registry.
 		ParticleEffects.Add( entry );
 		return entry;
 	}
-	public EntityParticle Create( string effect, bool follow = true, float lifeTime = -1 ) => Create( effect, "", follow, lifeTime );
+
+	public EntityParticle Create( string effect, Vector3 offset, bool follow = true, float lifeTime = -1 ) => Create( effect, "", offset, follow, lifeTime );
+	public EntityParticle Create( string effect, bool follow = true, float lifeTime = -1 ) => Create( effect, "", 0, follow, lifeTime );
+	public EntityParticle Create( string effect, string attachment, bool follow = true, float lifeTime = -1 ) => Create( effect, attachment, 0, follow, lifeTime );
 
 	public void Destroy( EntityParticle particle, bool immediate = false )
 	{
@@ -244,7 +247,7 @@ public class EntityParticleManager
 		ParticleEffects.Remove( particle );
 	}
 
-	public void SetControlPoint( EntityParticle particle, int point, Entity entity, string attachment, bool follow = true )
+	public void SetControlPoint( EntityParticle particle, int point, Entity entity, Vector3 offset, string attachment, bool follow = true )
 	{
 		if ( particle == null )
 			return;
@@ -257,13 +260,21 @@ public class EntityParticleManager
 			Entity = entity,
 			Attachment = attachment,
 			Follow = follow,
+			Offset = offset,
 			UseEffectEntity = entity == EffectEntity
 		};
 
-		if ( string.IsNullOrEmpty( attachment ) )
-			particle.Particle.SetEntity( point, entity, follow );
+		if ( entity.IsValid() ) 
+		{
+			if ( string.IsNullOrEmpty( attachment ) )
+				particle.Particle.SetEntity( point, entity, offset, follow );
+			else
+				particle.Particle.SetEntityAttachment( point, entity, attachment, offset, follow ? ParticleAttachment.AttachmentFollow : ParticleAttachment.Attachment );
+		}
 		else
-			particle.Particle.SetEntityAttachment( point, entity, attachment, follow );
+		{
+			particle.Particle.SetPosition( point, offset );
+		}
 	}
 
 	public void RegisterContainer( ParticleContainer container )
@@ -312,12 +323,17 @@ public class EntityParticle
 
 	public void SetControlPoint( int point, Entity entity, string attachment, bool follow = true )
 	{
-		Container?.SetControlPoint( this, point, entity, attachment, follow );
+		Container?.SetControlPoint( this, point, entity, 0, attachment, follow );
 	}
 
 	public void SetControlPoint( int point, Entity entity, bool follow = true )
 	{
-		Container?.SetControlPoint( this, point, entity, "", follow );
+		Container?.SetControlPoint( this, point, entity, 0, "", follow );
+	}
+
+	public void SetControlPoint( int point, Vector3 position, bool follow = true )
+	{
+		Container?.SetControlPoint( this, point, null, position, "", follow );
 	}
 
 	public ControlPoint? GetControlPoint( int point )
@@ -342,6 +358,7 @@ public class EntityParticle
 		public Entity Entity;
 		public string Attachment;
 		public bool Follow;
+		public Vector3 Offset;
 		public bool UseEffectEntity;
 	}
 }
