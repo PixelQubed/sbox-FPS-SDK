@@ -74,6 +74,9 @@ partial class Projectile
 			.WithoutTags( CollisionTags.Projectile )
 			.WithoutTags( CollisionTags.Weapon )
 
+			// Doesn't collide with debris
+			.WithoutTags( CollisionTags.Debris )
+
 			.Ignore( this )
 			.Ignore( Owner );
 
