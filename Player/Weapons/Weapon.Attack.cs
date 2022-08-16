@@ -51,7 +51,7 @@ partial class Source1Weapon
 			curAttack = Time.Now;
 		}
 
-		NextPrimaryAttackTime = NextSecondaryAttackTime = curAttack + attackTime;
+		NextPrimaryAttackTime = curAttack + attackTime;
 		return curAttack;
 	}
 
@@ -127,16 +127,18 @@ partial class Source1Weapon
 		return GetAttackDirectionWithSpread( spreadVec );
 	}
 
-	public virtual bool HasEnoughAmmoToAttack()
+	public virtual bool HasEnoughAmmo( int howMuch )
 	{
 		if ( !NeedsAmmo() )
 			return true;
 
-		var ammoPerAttack = GetAmmoPerShot();
-		if ( Clip < ammoPerAttack )
-			return false;
+		return Clip >= howMuch;
+	}
 
-		return true;
+	public virtual bool HasEnoughAmmoToAttack()
+	{
+		var ammoPerAttack = GetAmmoPerShot();
+		return HasEnoughAmmo( ammoPerAttack );
 	}
 
 	/// <summary>
