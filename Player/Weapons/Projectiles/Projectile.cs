@@ -9,10 +9,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	[Net] public TimeSince TimeSinceCreated { get; set; }
 
 	/// <summary>
-	/// The entity that used a launcher to fire this projectile.
-	/// </summary>
-	public Entity Attacker { get; set; }
-	/// <summary>
 	/// The weapon that launched this projectile.
 	/// </summary>
 	public Entity Launcher { get; set; }
@@ -28,7 +24,10 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	/// The launcher that launched this projectile originally.
 	/// </summary>
 	public Entity OriginalLauncher { get; set; }
-	public Entity OriginalAttacker { get; set; }
+	/// <summary>
+	/// Entity that owned this projectile originally.
+	/// </summary>
+	public Entity OriginalOwner { get; set; }
 	/// <summary>
 	/// How much base damage will this projectile deal.
 	/// </summary>
@@ -96,7 +95,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		OriginalPosition = Position;
 		OriginalVelocity = Velocity;
 		OriginalLauncher = Launcher;
-		OriginalAttacker = Attacker;
+		OriginalOwner = Owner;
 
 		// Copy base velocity too, some projectile use it
 		BaseVelocity = Velocity;

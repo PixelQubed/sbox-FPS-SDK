@@ -15,7 +15,6 @@ public partial class Source1Weapon
 	public virtual void SetupProjectile( Projectile ent, Vector3 origin, Vector3 velocity, float damage, DamageFlags flags )
 	{
 		ent.TeamNumber = TeamNumber;
-		ent.Attacker = Owner;
 		ent.Owner = Owner;
 		ent.Launcher = this;
 
