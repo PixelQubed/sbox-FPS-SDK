@@ -364,21 +364,28 @@ public class ParticleContainer
 
 	public void StopEffect( bool immediate = false )
 	{
+		if ( ActiveBinding > -1 )
+		{
+			var activeBinding = Bindings[ActiveBinding];
+			activeBinding.OnStopped?.Invoke( Particle );
+			ActiveBinding = -1;
+		}
+
 		Particle?.Destroy( immediate );
 		Particle = null;
 	}
 
-	public void Bind( string effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null )
+	public void Bind( string effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
 	{
-		AddBinding( effectName, null, priority, condition, onCreated );
+		AddBinding( effectName, null, priority, condition, onCreated, onStopped );
 	}
 
-	public void Bind( Func<string> effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null )
+	public void Bind( Func<string> effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
 	{
-		AddBinding( "", effectName, priority, condition, onCreated );
+		AddBinding( "", effectName, priority, condition, onCreated, onStopped );
 	}
 
-	void AddBinding(string effectName, Func<string> nameDelegate, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null )
+	void AddBinding(string effectName, Func<string> nameDelegate, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
 	{
 		if ( string.IsNullOrEmpty( effectName ) )
 			Assert.NotNull( nameDelegate );
@@ -390,7 +397,8 @@ public class ParticleContainer
 			EffectNameDelegate = nameDelegate,
 			Priority = priority,
 			ConditionDelegate = condition,
-			OnCreated = onCreated
+			OnCreated = onCreated,
+			OnStopped = onStopped
 		} );
 
 		Bindings = Bindings.OrderByDescending( x => x.Priority ).ToList();
@@ -412,8 +420,6 @@ public class ParticleContainer
 			// New binding!
 			if ( ActiveBinding != i )
 			{
-				ActiveBinding = i;
-
 				// Calculate effect name.
 				var effectName = binding.EffectName;
 				if ( binding.EffectNameDelegate != null )
@@ -424,6 +430,8 @@ public class ParticleContainer
 
 				if ( binding.OnCreated != null )
 					binding.OnCreated( effect );
+
+				ActiveBinding = i;
 			}
 
 			foundActiveBinding = true;
@@ -431,10 +439,7 @@ public class ParticleContainer
 		}
 
 		if ( ActiveBinding >= 0 && !foundActiveBinding )
-		{
 			StopEffect();
-			ActiveBinding = -1;
-		}
 	}
 
 	public struct Binding
@@ -444,5 +449,6 @@ public class ParticleContainer
 		public Func<string> EffectNameDelegate;
 		public Func<bool> ConditionDelegate;
 		public Action<EntityParticle> OnCreated;
+		public Action<EntityParticle> OnStopped;
 	}
 }
