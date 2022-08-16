@@ -1,6 +1,6 @@
 ﻿using Sandbox;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Amper.Source1;
@@ -102,8 +102,13 @@ public class EntityParticleManager
 		var entity = particle.GetControlPoint( 0 )?.Entity;
 		if ( entity.IsValid() )
 		{
-			if ( !entity.IsFirstPersonMode )
-				canDraw = true;
+			canDraw = true;
+
+			if ( !entity.EnableDrawing )
+				canDraw = false;
+
+			if ( entity.IsFirstPersonMode )
+				canDraw = false;
 		}
 
 		particle.Particle.EnableDrawing = canDraw;
@@ -166,6 +171,11 @@ public class EntityParticleManager
 			var lifeStr = time == -1 ? "∞" : $"{time}s";
 
 			str += $"  - {i}: {particle.Effect} ({lifeStr}) (visible: {particle.Particle.EnableDrawing})\n";
+			for ( var j = 0; j < particle.Points.Count; j++ )
+			{
+				var point = particle.Points[j];
+				str += $"    - {j}: {point.Entity} \"{point.Attachment}\" (use EF: {point.UseEffectEntity})\n";
+			}
 		}
 
 		str += $"- Containers:\n";
@@ -173,9 +183,12 @@ public class EntityParticleManager
 		for ( var i = 0; i < Containers.Count; i++ )
 		{
 			var container = Containers[i];
-			str += $"  - {i}: {container.Attachment}\n";
-
 			var activeBinding = container.ActiveBinding;
+
+			str += $"  - {i}: \"{container.Attachment} (active: {activeBinding})\"\n";
+			str += $"    - Particle: {container.Particle?.Effect ?? "<none>"}\n" +
+				   $"    - Bindings:\n";
+
 			for ( var j = 0; j < container.Bindings.Count; j++ )
 			{
 				var binding = container.Bindings[j];
@@ -192,7 +205,7 @@ public class EntityParticleManager
 					? "[✓]" 
 					: "[ ]";
 
-				str += $"    - {j}: {checkedStr} {effectName} {binding.Priority}\n";
+				str += $"      - {j}: {checkedStr} {effectName} {binding.Priority}\n";
 			}
 		}
 
@@ -236,6 +249,9 @@ public class EntityParticleManager
 		if ( particle == null )
 			return;
 
+		if ( particle.Particle == null )
+			return;
+
 		particle.Points[point] = new EntityParticle.ControlPoint
 		{
 			Entity = entity,
@@ -272,6 +288,7 @@ public class EntityParticle
 	public string Effect;
 	public Dictionary<int, ControlPoint> Points = new();
 	public float? ExpirationTime;
+	public float LifeTime;
 	public int ControlPointCount => Points.Count;
 
 	[ConVar.Client] public static float cl_particle_manager_auto_dispose_time { get; set; } = 10;
@@ -284,6 +301,7 @@ public class EntityParticle
 		Container = container;
 		Particle = particle;
 		Effect = effect;
+		LifeTime = lifeTime;
 		ExpirationTime = Time.Now + lifeTime;
 	}
 
@@ -353,6 +371,9 @@ public class ParticleContainer
 	{
 		StopEffect( stopImmediate );
 		Particle = particle;
+
+		if ( TryGetBindingByIndex( ActiveBinding, out var binding ) )
+			binding.OnCreated?.Invoke( Particle );
 	}
 
 	public EntityParticle StartEffect( string effectname, bool stopImmediate = true )
@@ -364,15 +385,27 @@ public class ParticleContainer
 
 	public void StopEffect( bool immediate = false )
 	{
-		if ( ActiveBinding > -1 )
-		{
-			var activeBinding = Bindings[ActiveBinding];
-			activeBinding.OnStopped?.Invoke( Particle );
-			ActiveBinding = -1;
-		}
+		if ( TryGetBindingByIndex( ActiveBinding, out var binding ) )
+			binding.OnStopped?.Invoke( Particle );
 
 		Particle?.Destroy( immediate );
 		Particle = null;
+	}
+
+	public void RestartEffect( bool stopImmediate = false )
+	{
+		// Nothing to restart.
+		if ( Particle == null )
+			return;
+
+		var effectName = Particle.Effect;
+		var isPersistent = Particle.ExpirationTime == null;
+
+		var particle = StartEffect( effectName, stopImmediate );
+
+		if ( isPersistent )
+			particle.MakePersistent();
+
 	}
 
 	public void Bind( string effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
@@ -425,13 +458,11 @@ public class ParticleContainer
 				if ( binding.EffectNameDelegate != null )
 					effectName = binding.EffectNameDelegate.Invoke();
 
+				ActiveBinding = i;
+
 				var effect = StartEffect( effectName );
 				effect.MakePersistent();
 
-				if ( binding.OnCreated != null )
-					binding.OnCreated( effect );
-
-				ActiveBinding = i;
 			}
 
 			foundActiveBinding = true;
@@ -439,7 +470,20 @@ public class ParticleContainer
 		}
 
 		if ( ActiveBinding >= 0 && !foundActiveBinding )
+		{
 			StopEffect();
+			ActiveBinding = -1;
+		}
+	}
+
+	public bool TryGetBindingByIndex( int index, out Binding binding )
+	{
+		binding = default;
+		if ( index < 0 || index >= Bindings.Count )
+			return false;
+
+		binding = Bindings[index];
+		return true;
 	}
 
 	public struct Binding
