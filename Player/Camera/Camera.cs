@@ -66,6 +66,12 @@ partial class Source1Camera : CameraMode
 		{
 			Viewer = null;
 
+			var angles = (QAngle)Rotation;
+			angles.x += cl_thirdperson_pitch;
+			angles.y += cl_thirdperson_yaw;
+			angles.z += cl_thirdperson_roll;
+			Rotation = angles;
+
 			var tpPos = Position - Rotation.Forward * cl_thirdperson_distance;
 			var tr = Trace.Ray( Position, tpPos )
 				.Size( 5 )
@@ -75,6 +81,10 @@ partial class Source1Camera : CameraMode
 			Position = tr.EndPosition;
 		}
 	}
+
+	[ConVar.Client] public static float cl_thirdperson_pitch { get; set; } = 0;
+	[ConVar.Client] public static float cl_thirdperson_yaw { get; set; } = 0;
+	[ConVar.Client] public static float cl_thirdperson_roll { get; set; } = 0;
 
 	[ConVar.Client] public static bool cl_thirdperson { get; set; }
 	[ConVar.Client] public static float cl_thirdperson_distance { get; set; } = 120;

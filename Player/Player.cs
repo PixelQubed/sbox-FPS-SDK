@@ -9,6 +9,22 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 {
 	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
 
+	public override void Spawn()
+	{
+		base.Spawn();
+
+		Animator = new PlayerAnimator();
+		CameraMode = new Source1Camera();
+
+		TeamNumber = 0;
+		LastObserverMode = ObserverMode.Chase;
+	}
+
+	public override void ClientSpawn()
+	{
+		ParticleContainer = new( this );
+	}
+
 	[Net] public PlayerAnimator Animator { get; set; }
 	public CameraMode CameraMode
 	{
@@ -22,17 +38,6 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 	// Client needs to be aware about these things.
 	[Net] public new Entity LastAttacker { get; set; }
 	[Net] public new Entity LastAttackerWeapon { get; set; }
-
-	public override void Spawn()
-	{
-		base.Spawn();	
-
-		Animator = new PlayerAnimator();
-		CameraMode = new Source1Camera();
-
-		TeamNumber = 0;
-		LastObserverMode = ObserverMode.Chase;
-	}
 
 	public virtual float GetMaxHealth() => 100;
 
