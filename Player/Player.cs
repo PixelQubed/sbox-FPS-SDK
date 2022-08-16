@@ -22,7 +22,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 	public override void ClientSpawn()
 	{
-		ParticleContainer = new( this );
+		ParticleManager = new( this );
 	}
 
 	[Net] public PlayerAnimator Animator { get; set; }

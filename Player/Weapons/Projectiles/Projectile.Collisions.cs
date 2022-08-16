@@ -23,10 +23,6 @@ partial class Projectile
 
 	public virtual void SimulateCollisions()
 	{
-		// Don't simulate collisions if we don't move.
-		if ( MoveType == ProjectileMoveType.None )
-			return;
-
 		var vecVelocityPerTick = Velocity * Time.Delta;
 
 		var origin = Position - vecVelocityPerTick;

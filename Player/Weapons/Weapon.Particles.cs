@@ -4,10 +4,10 @@ using Sandbox;
 
 namespace Amper.Source1;
 
-partial class Source1Weapon : IHasParticleContainer
+partial class Source1Weapon : IHasEntityParticleManager
 {
-	public ParticleContainer ParticleContainer { get; set; }
-	Entity IHasParticleContainer.EffectEntity => GetEffectEntity();
+	public EntityParticleManager ParticleManager { get; set; }
+	Entity IHasEntityParticleManager.EffectEntity => GetEffectEntity();
 
 	//
 	// OLD SYSTEM

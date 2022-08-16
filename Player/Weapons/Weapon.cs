@@ -30,7 +30,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 
 	public override void ClientSpawn()
 	{
-		ParticleContainer = new( this );
+		ParticleManager = new( this );
 	}
 
 	public virtual bool CanDeploy( Source1Player player ) => true;
@@ -229,4 +229,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 
 	protected virtual void DebugScreenText( float interval ) { }
 	[ConVar.Replicated] public static bool sv_debug_weapons { get; set; }
+
+	[Event.Tick] public virtual void Tick() { }
+	[Event.Frame] public virtual void Frame() { }
 }

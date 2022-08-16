@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Amper.Source1;
 
-partial class Source1Player : IHasParticleContainer
+partial class Source1Player : IHasEntityParticleManager
 {
 	// IHasParticleContainer
-	public ParticleContainer ParticleContainer { get; set; }
+	public EntityParticleManager ParticleManager { get; set; }
 	public Entity EffectEntity => this;
 
 	[Net, Predicted] public Vector3 ViewPunchAngle { get;  set; }
