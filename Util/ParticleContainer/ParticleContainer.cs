@@ -159,9 +159,9 @@ public class EntityParticleManager
 			var particle = ParticleEffects[i];
 
 			// Display how much time until expiration.
-			var time = -1;
+			var time = -1f;
 			if ( particle.ExpirationTime.HasValue )
-				time = (MathF.Max( particle.ExpirationTime.Value - Time.Now, 0 ) * 100).NearestToInt() / 100;
+				time = (MathF.Max( particle.ExpirationTime.Value - Time.Now, 0 ) * 100).NearestToInt() / 100f;
 
 			var lifeStr = time == -1 ? "∞" : $"{time}s";
 
@@ -208,6 +208,9 @@ public class EntityParticleManager
 
 		// Create the particle system
 		var pcf = Particles.Create( effect );
+		if ( pcf == null )
+			return null;
+
 		// Create a container wrapper for this system.
 		var entry = new EntityParticle( this, pcf, effect, lifeTime );
 		// Attach the particle to the effect entity as first control point.
