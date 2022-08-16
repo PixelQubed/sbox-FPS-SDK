@@ -114,15 +114,15 @@ partial class Source1Player
 	/// </summary>
 	public virtual void ApplyOnPlayerDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
-	public virtual void ApplyDamageViewPunch( ExtendedDamageInfo info ) { }
+	public virtual void ApplyViewPunchFromDamage( ExtendedDamageInfo info ) { }
 	public virtual bool ShouldPreventDeath( ExtendedDamageInfo info )
 	{
 		return IsInBuddhaMode;
 	}
 
 
-	public virtual bool ShouldDamageApplyPush( ExtendedDamageInfo info ) => true;
-	public virtual bool ShouldDamageApplyViewPunch( ExtendedDamageInfo info ) => true;
+	public virtual bool ShouldApplyPushFromDamage( ExtendedDamageInfo info ) => true;
+	public virtual bool ShouldApplyViewPunchFromDamage( ExtendedDamageInfo info ) => true;
 	public virtual bool ShouldFlinchFromDamage( ExtendedDamageInfo info ) => true;
 	public virtual bool ShouldBleedFromDamage( ExtendedDamageInfo info ) => true;
 
@@ -133,12 +133,12 @@ partial class Source1Player
 	public virtual void OnTakeDamageReaction( ExtendedDamageInfo info )
 	{
 		// Apply velocity to the player from the damage.
-		if ( ShouldDamageApplyPush( info ) ) 
+		if ( ShouldApplyPushFromDamage( info ) ) 
 			ApplyPushFromDamage( info );
 
 		// Apply view kick.
-		if ( ShouldDamageApplyViewPunch( info ) ) 
-			ApplyDamageViewPunch( info );
+		if ( ShouldApplyViewPunchFromDamage( info ) ) 
+			ApplyViewPunchFromDamage( info );
 
 		if ( ShouldFlinchFromDamage( info ) ) 
 			PlayFlinchFromDamage( info );
