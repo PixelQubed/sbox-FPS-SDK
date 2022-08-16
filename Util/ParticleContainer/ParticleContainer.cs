@@ -185,7 +185,7 @@ public class EntityParticleManager
 			var container = Containers[i];
 			var activeBinding = container.ActiveBinding;
 
-			str += $"  - {i}: \"{container.Attachment} (active: {activeBinding})\"\n";
+			str += $"  - {i}: \"{container.Attachment}\" (active: {activeBinding})\n";
 			str += $"    - Particle: {container.Particle?.Effect ?? "<none>"}\n" +
 				   $"    - Bindings:\n";
 
@@ -202,7 +202,7 @@ public class EntityParticleManager
 				}
 
 				var checkedStr = activeBinding == j 
-					? "[✓]" 
+					? "[X]" 
 					: "[ ]";
 
 				str += $"      - {j}: {checkedStr} {effectName} {binding.Priority}\n";

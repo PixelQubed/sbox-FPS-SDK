@@ -201,8 +201,6 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 			OnHolster( Player );
 
 		ClearViewModel();
-		DisposeAllPesistentParticles( true );
-
 		base.OnDestroy();
 	}
 
