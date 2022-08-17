@@ -197,7 +197,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 
 	protected override void OnDestroy()
 	{
-		if ( Player.IsValid() && Player.ActiveWeapon == this ) 
+		if ( Player.IsValid() && Player.ActiveWeapon == this )
 			OnHolster( Player );
 
 		ClearViewModel();
@@ -217,7 +217,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 	public virtual void OnViewModelAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData ) { }
 	public virtual void OnPlayerAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData ) { }
 
-	public virtual void RenderHud( Vector2 screenSize ) 
+	public virtual void RenderHud( Vector2 screenSize )
 	{
 		var center = screenSize * .5f;
 		DrawCrosshair( screenSize, center );
@@ -228,6 +228,17 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 	protected virtual void DebugScreenText( float interval ) { }
 	[ConVar.Replicated] public static bool sv_debug_weapons { get; set; }
 
-	[Event.Tick] public virtual void Tick() { }
+	[Event.Tick] 
+	void TickInternal() 
+	{ 
+		Tick(); 
+		if ( IsServer ) ServerTick();
+		if ( IsClient ) ClientTick(); 
+	}
+
+	public virtual void Tick() { }
+	public virtual void ClientTick() { }
+	public virtual void ServerTick() { }
+
 	[Event.Frame] public virtual void Frame() { }
 }
