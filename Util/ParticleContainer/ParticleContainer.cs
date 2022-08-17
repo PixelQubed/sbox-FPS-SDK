@@ -99,16 +99,29 @@ public class EntityParticleManager
 		// to an entity that is currently not being view through first person.
 		var canDraw = false;
 
-		var entity = particle.GetControlPoint( 0 )?.Entity;
-		if ( entity.IsValid() )
+		var cpNull = particle.GetControlPoint( 0 );
+		if ( cpNull.HasValue )
 		{
 			canDraw = true;
+			var point = cpNull.Value;
 
-			if ( !entity.EnableDrawing )
-				canDraw = false;
+			// If we use an effect entity, make 
+			// sure our main entity is visible too.
+			if ( point.UseEffectEntity )
+			{
+				if ( !Entity.EnableDrawing )
+					canDraw = false;
+			}
 
-			if ( entity.IsFirstPersonMode )
-				canDraw = false;
+			var entity = point.Entity;
+			if ( entity.IsValid() )
+			{
+				if ( !entity.EnableDrawing )
+					canDraw = false;
+
+				if ( entity.IsFirstPersonMode )
+					canDraw = false;
+			}
 		}
 
 		particle.Particle.EnableDrawing = canDraw;
@@ -371,6 +384,7 @@ public class ParticleContainer
 	public bool Follow;
 	public List<Binding> Bindings = new();
 	public int ActiveBinding = -1;
+	public bool IsActive => ActiveBinding >= 0;
 
 	public ParticleContainer( IHasEntityParticleManager outer, string attachment = "", bool follow = true )
 	{
