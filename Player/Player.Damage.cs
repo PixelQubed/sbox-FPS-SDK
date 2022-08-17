@@ -35,10 +35,6 @@ partial class Source1Player
 		LastAttackerWeapon = info.Weapon;
 		TimeSinceTakeDamage = 0;
 
-		//
-		// Actually deal damage!
-		//
-
 		Health -= info.Damage;
 
 		// We might want to avoid dying, do so.

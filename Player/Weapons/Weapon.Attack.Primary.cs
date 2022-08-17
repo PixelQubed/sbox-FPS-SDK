@@ -53,25 +53,24 @@ partial class Source1Weapon
 		// Note when we last fired.
 		LastAttackTime = Time.Now;
 
-		// GAMEPLAY
 		// Calculate when we need to attack next.
 		CalculateNextAttackTime();
 		// Consume ammo for this attack.
 		ConsumeAmmoOnAttack();
 		// Stop reloading if we are firing already.
 		StopReload();
+
+
+		Attack();
+
+
 		// Adds recoil after shot.
 		DoRecoil();
-
-		// VISUALS
 		// Play the appropriate attack animations.
 		SendAnimParametersOnAttack();
 		// Creates a muzzle particle effect.
 		CreateMuzzleFlash();
 		// Play the appropriate sound.
 		PlayAttackSound();
-
-		// DO THE SHOOTY THING!
-		Attack();
 	}
 }
