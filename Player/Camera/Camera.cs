@@ -176,7 +176,6 @@ partial class Source1Camera : CameraMode
 		if ( !Host.IsClient )
 			return;
 
-		var rumbleAngle = 0f;
 		Vector3 shakeAppliedOffset = 0;
 
 		for ( var i = ScreenShake.All.Count - 1; i >= 0; i-- )
