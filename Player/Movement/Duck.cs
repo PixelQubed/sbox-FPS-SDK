@@ -20,8 +20,8 @@ partial class GameMovement
 		return speed;
 	}
 
-
 	public virtual bool WishDuck() => Input.Down( InputButton.Duck );
+
 	public virtual void SimulateDucking()
 	{
 		// Reduce duck-spam penalty over time

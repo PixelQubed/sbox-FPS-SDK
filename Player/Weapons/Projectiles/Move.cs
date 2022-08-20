@@ -45,13 +45,11 @@ partial class Projectile
 	public void FlyMoveSimulate()
 	{
 		Velocity += Map.Physics.Gravity * Gravity * Time.Delta;
+		Position += Velocity * Time.Delta;
 
-		var mover = new MoveHelper( Position, Velocity );
-		mover.Trace = SetupMoveHelperTrace();
-		mover.TryMove( Time.Delta );
-
-		Position = mover.Position;
-		Velocity = mover.Velocity;
+		var angles = Rotation.Angles();
+		angles += AngularVelocity * Time.Delta;
+		Rotation = angles.ToRotation();
 	}
 
 	public virtual Trace SetupMoveHelperTrace()

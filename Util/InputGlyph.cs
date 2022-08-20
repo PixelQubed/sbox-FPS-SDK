@@ -12,10 +12,10 @@ public class InputGlyph : Image
 
 	public Texture GetGlyphTexture()
 	{ 
-		// this key is unbound.
 		if ( string.IsNullOrEmpty( Input.GetButtonOrigin( Button ) ) )
 			return UnboundTexture;
 
+		// this key is unbound.
 		var style = GlyphStyle.Knockout;
 
 		// texture doesnt exist, or can't be generated
@@ -37,6 +37,8 @@ public class InputGlyph : Image
 		var texture = GetGlyphTexture();
 
 		Texture = texture;
+		if ( texture == null )
+			return;
 
 		float width = texture.Width;
 		float height = texture.Height;
