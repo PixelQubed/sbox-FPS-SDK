@@ -47,6 +47,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 
 	public float? AutoDestroyTime { get; set; }
 	public float? AutoExplodeTime { get; set; }
+	public bool FaceVelocity { get; set; }
 
 	public override void Spawn()
 	{
@@ -65,6 +66,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		EnableShadowInFirstPerson = false;
 
 		AutoDestroyTime = 30;
+		FaceVelocity = true;
 	}
 
 	[Event.Tick.Server]
@@ -217,7 +219,6 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public virtual float AttackerRadius => 121;
 
 	public virtual bool IsDestroyable => false;
-	public virtual bool FaceVelocity => true;
 }
 
 public enum ProjectileMoveType

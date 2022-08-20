@@ -23,6 +23,9 @@ partial class Projectile
 
 	public virtual void SimulateCollisions()
 	{
+		if ( MoveType == ProjectileMoveType.None )
+			return;
+
 		var vecVelocityPerTick = Velocity * Time.Delta;
 
 		var origin = Position - vecVelocityPerTick;
@@ -34,12 +37,12 @@ partial class Projectile
 			OnTraceTouch( tr.Entity, tr );
 	}
 
-	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end )
+	public TraceResult TraceBBox( Vector3 start, Vector3 end )
 	{
 		return TraceBBox( start, end, Mins, Maxs );
 	}
 
-	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
+	public TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
 	{
 		if( sv_debug_projectile_collisions )
 		{
@@ -52,7 +55,7 @@ partial class Projectile
 		return SetupCollisionTrace( start, end, mins, maxs ).Run();
 	}
 
-	public virtual Trace SetupCollisionTrace( Vector3 start, Vector3 end )
+	public Trace SetupCollisionTrace( Vector3 start, Vector3 end )
 	{
 		return SetupCollisionTrace( start, end, Mins, Maxs );
 	}
