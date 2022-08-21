@@ -116,5 +116,46 @@ public static partial class Util
 	{
 		return (int)(num < 0 ? (num - 0.5) : (num + 0.5));
 	}
+
+	public static float ApproachAngle( this float value, float target, float speed )
+	{
+		float delta = target - value;
+
+		// Speed is assumed to be positive
+		if ( speed < 0 )
+			speed = -speed;
+
+		if ( delta < -180 )
+			delta += 360;
+		else if ( delta > 180 )
+			delta -= 360;
+
+		if ( delta > speed )
+			value += speed;
+		else if ( delta < -speed )
+			value -= speed;
+		else
+			value = target;
+
+		return value;
+	}
+
+	public static float AngleDifference( this float srcAngle, float destAngle )
+	{
+		float delta;
+
+		delta = (destAngle - srcAngle) % 360;
+		if ( destAngle > srcAngle )
+		{
+			if ( delta >= 180 )
+				delta -= 360;
+		}
+		else
+		{
+			if ( delta <= -180 )
+				delta += 360;
+		}
+		return delta;
+	}
 }
 
