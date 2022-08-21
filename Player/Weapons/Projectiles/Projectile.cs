@@ -190,7 +190,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 			? Owner.EyePosition 
 			: Position;
 
-		return ExtendedDamageInfo.Create( damage )
+		var info = ExtendedDamageInfo.Create( damage )
 			.WithReportPosition( reportPos )
 			.WithOriginPosition( OriginalPosition )
 			.WithHitPosition( Position )
@@ -198,7 +198,12 @@ public abstract partial class Projectile : ModelEntity, ITeam
 			.WithInflictor( this )
 			.WithWeapon( Launcher )
 			.WithFlag( flags );
+
+		ApplyDamageModifications( ref info );
+		return info;
 	}
+
+	public virtual void ApplyDamageModifications( ref ExtendedDamageInfo info ) { }
 
 	public virtual void Explode( Entity other, TraceResult trace )
 	{
