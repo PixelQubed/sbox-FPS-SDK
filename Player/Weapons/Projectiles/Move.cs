@@ -23,12 +23,7 @@ partial class Projectile
 		UsePhysicsCollision = physicsEnabled;
 	}
 
-	public virtual void SimulateMovement()
-	{
-		SimulateMoveType();
-	}
-
-	public virtual void SimulateMoveType()
+	public void SimulateMovement()
 	{
 		switch ( MoveType )
 		{
@@ -38,6 +33,10 @@ partial class Projectile
 
 			case ProjectileMoveType.Fly:
 				FlyMoveSimulate();
+				break;
+
+			case ProjectileMoveType.Custom:
+				MoveCustom();
 				break;
 		}
 	}
@@ -52,8 +51,8 @@ partial class Projectile
 		Rotation = angles.ToRotation();
 	}
 
-	public virtual Trace SetupMoveHelperTrace()
+	public virtual void MoveCustom()
 	{
-		return SetupCollisionTrace( 0, 0 );
+
 	}
 }

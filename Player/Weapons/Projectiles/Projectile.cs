@@ -225,5 +225,6 @@ public enum ProjectileMoveType
 {
 	None,
 	Fly,
-	Physics
+	Physics,
+	Custom
 };
