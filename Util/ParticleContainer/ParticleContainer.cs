@@ -439,20 +439,21 @@ public class ParticleContainer
 
 	}
 
-	public void Bind( string effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
+	public void Bind( string effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null, Action<EntityParticle> onTick = null )
 	{
-		AddBinding( effectName, null, priority, condition, onCreated, onStopped );
+		AddBinding( effectName, null, priority, condition, onCreated, onStopped, onTick );
 	}
 
-	public void Bind( Func<string> effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
+	public void Bind( Func<string> effectName, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null, Action<EntityParticle> onTick = null )
 	{
-		AddBinding( "", effectName, priority, condition, onCreated, onStopped );
+		AddBinding( "", effectName, priority, condition, onCreated, onStopped, onTick );
 	}
 
-	void AddBinding(string effectName, Func<string> nameDelegate, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null )
+	void AddBinding(string effectName, Func<string> nameDelegate, int priority, Func<bool> condition, Action<EntityParticle> onCreated = null, Action<EntityParticle> onStopped = null, Action<EntityParticle> onTick = null )
 	{
 		if ( string.IsNullOrEmpty( effectName ) )
 			Assert.NotNull( nameDelegate );
+
 		Assert.NotNull( condition );
 
 		Bindings.Add( new()
@@ -462,7 +463,8 @@ public class ParticleContainer
 			Priority = priority,
 			ConditionDelegate = condition,
 			OnCreated = onCreated,
-			OnStopped = onStopped
+			OnStopped = onStopped,
+			OnTick = onTick
 		} );
 
 		Bindings = Bindings.OrderByDescending( x => x.Priority ).ToList();
@@ -496,6 +498,9 @@ public class ParticleContainer
 
 			}
 
+			if ( Particle != null )
+				binding.OnTick?.Invoke( Particle );
+
 			foundActiveBinding = true;
 			break;
 		}
@@ -525,5 +530,6 @@ public class ParticleContainer
 		public Func<bool> ConditionDelegate;
 		public Action<EntityParticle> OnCreated;
 		public Action<EntityParticle> OnStopped;
+		public Action<EntityParticle> OnTick;
 	}
 }
