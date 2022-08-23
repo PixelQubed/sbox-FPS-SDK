@@ -243,7 +243,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		ent.Velocity = velocity;
 
 		ent.Damage = damage;
-		ent.DamageFlags = flags;
+		ent.DamageFlags |= flags;
 		ent.CustomKillType = customKillType;
 
 		ent.OnInitialized();
