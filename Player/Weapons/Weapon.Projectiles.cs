@@ -4,25 +4,9 @@ namespace Amper.Source1;
 
 public partial class Source1Weapon
 {
-	public T FireProjectile<T>( Vector3 origin, Vector3 velocity, float damage, DamageFlags flags = 0 ) where T : Projectile, new()
+	public T FireProjectile<T>( Vector3 origin, Vector3 velocity, float damage, DamageFlags flags = 0, int customKillType = 0 ) where T : Projectile, new()
 	{
-		var ent = new T();
-		SetupProjectile( ent, origin, velocity, damage, flags );
-		ent.OnInitialized( this );
-		return ent; // Launch!
-	}
-
-	public virtual void SetupProjectile( Projectile ent, Vector3 origin, Vector3 velocity, float damage, DamageFlags flags )
-	{
-		ent.TeamNumber = TeamNumber;
-		ent.Owner = Owner;
-		ent.Launcher = this;
-
-		ent.Velocity = velocity;
-		ent.Position = origin;
-
-		ent.Damage = damage;
-		ent.DamageFlags |= flags;
+		return Projectile.Create<T>( origin, velocity, Owner, this, damage, flags, customKillType );
 	}
 
 	public virtual void GetProjectileFireSetup( Vector3 offset, out Vector3 origin, out Vector3 direction, bool hitTeammates = false, float maxRange = 2000 )

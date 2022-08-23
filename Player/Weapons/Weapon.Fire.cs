@@ -125,7 +125,7 @@ partial class Source1Weapon
 		}
 	}
 
-	protected virtual Trace SetupFireBulletTrace( Vector3 Origin, Vector3 Target )
+	public virtual Trace SetupFireBulletTrace( Vector3 Origin, Vector3 Target )
 	{
 		var tr = Trace.Ray( Origin, Target )
 			.Ignore( this )
