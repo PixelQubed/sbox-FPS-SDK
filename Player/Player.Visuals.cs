@@ -4,12 +4,8 @@ using System.Linq;
 
 namespace Amper.Source1;
 
-partial class Source1Player : IHasEntityParticleManager
+partial class Source1Player : IHasEffectEntity
 {
-	// IHasParticleContainer
-	public EntityParticleManager ParticleManager { get; set; }
-	public Entity EffectEntity => this;
-
 	[Net, Predicted] public Vector3 ViewPunchAngle { get;  set; }
 	[Net, Predicted] public Vector3 ViewPunchAngleVelocity { get;  set; }
 
@@ -39,4 +35,6 @@ partial class Source1Player : IHasEntityParticleManager
 			angle = 0;
 		}
 	}
+
+	public ModelEntity GetEffectEntity() => this;
 }

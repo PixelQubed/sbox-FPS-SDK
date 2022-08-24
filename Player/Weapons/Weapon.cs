@@ -28,11 +28,6 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 		EnableShadowInFirstPerson = true;
 	}
 
-	public override void ClientSpawn()
-	{
-		ParticleManager = new( this );
-	}
-
 	public virtual bool CanDeploy( Source1Player player ) => true;
 	public virtual bool CanHolster( Source1Player player ) => true;
 

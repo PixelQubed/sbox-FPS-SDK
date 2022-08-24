@@ -2,9 +2,9 @@
 
 namespace Amper.Source1;
 
-partial class Source1Weapon
+partial class Source1Weapon : IHasEffectEntity
 {
-	public virtual AnimatedEntity GetEffectEntity()
+	public virtual ModelEntity GetEffectEntity()
 	{
 		return IsLocalPawn && IsFirstPersonMode
 			? Player?.GetViewModel( ViewModelIndex )
