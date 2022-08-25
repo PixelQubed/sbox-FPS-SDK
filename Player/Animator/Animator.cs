@@ -1,5 +1,4 @@
 ﻿using System;
-using Sandbox;
 
 namespace Amper.Source1;
 
@@ -70,14 +69,20 @@ public partial class PlayerAnimator : BaseNetworkable
 		var forward = Player.Rotation.Forward.Dot( velocity );
 		var sideward = Player.Rotation.Right.Dot( velocity );
 
+		var angle = MathF.Atan2( sideward, forward ).RadianToDegree().NormalizeDegrees();
+
+		SetAnimParameter( "move_direction", angle );
 		SetAnimParameter( "move_speed", velocity.Length );
-		SetAnimParameter( "move_y", sideward / Player.MaxSpeed );
-		SetAnimParameter( "move_x", forward / Player.MaxSpeed );
+		SetAnimParameter( "move_groundspeed", velocity.WithZ( 0 ).Length );
+
+		SetAnimParameter( "move_y", sideward );
+		SetAnimParameter( "move_x", forward );
 	}
 
 	public virtual void UpdateDucking()
 	{
 		SetAnimParameter( "f_duck", Player.DuckProgress );
+		SetAnimParameter( "duck", Player.DuckProgress );
 		SetAnimParameter( "b_ducked", Player.IsDucked );
 		SetAnimParameter( "b_crouch", Player.IsDucked );
 	}
