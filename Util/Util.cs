@@ -157,5 +157,19 @@ public static partial class Util
 		}
 		return delta;
 	}
+
+	public static bool InRange( this byte value, byte min, byte max )
+	{
+		// if min is greater than max, 
+		// swap the values.
+		if ( min > max )
+		{
+			var buff = min;
+			min = max;
+			max = buff;
+		}
+
+		return value >= min && value <= max;
+	}
 }
 
