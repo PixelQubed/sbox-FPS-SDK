@@ -158,7 +158,7 @@ public static partial class Util
 		return delta;
 	}
 
-	public static bool InRange( this byte value, byte min, byte max )
+	public static bool InRange( this float value, float min, float max )
 	{
 		// if min is greater than max, 
 		// swap the values.
