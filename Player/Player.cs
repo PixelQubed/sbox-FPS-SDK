@@ -20,11 +20,6 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 		LastObserverMode = ObserverMode.Chase;
 	}
 
-	public override void ClientSpawn()
-	{
-		ParticleManager = new( this );
-	}
-
 	[Net] public PlayerAnimator Animator { get; set; }
 	public CameraMode CameraMode
 	{

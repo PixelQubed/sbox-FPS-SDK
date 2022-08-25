@@ -5,7 +5,8 @@ namespace Amper.Source1;
 public abstract partial class Projectile : ModelEntity, ITeam
 {
 	[Net] public int TeamNumber { get; set; }
-	[Net] public DamageFlags DamageFlags { get; set; } 
+	[Net] public DamageFlags DamageFlags { get; set; }
+	public int CustomKillType { get; set; }
 	[Net] public TimeSince TimeSinceCreated { get; set; }
 
 	/// <summary>
@@ -89,7 +90,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		}
 	}
 
-	public virtual void OnInitialized( Entity launcher )
+	public virtual void OnInitialized()
 	{
 		EnableDrawing = true;
 
@@ -190,15 +191,21 @@ public abstract partial class Projectile : ModelEntity, ITeam
 			? Owner.EyePosition 
 			: Position;
 
-		return ExtendedDamageInfo.Create( damage )
+		var info = ExtendedDamageInfo.Create( damage )
 			.WithReportPosition( reportPos )
 			.WithOriginPosition( OriginalPosition )
+			.WithCustomKillType( CustomKillType )
 			.WithHitPosition( Position )
 			.WithAttacker( Owner )
 			.WithInflictor( this )
 			.WithWeapon( Launcher )
 			.WithFlag( flags );
+
+		ApplyDamageModifications( ref info );
+		return info;
 	}
+
+	public virtual void ApplyDamageModifications( ref ExtendedDamageInfo info ) { }
 
 	public virtual void Explode( Entity other, TraceResult trace )
 	{
@@ -219,11 +226,35 @@ public abstract partial class Projectile : ModelEntity, ITeam
 	public virtual float AttackerRadius => 121;
 
 	public virtual bool IsDestroyable => false;
+
+	public static T Create<T>(Vector3 origin, Vector3 velocity, Entity owner, Entity launcher, float damage, DamageFlags flags = 0, int customKillType = 0 ) where T : Projectile, new()
+	{
+		// Create the projectile.
+		var ent = new T();
+
+		ent.Owner = owner;
+		ent.Launcher = launcher;
+
+		// Set the projectile's team to owner's team if it has a team.
+		if ( owner is ITeam ownerTeam )
+			ent.TeamNumber = ownerTeam.TeamNumber;
+
+		ent.Position = origin;
+		ent.Velocity = velocity;
+
+		ent.Damage = damage;
+		ent.DamageFlags |= flags;
+		ent.CustomKillType = customKillType;
+
+		ent.OnInitialized();
+		return ent;
+	}
 }
 
 public enum ProjectileMoveType
 {
 	None,
 	Fly,
-	Physics
+	Physics,
+	Custom
 };

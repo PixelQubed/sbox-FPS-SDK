@@ -44,8 +44,10 @@ partial class GameMovement
 		Player.SetAnimParameter( "b_jump", true );
 
 		var startz = Velocity[2];
-		if ( Player.IsDucked )
+		if ( Player.IsDucking || Player.IsDucked ) 
+		{
 			Velocity.z = JumpImpulse;
+		}
 		else
 			Velocity.z += JumpImpulse;
 

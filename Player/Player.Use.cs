@@ -1,13 +1,16 @@
 ﻿using Sandbox;
+using Sandbox.Internal;
 
 namespace Amper.Source1;
 
 partial class Source1Player
 {
 	public Entity HoveredEntity { get; private set; }
+	public float HoveredDistance { get; private set; }
 
-	protected virtual Entity FindHovered()
+	protected virtual Entity FindHovered( out float distance )
 	{
+		distance = 0;
 		var tr = Trace.Ray( EyePosition, EyePosition + EyeRotation.Forward * 5000 )
 			.Ignore( this )
 			.WithAnyTags( CollisionTags.Solid )
@@ -20,13 +23,15 @@ partial class Source1Player
 		if ( tr.Entity.IsWorld )
 			return null;
 
+		distance = tr.Distance;
 		return tr.Entity;
 	}
 
 	protected virtual void SimulateHover()
 	{
 		// The entity we're currently looking at.
-		HoveredEntity = FindHovered();
+		HoveredEntity = FindHovered( out var distance );
+		HoveredDistance = distance;
 	}
 
 	//

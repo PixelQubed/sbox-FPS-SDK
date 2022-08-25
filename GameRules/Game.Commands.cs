@@ -4,6 +4,13 @@ namespace Amper.Source1;
 
 partial class GameRules
 {
+	[ConCmd.Server( "lastweapon" )]
+	public static void Command_LastWeapon()
+	{
+		if ( ConsoleSystem.Caller.Pawn is Source1Player player )
+			player.SwitchToNextBestWeapon();
+	}
+
 	// This is being called by Sandbox's native "kill" command.
 	public override void DoPlayerSuicide( Client cl )
 	{

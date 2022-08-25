@@ -27,6 +27,7 @@ public struct ExtendedDamageInfo
 	/// The position which we will report to the client that received damage.
 	/// </summary>
 	public Vector3 ReportPosition { get; set; }
+	public int CustomKillType { get; set; }
 
 	public static ExtendedDamageInfo Create( float damage )
 	{
@@ -128,6 +129,12 @@ public struct ExtendedDamageInfo
 	public ExtendedDamageInfo WithForce( Vector3 force )
 	{
 		Force = force;
+		return this;
+	}
+
+	public ExtendedDamageInfo WithCustomKillType( int killType )
+	{
+		CustomKillType = killType;
 		return this;
 	}
 
