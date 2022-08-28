@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public partial class GameRules : Game
 {

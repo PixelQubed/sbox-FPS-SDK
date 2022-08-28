@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 partial class GameRules
 {

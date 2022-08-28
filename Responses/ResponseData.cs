@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public partial class ResponseData<Concepts, Contexts> : GameResource where Concepts : Enum where Contexts : Enum
 {

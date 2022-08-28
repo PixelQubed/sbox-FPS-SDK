@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public class NavMeshExtended
 {

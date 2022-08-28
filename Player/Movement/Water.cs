@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public enum WaterLevelType
 {

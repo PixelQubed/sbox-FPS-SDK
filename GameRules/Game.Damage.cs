@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public struct RadiusDamageInfo
 {

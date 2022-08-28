@@ -2,7 +2,7 @@ using Sandbox;
 using System;
 using System.Linq;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 partial class Source1Player : IHasEffectEntity
 {

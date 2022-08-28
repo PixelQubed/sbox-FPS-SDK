@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public static partial class Util
 {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public enum DispatchType { None = 0, Client = 1, Server = 2 }
 

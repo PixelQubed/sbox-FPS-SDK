@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public class EntityJsonConverter : JsonConverter<Entity>
 {

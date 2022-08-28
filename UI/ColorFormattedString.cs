@@ -2,7 +2,7 @@
 using Sandbox.UI.Construct;
 using System;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 [UseTemplate]
 public class ColorFormattedString : Panel

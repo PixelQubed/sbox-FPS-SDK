@@ -1,7 +1,7 @@
 ﻿using System;
 using Sandbox;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public struct QAngle
 {

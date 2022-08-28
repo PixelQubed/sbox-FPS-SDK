@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Sandbox;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public interface IResponseSpeaker<Concepts, Contexts> where Concepts : Enum where Contexts : Enum
 {

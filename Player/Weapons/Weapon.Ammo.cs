@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 partial class Source1Weapon
 {

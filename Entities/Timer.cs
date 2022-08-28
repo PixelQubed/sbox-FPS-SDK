@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 /// <summary>
 /// Timer entity, used to count down the time for the purposes of a gamemode.

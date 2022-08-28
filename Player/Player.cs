@@ -2,7 +2,7 @@ using Sandbox;
 using System.Linq;
 using System;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 [Title( "Player" ), Icon( "emoji_people" )]
 public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExtendedDamageInfo

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 public partial class ScreenShake : BaseNetworkable
 {

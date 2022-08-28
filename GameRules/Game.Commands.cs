@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 
-namespace Amper.Source1;
+namespace Amper.FPS;
 
 partial class GameRules
 {
