@@ -5,8 +5,8 @@ namespace Amper.FPS;
 
 public partial class ViewModel : BaseViewModel
 {
-	public Source1Weapon Weapon { get; set; }
-	public Source1Player Player => Weapon?.Player;
+	public SDKWeapon Weapon { get; set; }
+	public SDKPlayer Player => Weapon?.Player;
 
 	public override void Spawn()
 	{
@@ -29,7 +29,7 @@ public partial class ViewModel : BaseViewModel
 	public virtual bool ShouldDraw() => true;
 	public virtual void CalculateView( ref CameraSetup camSetup ) { }
 
-	public virtual void SetWeaponModel( string viewmodel, Source1Weapon weapon )
+	public virtual void SetWeaponModel( string viewmodel, SDKWeapon weapon )
 	{
 		ClearWeapon( weapon );
 
@@ -45,7 +45,7 @@ public partial class ViewModel : BaseViewModel
 			SetupAttachments();
 	}
 
-	public virtual void ClearWeapon( Source1Weapon weapon )
+	public virtual void ClearWeapon( SDKWeapon weapon )
 	{
 		if ( Weapon != weapon )
 			return;

@@ -10,7 +10,7 @@ partial class GameRules
 	/// <summary>
 	/// Is this player allowed to change their team?
 	/// </summary>
-	public virtual bool CanPlayerChangeTeams( Source1Player player ) => true;
+	public virtual bool CanPlayerChangeTeams( SDKPlayer player ) => true;
 	/// <summary>
 	/// Is anyone allowed to change their team from this one?
 	/// </summary>
@@ -23,7 +23,7 @@ partial class GameRules
 	/// <summary>
 	/// Can this player change their team to the new team?
 	/// </summary>
-	public virtual bool CanPlayerChangeTeamTo( Source1Player player, int newTeam )
+	public virtual bool CanPlayerChangeTeamTo( SDKPlayer player, int newTeam )
 	{
 		// We're already on this team.
 		if ( player.TeamNumber == newTeam )
@@ -51,7 +51,7 @@ partial class GameRules
 	/// Override the team that the player will join on request. This is done AFTER all the checks to join a team have passed. 
 	/// The new team is NOT being checked.
 	/// </summary>
-	public virtual int GetTeamAssignmentOverride( Source1Player player, int team, bool autoBalance ) => team;
+	public virtual int GetTeamAssignmentOverride( SDKPlayer player, int team, bool autoBalance ) => team;
 
 	#endregion
 
@@ -60,7 +60,7 @@ partial class GameRules
 	/// <summary>
 	/// How much damage we should take for landing with this amount of velocity.
 	/// </summary>
-	public virtual float GetPlayerFallDamage( Source1Player player, float velocity )
+	public virtual float GetPlayerFallDamage( SDKPlayer player, float velocity )
 	{
 		var damage = velocity - player.MaxSafeFallSpeed;
 		return damage * player.DamageForFallSpeed;
@@ -132,7 +132,7 @@ partial class GameRules
 	/// <summary>
 	/// Can this player respawn right now?
 	/// </summary>
-	public virtual bool CanPlayerRespawn( Source1Player player )
+	public virtual bool CanPlayerRespawn( SDKPlayer player )
 	{
 		if ( !TeamManager.IsPlayable( player.TeamNumber ) ) 
 			return false;

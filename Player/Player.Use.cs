@@ -3,7 +3,7 @@ using Sandbox.Internal;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	public Entity HoveredEntity { get; private set; }
 	public float HoveredDistance { get; private set; }

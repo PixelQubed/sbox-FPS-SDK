@@ -2,14 +2,14 @@
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	public TimeSince TimeSinceSprayed { get; set; }
 
 	[ConCmd.Server( "spray" )]
 	public static void Command_Spray()
 	{
-		if ( ConsoleSystem.Caller.Pawn is Source1Player player ) 
+		if ( ConsoleSystem.Caller.Pawn is SDKPlayer player ) 
 		{
 			if ( player.TimeSinceSprayed < sv_spray_cooldown ) 
 				return;

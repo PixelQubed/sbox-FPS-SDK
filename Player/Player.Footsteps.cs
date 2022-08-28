@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	public float StepSoundTime { get; set; }
 	bool NextFootRight { get; set; }

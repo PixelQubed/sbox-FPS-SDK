@@ -7,7 +7,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	public virtual bool WishSecondaryAttack() => Input.Down( InputButton.SecondaryAttack );
 

@@ -2,9 +2,9 @@
 
 namespace Amper.FPS;
 
-public partial class Source1Weapon : AnimatedEntity, ITeam
+public partial class SDKWeapon : AnimatedEntity, ITeam
 {
-	public Source1Player Player => Owner as Source1Player;
+	public SDKPlayer Player => Owner as SDKPlayer;
 
 	[Net, Predicted] public bool IsDeployed { get; set; }
 	[Net] public Client OriginalOwner { get; set; }
@@ -28,11 +28,11 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 		EnableShadowInFirstPerson = true;
 	}
 
-	public virtual bool CanDeploy( Source1Player player ) => true;
-	public virtual bool CanHolster( Source1Player player ) => true;
+	public virtual bool CanDeploy( SDKPlayer player ) => true;
+	public virtual bool CanHolster( SDKPlayer player ) => true;
 
-	public virtual bool CanEquip( Source1Player player ) => true;
-	public virtual bool CanDrop( Source1Player player ) => true;
+	public virtual bool CanEquip( SDKPlayer player ) => true;
+	public virtual bool CanDrop( SDKPlayer player ) => true;
 
 	public virtual bool RemoveOnRoundRestart() => false;
 
@@ -57,7 +57,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 	/// <summary>
 	/// The weapon has been picked up by someone
 	/// </summary>
-	public virtual void OnEquip( Source1Player owner )
+	public virtual void OnEquip( SDKPlayer owner )
 	{
 		if ( !IsValid )
 			return;
@@ -77,7 +77,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 	/// <summary>
 	/// The weapon has been dropped by the owner
 	/// </summary>
-	public virtual void OnDrop( Source1Player owner )
+	public virtual void OnDrop( SDKPlayer owner )
 	{
 		if ( !IsValid )
 			return;
@@ -90,7 +90,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 		EnableAllCollisions = true;
 	}
 
-	public virtual void OnDeploy( Source1Player owner )
+	public virtual void OnDeploy( SDKPlayer owner )
 	{
 		if ( !IsValid )
 			return;
@@ -112,7 +112,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 		SendAnimParameter( "b_deploy" );
 	}
 
-	public virtual void OnHolster( Source1Player owner )
+	public virtual void OnHolster( SDKPlayer owner )
 	{
 		if ( !IsValid )
 			return;
@@ -138,7 +138,7 @@ public partial class Source1Weapon : AnimatedEntity, ITeam
 
 	public virtual ViewModel GetViewModelEntity()
 	{
-		var player = Owner as Source1Player;
+		var player = Owner as SDKPlayer;
 		return player?.GetViewModel( ViewModelIndex );
 	}
 

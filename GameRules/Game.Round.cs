@@ -59,7 +59,7 @@ partial class GameRules
 
 	public virtual bool MapCleanUpFilter( string classname, Entity entity )
 	{
-		if ( entity is Source1Weapon weapon && weapon.RemoveOnRoundRestart() )
+		if ( entity is SDKWeapon weapon && weapon.RemoveOnRoundRestart() )
 			return true;
 
 		return false;

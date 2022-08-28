@@ -57,7 +57,7 @@ public static class TeamManager
 	public static bool TeamExists( int number ) => Teams.ContainsKey( number );
 	public static TeamProperties GetProperties( int number ) => Teams.ContainsKey( number ) ? Teams[number] : default;
 	public static string GetTag( int team ) => $"Team_{GetProperties( team ).Name}";
-	public static IEnumerable<Source1Player> GetPlayers( int team ) => Entity.All.OfType<Source1Player>().Where( x => x.TeamNumber == team );
+	public static IEnumerable<SDKPlayer> GetPlayers( int team ) => Entity.All.OfType<SDKPlayer>().Where( x => x.TeamNumber == team );
 	public static string GetName( int team ) => GetProperties( team ).Name;
 	public static string GetTitle( int team ) => GetProperties( team ).Title;
 	public static bool IsJoinable( int team ) => GetProperties( team ).IsJoinable;

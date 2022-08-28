@@ -3,11 +3,11 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera : CameraMode
+partial class SDKCamera : CameraMode
 {
 	public override void Build( ref CameraSetup camSetup )
 	{
-		var player = Source1Player.LocalPlayer;
+		var player = SDKPlayer.LocalPlayer;
 		if ( player == null )
 			return;
 
@@ -20,7 +20,7 @@ partial class Source1Camera : CameraMode
 
 	public override void Update()
 	{
-		var player = Source1Player.LocalPlayer;
+		var player = SDKPlayer.LocalPlayer;
 		if ( player == null ) 
 			return;
 
@@ -40,7 +40,7 @@ partial class Source1Camera : CameraMode
 		LastFieldOfView = FieldOfView;
 	}
 
-	public virtual void CalculateView( Source1Player player )
+	public virtual void CalculateView( SDKPlayer player )
 	{
 		if ( player.IsObserver )
 		{
@@ -56,7 +56,7 @@ partial class Source1Camera : CameraMode
 	}
 
 
-	public virtual void CalculatePlayerView( Source1Player player )
+	public virtual void CalculatePlayerView( SDKPlayer player )
 	{
 		var punch = player.ViewPunchAngle;
 		Rotation *= Rotation.From( punch.x, punch.y, punch.z );
@@ -89,7 +89,7 @@ partial class Source1Camera : CameraMode
 	[ConVar.Client] public static bool cl_thirdperson { get; set; }
 	[ConVar.Client] public static float cl_thirdperson_distance { get; set; } = 120;
 
-	public virtual void CalculateObserverView( Source1Player player )
+	public virtual void CalculateObserverView( SDKPlayer player )
 	{
 		switch( player.ObserverMode )
 		{
@@ -116,7 +116,7 @@ partial class Source1Camera : CameraMode
 	float m_flOldPlayerViewOffsetZ;
 	[ConVar.Client] public static bool cl_smoothstairs { get; set; } = true;
 
-	public virtual void SmoothViewOnStairs( Source1Player player )
+	public virtual void SmoothViewOnStairs( SDKPlayer player )
 	{
 		var pGroundEntity = player.GroundEntity;
 		float flCurrentPlayerZ = player.Position.z;
@@ -171,7 +171,7 @@ partial class Source1Camera : CameraMode
 		}
 	}
 
-	public virtual void CalculateScreenShake( Source1Player player )
+	public virtual void CalculateScreenShake( SDKPlayer player )
 	{
 		if ( !Host.IsClient )
 			return;

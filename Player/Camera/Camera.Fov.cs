@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera
+partial class SDKCamera
 {
 	protected float DefaultFieldOfView { get; private set; }
 	protected float LastFieldOfView { get; set; }
@@ -15,7 +15,7 @@ partial class Source1Camera
 	protected float FieldOfViewAnimateStart { get; private set; }
 	protected TimeSince TimeSinceFieldOfViewAnimateStart { get; private set; }
 
-	public void RetrieveFieldOfViewFromPlayer( Source1Player player )
+	public void RetrieveFieldOfViewFromPlayer( SDKPlayer player )
 	{
 		//
 		// Desired FOV Value
@@ -41,7 +41,7 @@ partial class Source1Camera
 		}
 	}
 
-	public virtual void CalculateFieldOfView( Source1Player player )
+	public virtual void CalculateFieldOfView( SDKPlayer player )
 	{
 		if ( cl_debug_fov )
 			DebugFieldOfView( player );
@@ -87,7 +87,7 @@ partial class Source1Camera
 
 	[ConVar.Client] public static float cl_viewmodel_fov { get; set; } = 75;
 
-	public void DebugFieldOfView( Source1Player player )
+	public void DebugFieldOfView( SDKPlayer player )
 	{
 		DebugOverlay.ScreenText(
 			$"[FOV]\n" +

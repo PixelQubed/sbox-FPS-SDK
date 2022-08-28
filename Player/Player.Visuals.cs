@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class Source1Player : IHasEffectEntity
+partial class SDKPlayer : IHasEffectEntity
 {
 	[Net, Predicted] public Vector3 ViewPunchAngle { get;  set; }
 	[Net, Predicted] public Vector3 ViewPunchAngleVelocity { get;  set; }

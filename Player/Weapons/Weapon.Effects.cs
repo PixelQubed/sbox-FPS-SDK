@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Weapon : IHasEffectEntity
+partial class SDKWeapon : IHasEffectEntity
 {
 	public virtual ModelEntity GetEffectEntity()
 	{

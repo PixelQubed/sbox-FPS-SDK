@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Player : ITeam
+partial class SDKPlayer : ITeam
 {
 	[Net] public int TeamNumber { get; set; }
 	[Net] public int TeamChanges { get; set; }

@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
-	public IEnumerable<Source1Weapon> Weapons => Children.OfType<Source1Weapon>();
-	[Net, Predicted] public Source1Weapon ActiveWeapon { get; set; }
-	[Predicted] Source1Weapon LastActiveWeapon { get; set; }
+	public IEnumerable<SDKWeapon> Weapons => Children.OfType<SDKWeapon>();
+	[Net, Predicted] public SDKWeapon ActiveWeapon { get; set; }
+	[Predicted] SDKWeapon LastActiveWeapon { get; set; }
 
 	/// <summary>
 	/// Can this player attack using their weapons?
@@ -18,7 +18,7 @@ partial class Source1Player
 
 	public virtual void SimulateActiveWeapon( Client cl )
 	{
-		if ( Input.ActiveChild is Source1Weapon newWeapon )
+		if ( Input.ActiveChild is SDKWeapon newWeapon )
 			SwitchToWeapon( newWeapon );
 
 		if ( LastActiveWeapon != ActiveWeapon )
@@ -34,7 +34,7 @@ partial class Source1Player
 			ActiveWeapon.Simulate( cl );
 	}
 
-	public virtual void OnSwitchedActiveWeapon( Source1Weapon lastWeapon, Source1Weapon newWeapon )
+	public virtual void OnSwitchedActiveWeapon( SDKWeapon lastWeapon, SDKWeapon newWeapon )
 	{
 		if ( lastWeapon.IsValid() )
 		{
@@ -53,7 +53,7 @@ partial class Source1Player
 		}
 	}
 
-	public bool SwitchToWeapon( Source1Weapon weapon, bool rememberLast = true )
+	public bool SwitchToWeapon( SDKWeapon weapon, bool rememberLast = true )
 	{
 		if ( !weapon.IsValid() )
 			return false;
@@ -78,7 +78,7 @@ partial class Source1Player
 		return true;
 	}
 
-	public virtual bool EquipWeapon( Source1Weapon weapon, bool makeActive = false )
+	public virtual bool EquipWeapon( SDKWeapon weapon, bool makeActive = false )
 	{
 		Host.AssertServer();
 
@@ -105,7 +105,7 @@ partial class Source1Player
 	/// <summary>
 	/// Prepare weapon to being equipped. Return false to prevent from being equipped.
 	/// </summary>
-	protected virtual bool PreEquipWeapon( Source1Weapon weapon, bool makeActive )
+	protected virtual bool PreEquipWeapon( SDKWeapon weapon, bool makeActive )
 	{
 		// See if have another weapon in this weapon's slot.
 		// If we have, throw it away.
@@ -122,24 +122,24 @@ partial class Source1Player
 		return true;
 	}
 
-	public virtual bool CanEquip( Source1Weapon weapon ) => weapon.CanEquip( this );
-	public virtual bool CanDrop( Source1Weapon weapon ) => weapon.CanDrop( this );
+	public virtual bool CanEquip( SDKWeapon weapon ) => weapon.CanEquip( this );
+	public virtual bool CanDrop( SDKWeapon weapon ) => weapon.CanDrop( this );
 
-	public virtual bool CanDeploy( Source1Weapon weapon ) => weapon.CanDeploy( this );
-	public virtual bool CanHolster( Source1Weapon weapon ) => weapon.CanHolster( this );
+	public virtual bool CanDeploy( SDKWeapon weapon ) => weapon.CanDeploy( this );
+	public virtual bool CanHolster( SDKWeapon weapon ) => weapon.CanHolster( this );
 
-	public virtual bool IsEquipped( Source1Weapon weapon ) => Children.Contains( weapon );
+	public virtual bool IsEquipped( SDKWeapon weapon ) => Children.Contains( weapon );
 
 	public virtual void DeleteAllWeapons()
 	{
-		var weapons = Children.OfType<Source1Weapon>().ToArray();
+		var weapons = Children.OfType<SDKWeapon>().ToArray();
 		foreach ( var child in weapons )
 			child.Delete();
 	}
 
 	public virtual void SwitchToNextBestWeapon()
 	{
-		var weapons = Children.OfType<Source1Weapon>()
+		var weapons = Children.OfType<SDKWeapon>()
 			.Where( x => x != ActiveWeapon && CanDeploy( x ) )
 			.OrderBy( x => x.SlotNumber );
 
@@ -160,8 +160,8 @@ partial class Source1Player
 		return eyeAngles;
 	}
 
-	public T GetWeaponOfType<T>() where T : Source1Weapon => Children.OfType<T>().FirstOrDefault();
-	public bool HasWeaponOfType<T>() where T : Source1Weapon => GetWeaponOfType<T>() != null;
+	public T GetWeaponOfType<T>() where T : SDKWeapon => Children.OfType<T>().FirstOrDefault();
+	public bool HasWeaponOfType<T>() where T : SDKWeapon => GetWeaponOfType<T>() != null;
 
 	public List<ViewModel> ViewModels { get; set; } = new();
 
@@ -201,12 +201,12 @@ partial class Source1Player
 		return 0;
 	}
 
-	public Source1Weapon GetWeaponInSlot( int slot )
+	public SDKWeapon GetWeaponInSlot( int slot )
 	{
-		return Children.OfType<Source1Weapon>().Where( x => x.SlotNumber == slot ).FirstOrDefault();
+		return Children.OfType<SDKWeapon>().Where( x => x.SlotNumber == slot ).FirstOrDefault();
 	}
 
-	public virtual bool ThrowWeapon( Source1Weapon weapon, float force = 400 )
+	public virtual bool ThrowWeapon( SDKWeapon weapon, float force = 400 )
 	{
 		var origin = WorldSpaceBounds.Center;
 		var vecForce = EyeRotation.Forward * 100 + Vector3.Up * 100;
@@ -222,7 +222,7 @@ partial class Source1Player
 		return false;
 	}
 
-	public virtual bool DropWeapon( Source1Weapon weapon, Vector3 origin, Vector3 force )
+	public virtual bool DropWeapon( SDKWeapon weapon, Vector3 origin, Vector3 force )
 	{
 		if ( !weapon.IsValid() )
 			return false;

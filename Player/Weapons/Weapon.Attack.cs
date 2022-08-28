@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	[Net, Predicted] public float NextAttackTime { get; set; }
 	[Net, Predicted] public float NextPrimaryAttackTime { get; set; }

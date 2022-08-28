@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-public partial class Source1Weapon
+public partial class SDKWeapon
 {
 	public T FireProjectile<T>( Vector3 origin, Vector3 velocity, float damage, DamageFlags flags = 0, int customKillType = 0 ) where T : Projectile, new()
 	{

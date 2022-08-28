@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	public virtual bool CanOwnerAirDash() => true;
 	public virtual bool CanOwnerJump() => true;

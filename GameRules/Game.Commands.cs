@@ -7,14 +7,14 @@ partial class GameRules
 	[ConCmd.Server( "lastweapon" )]
 	public static void Command_LastWeapon()
 	{
-		if ( ConsoleSystem.Caller.Pawn is Source1Player player )
+		if ( ConsoleSystem.Caller.Pawn is SDKPlayer player )
 			player.SwitchToNextBestWeapon();
 	}
 
 	// This is being called by Sandbox's native "kill" command.
 	public override void DoPlayerSuicide( Client cl )
 	{
-		var player = cl.Pawn as Source1Player;
+		var player = cl.Pawn as SDKPlayer;
 		if ( player == null ) return;
 
 		player.CommitSuicide( explode: false );
@@ -27,7 +27,7 @@ partial class GameRules
 		if ( client == null )
 			return;
 
-		var player = client.Pawn as Source1Player;
+		var player = client.Pawn as SDKPlayer;
 		if ( player == null ) 
 			return;
 
@@ -51,7 +51,7 @@ partial class GameRules
 		if ( client == null )
 			return;
 
-		var player = client.Pawn as Source1Player;
+		var player = client.Pawn as SDKPlayer;
 		if ( player == null )
 			return;
 
@@ -65,7 +65,7 @@ partial class GameRules
 		if ( client == null )
 			return;
 
-		var player = client.Pawn as Source1Player;
+		var player = client.Pawn as SDKPlayer;
 		if ( player == null )
 			return;
 
@@ -80,7 +80,7 @@ partial class GameRules
 		if ( client == null )
 			return;
 
-		var player = client.Pawn as Source1Player;
+		var player = client.Pawn as SDKPlayer;
 		if ( player == null )
 			return;
 
@@ -95,7 +95,7 @@ partial class GameRules
 		if ( client == null )
 			return;
 
-		var player = client.Pawn as Source1Player;
+		var player = client.Pawn as SDKPlayer;
 		if ( player == null )
 			return;
 

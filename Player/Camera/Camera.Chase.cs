@@ -3,9 +3,9 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera
+partial class SDKCamera
 {
-	public void CalculateChaseCamView( Source1Player player )
+	public void CalculateChaseCamView( SDKPlayer player )
 	{
 		var target = player.ObserverTarget;
 

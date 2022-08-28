@@ -1,6 +1,6 @@
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	public virtual Vector3 GetPlayerMins( bool ducked )
 	{

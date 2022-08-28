@@ -7,7 +7,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	/// <summary>
 	/// Weapons may modify the damage info if they have a need to do it. 

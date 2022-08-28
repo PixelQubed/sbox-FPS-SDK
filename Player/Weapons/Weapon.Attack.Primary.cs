@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	public virtual bool WishPrimaryAttack() => Input.Down( InputButton.PrimaryAttack );
 

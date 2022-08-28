@@ -14,7 +14,7 @@ partial class GameRules
 	/// space and they can safely spawn without getting stuck. `transform` will contain the transform data of the position where the 
 	/// player would've spawned.
 	/// </summary>
-	public virtual bool TryFitOnSpawnpoint( Source1Player player, Entity spawnPoint, out Transform transform )
+	public virtual bool TryFitOnSpawnpoint( SDKPlayer player, Entity spawnPoint, out Transform transform )
 	{
 		transform = spawnPoint.Transform;
 
@@ -49,7 +49,7 @@ partial class GameRules
 		return !tr.Hit;
 	}
 
-	public virtual Trace SetupSpawnTrace( Source1Player player, Vector3 from, Vector3 to, Vector3 mins, Vector3 maxs )
+	public virtual Trace SetupSpawnTrace( SDKPlayer player, Vector3 from, Vector3 to, Vector3 mins, Vector3 maxs )
 	{
 		return Trace.Ray( from, to )
 			.Size( mins, maxs )
@@ -60,7 +60,7 @@ partial class GameRules
 			.Ignore( player );
 	}
 
-	public virtual void FindAndMovePlayerToSpawnPoint( Source1Player player )
+	public virtual void FindAndMovePlayerToSpawnPoint( SDKPlayer player )
 	{
 		// try to find a valid spawn point for this player
 		var team = player.TeamNumber;

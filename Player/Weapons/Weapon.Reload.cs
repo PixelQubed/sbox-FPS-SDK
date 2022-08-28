@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	[Net, Predicted] public bool IsReloading { get; set; }
 	[Net, Predicted] public float NextReloadCycleTime { get; set; }

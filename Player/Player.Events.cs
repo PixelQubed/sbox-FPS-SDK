@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	#region Footsteps
 	public virtual void OnFootstep( bool right, Vector3 origin, string sound, float volume )

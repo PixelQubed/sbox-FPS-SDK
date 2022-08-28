@@ -3,11 +3,11 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera
+partial class SDKCamera
 {
 	Vector3 LastDeathcamPosition { get; set; }
 
-	public void CalculateDeathCamView( Source1Player player )
+	public void CalculateDeathCamView( SDKPlayer player )
 	{
 		var killer = player.LastAttacker;
 

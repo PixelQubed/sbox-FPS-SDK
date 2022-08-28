@@ -12,7 +12,7 @@ partial class GameRules
 
 	public static void PlaySoundToTeam( int team, string sound, SoundBroadcastChannel channel, bool stopprevious = true )
 	{
-		var clients = All.OfType<Source1Player>()
+		var clients = All.OfType<SDKPlayer>()
 			.Where( x => x.TeamNumber == team )
 			.Select( x => x.Client )
 			.Where( x => x != null );

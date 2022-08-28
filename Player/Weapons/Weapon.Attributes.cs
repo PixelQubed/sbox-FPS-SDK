@@ -1,6 +1,6 @@
 ﻿namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	//
 	// Properties

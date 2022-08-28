@@ -5,7 +5,7 @@ namespace Amper.FPS;
 
 public partial class GameMovement
 {
-	protected Source1Player Player;
+	protected SDKPlayer Player;
 
 	public float MaxSpeed;
 	public Vector3 Position;
@@ -16,7 +16,7 @@ public partial class GameMovement
 	public float SideMove;
 	public float UpMove;
 
-	public virtual void Simulate( Source1Player player )
+	public virtual void Simulate( SDKPlayer player )
 	{
 		// Check if we've supplied proper player.
 		if ( !player.IsValid() )
@@ -32,7 +32,7 @@ public partial class GameMovement
 		ApplyMoveData( player );
 	}
 
-	public virtual void FrameSimulate( Source1Player player )
+	public virtual void FrameSimulate( SDKPlayer player )
 	{
 		// Check if we've supplied proper player.
 		if ( !player.IsValid() )
@@ -53,7 +53,7 @@ public partial class GameMovement
 		ViewAngles = Input.Rotation;
 	}
 
-	public virtual void SetupMoveData( Source1Player player )
+	public virtual void SetupMoveData( SDKPlayer player )
 	{
 		MaxSpeed = player.MaxSpeed;
 		Position = player.Position;
@@ -65,7 +65,7 @@ public partial class GameMovement
 		UpMove = Input.Up * MaxSpeed;
 	}
 
-	public virtual void ApplyMoveData( Source1Player player )
+	public virtual void ApplyMoveData( SDKPlayer player )
 	{
 		player.Position = Position;
 		player.EyeRotation = ViewAngles;

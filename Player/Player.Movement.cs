@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	//
 	// View Angles

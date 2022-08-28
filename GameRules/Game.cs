@@ -123,32 +123,32 @@ public partial class GameRules : Game
 	/// Amount of seconds until this player is able to respawn.
 	/// </summary>
 	/// <param name="player"></param>
-	public virtual float GetPlayerRespawnTime( Source1Player player ) => 0;
+	public virtual float GetPlayerRespawnTime( SDKPlayer player ) => 0;
 
 	/// <summary>
 	/// This player was just killed.
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerDeath( Source1Player player, ExtendedDamageInfo info ) { }
+	public virtual void PlayerDeath( SDKPlayer player, ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// This player was just hurt.
 	/// </summary>
 	/// <param name="player"></param>
 	/// <param name="info"></param>
-	public virtual void PlayerHurt( Source1Player player, ExtendedDamageInfo info ) { }
+	public virtual void PlayerHurt( SDKPlayer player, ExtendedDamageInfo info ) { }
 
 	/// <summary>
 	/// On player respawned
 	/// </summary>
 	/// <param name="player"></param>
-	public virtual void PlayerRespawn( Source1Player player ) { }
+	public virtual void PlayerRespawn( SDKPlayer player ) { }
 
 	/// <summary>
 	/// On player respawned
 	/// </summary>
-	public virtual void PlayerChangeTeam( Source1Player player, int team ) { }
+	public virtual void PlayerChangeTeam( SDKPlayer player, int team ) { }
 
 	/// <summary>
 	/// Create standard game entities.
@@ -160,7 +160,7 @@ public partial class GameRules : Game
 	/// </summary>
 	public virtual void RespawnPlayers( bool forceRespawn, bool teamonly = false, int team = 0 )
 	{
-		var players = All.OfType<Source1Player>().ToList();
+		var players = All.OfType<SDKPlayer>().ToList();
 
 		foreach ( var player in players )
 		{
@@ -190,8 +190,8 @@ public partial class GameRules : Game
 	/// </summary>
 	/// <param name="player"></param>
 	/// <returns></returns>
-	public virtual bool AreRespawnConditionsMet( Source1Player player ) => true;
-	public bool HasPlayers() => All.OfType<Source1Player>().Any( x => x.IsReadyToPlay() );
+	public virtual bool AreRespawnConditionsMet( SDKPlayer player ) => true;
+	public bool HasPlayers() => All.OfType<SDKPlayer>().Any( x => x.IsReadyToPlay() );
 
 	public virtual float DamageForce( Vector3 size, float damage, float scale )
 	{
@@ -208,7 +208,7 @@ public partial class GameRules : Game
 	{
 		base.RenderHud();
 
-		var player = Local.Pawn as Source1Player;
+		var player = Local.Pawn as SDKPlayer;
 		if ( player == null )
 			return;
 

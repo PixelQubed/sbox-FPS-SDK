@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	/// <summary>
 	/// This is called before all the calculations are made. Even if the damage doesn't go through!

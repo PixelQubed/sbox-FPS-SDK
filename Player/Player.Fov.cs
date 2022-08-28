@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	[Net, Predicted] public float ForcedFieldOfView { get; private set; }
 	[Net, Predicted] public Entity ForcedFieldOfViewRequester { get; private set; }

@@ -9,7 +9,7 @@ public partial class SpawnPoint : Entity
 	/// </summary>
 	/// <param name="player"></param>
 	/// <returns></returns>
-	public virtual bool CanSpawn( Source1Player player )
+	public virtual bool CanSpawn( SDKPlayer player )
 	{
 		return true;
 	}

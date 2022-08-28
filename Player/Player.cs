@@ -5,16 +5,16 @@ using System;
 namespace Amper.FPS;
 
 [Title( "Player" ), Icon( "emoji_people" )]
-public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExtendedDamageInfo
+public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtendedDamageInfo
 {
-	public static Source1Player LocalPlayer => Local.Pawn as Source1Player;
+	public static SDKPlayer LocalPlayer => Local.Pawn as SDKPlayer;
 
 	public override void Spawn()
 	{
 		base.Spawn();
 
 		Animator = new PlayerAnimator();
-		CameraMode = new Source1Camera();
+		CameraMode = new SDKCamera();
 
 		TeamNumber = 0;
 		LastObserverMode = ObserverMode.Chase;
@@ -157,7 +157,7 @@ public partial class Source1Player : AnimatedEntity, IHasMaxHealth, IAcceptsExte
 
 	public float GetFOV()
 	{
-		var camFov = ((Source1Camera)CameraMode).FieldOfView;
+		var camFov = ((SDKCamera)CameraMode).FieldOfView;
 		if ( camFov > 0 )
 			return camFov;
 

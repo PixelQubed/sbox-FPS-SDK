@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	[Net] public ObserverMode ObserverMode { get; private set; }
 	[Net] public Entity ObserverTarget { get; private set; }
@@ -224,7 +224,7 @@ partial class Source1Player
 
 	public virtual IEnumerable<Entity> FindObserverableEntities()
 	{
-		return All.OfType<Source1Player>().Where( x => x.IsAlive );
+		return All.OfType<SDKPlayer>().Where( x => x.IsAlive );
 	}
 
 	public virtual bool CanObserveTarget( Entity target )
@@ -240,7 +240,7 @@ partial class Source1Player
 		if ( !target.EnableDrawing ) 
 			return false;
 
-		if ( target is Source1Player player )
+		if ( target is SDKPlayer player )
 		{
 			if ( !player.IsAlive )
 			{

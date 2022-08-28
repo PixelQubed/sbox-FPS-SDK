@@ -1,14 +1,15 @@
 ﻿using System;
+using Sandbox;
 
 namespace Amper.FPS;
 
 public partial class PlayerAnimator : BaseNetworkable
 {
-	protected Source1Player Player;
+	protected SDKPlayer Player;
 
 	Rotation EyeRotation;
 
-	public void Simulate( Source1Player player ) 
+	public void Simulate( SDKPlayer player ) 
 	{	
 		Player = player;
 		Update();

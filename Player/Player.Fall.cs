@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class Source1Player
+partial class SDKPlayer
 {
 	[ConVar.Replicated] public static bool sv_falldamage { get; set; } = true;
 	public float FallVelocity { get; set; }

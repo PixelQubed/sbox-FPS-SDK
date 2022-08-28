@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera
+partial class SDKCamera
 {
 	bool WillPlayFreezeCamSound { get; set; }
 	bool WillFreezeGameScene { get; set; }
@@ -11,7 +11,7 @@ partial class Source1Camera
 	public virtual float FreezeCamDistanceMin => 96;
 	public virtual float FreezeCamDistanceMax => 200;
 
-	public void CalculateFreezeCamView( Source1Player player )
+	public void CalculateFreezeCamView( SDKPlayer player )
 	{
 		var killer = player.LastAttacker;
 
@@ -21,7 +21,7 @@ partial class Source1Camera
 		// get time for death animation
 		var deathAnimTime = player.DeathAnimationTime;
 		// get time for freeze cam to move to the player
-		var travelTime = Source1Player.sv_spectator_freeze_traveltime;
+		var travelTime = SDKPlayer.sv_spectator_freeze_traveltime;
 
 		// time that has passed while we are in freeze cam
 		var timeInFreezeCam = player.TimeSinceDeath - deathAnimTime;
@@ -83,7 +83,7 @@ partial class Source1Camera
 		if ( WillFreezeGameScene && travelLerp >= 1 )
 		{
 			WillFreezeGameScene = false;
-			FreezeCameraPanel.Freeze( Source1Player.sv_spectator_freeze_time, Position, Rotation, fov );
+			FreezeCameraPanel.Freeze( SDKPlayer.sv_spectator_freeze_time, Position, Rotation, fov );
 		}
 	}
 

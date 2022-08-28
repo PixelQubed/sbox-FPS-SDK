@@ -3,9 +3,9 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Camera
+partial class SDKCamera
 {
-	public void CalculateInEyeCamView( Source1Player player )
+	public void CalculateInEyeCamView( SDKPlayer player )
 	{
 		var target = player.ObserverTarget;
 

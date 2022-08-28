@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class Source1Weapon
+partial class SDKWeapon
 {
 	[Net, Predicted] public int Clip { get; set; }
 	[Net, Predicted] public int Reserve { get; set; }

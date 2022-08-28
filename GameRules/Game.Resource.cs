@@ -9,7 +9,7 @@ partial class GameRules
 		var clients = Client.All;
 		foreach ( var client in clients )
 		{
-			var pawn = client.Pawn as Source1Player;
+			var pawn = client.Pawn as SDKPlayer;
 			if ( pawn == null )
 				continue;
 
@@ -17,7 +17,7 @@ partial class GameRules
 		}
 	}
 
-	public virtual void UpdateClientData( Client client, Source1Player player )
+	public virtual void UpdateClientData( Client client, SDKPlayer player )
 	{
 		client.SetValue( "f_health", player.Health );
 		client.SetValue( "f_maxhealth", player.MaxHealth );
