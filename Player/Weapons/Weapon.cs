@@ -12,7 +12,7 @@ public partial class SDKWeapon : AnimatedEntity, ITeam
 	[Net] public int SlotNumber { get; set; }
 	[Net] public int TeamNumber { get; set; }
 
-	public ViewModel ViewModel { get; set; }
+	public SDKViewModel ViewModel { get; set; }
 
 	public override void Spawn()
 	{
@@ -136,7 +136,7 @@ public partial class SDKWeapon : AnimatedEntity, ITeam
 		ViewModel = null;
 	}
 
-	public virtual ViewModel GetViewModelEntity()
+	public virtual SDKViewModel GetViewModelEntity()
 	{
 		var player = Owner as SDKPlayer;
 		return player?.GetViewModel( ViewModelIndex );

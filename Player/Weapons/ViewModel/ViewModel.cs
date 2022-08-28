@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-public partial class ViewModel : BaseViewModel
+public partial class SDKViewModel : BaseViewModel
 {
 	public SDKWeapon Weapon { get; set; }
 	public SDKPlayer Player => Weapon?.Player;

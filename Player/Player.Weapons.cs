@@ -163,9 +163,9 @@ partial class SDKPlayer
 	public T GetWeaponOfType<T>() where T : SDKWeapon => Children.OfType<T>().FirstOrDefault();
 	public bool HasWeaponOfType<T>() where T : SDKWeapon => GetWeaponOfType<T>() != null;
 
-	public List<ViewModel> ViewModels { get; set; } = new();
+	public List<SDKViewModel> ViewModels { get; set; } = new();
 
-	public ViewModel GetViewModel( int index = 0 )
+	public SDKViewModel GetViewModel( int index = 0 )
 	{
 		if ( !IsClient )
 			return null;
@@ -191,7 +191,7 @@ partial class SDKPlayer
 		return vm;
 	}
 
-	public virtual ViewModel CreateViewModel() => new ViewModel();
+	public virtual SDKViewModel CreateViewModel() => new SDKViewModel();
 
 	public int GetActiveSlot()
 	{
