@@ -38,7 +38,7 @@ partial class SDKPlayer
 	// Use
 	//
 
-	[Net] public Entity UseEntity { get; protected set; }
+	public Entity UseEntity { get; protected set; }
 
 	public virtual void SimulateUse()
 	{
