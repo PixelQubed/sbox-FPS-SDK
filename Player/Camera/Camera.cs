@@ -3,7 +3,7 @@ using System;
 
 namespace Amper.FPS;
 
-partial class SDKCamera : CameraMode
+public partial class SDKCamera : CameraMode
 {
 	public override void Build( ref CameraSetup camSetup )
 	{
