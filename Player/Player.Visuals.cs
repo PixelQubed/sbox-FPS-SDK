@@ -13,8 +13,8 @@ partial class SDKPlayer : IHasEffectEntity
 	{
 		var angle = ViewPunchAngle;
 		angle.x += pitch;
-		angle.y = yaw;
-		angle.z = roll;
+		angle.y += yaw;
+		angle.z += roll;
 		ViewPunchAngle = angle;
 	}
 
