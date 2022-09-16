@@ -280,7 +280,8 @@ public partial class EventDispatcher
 		Type typeHint;
 		if ( !typeHints.TryGetValue( typename, out typeHint ) ) 
 		{
-			typeHint = TypeLibrary.GetTypeByName<DispatchableEventBase>( typename );
+			var type = TypeLibrary.GetDescription<DispatchableEventBase>( typename );
+			typeHint = type.TargetType;
 		}
 
 		DispatchableEventBase arguments = (DispatchableEventBase)JsonSerializer.Deserialize(data, typeHint, serializerOptions );

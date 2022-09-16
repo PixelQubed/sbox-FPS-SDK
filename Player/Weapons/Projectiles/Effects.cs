@@ -31,12 +31,6 @@ public partial class Projectile
 
 		if ( tr.Hit )
 		{
-			DecalSystem.PlaceOnWorld(
-				Material.Load( "materials/decals/scorch.vmat" ),
-				tr.EndPosition,
-				Rotation.LookAt( tr.Normal ),
-				new Vector3( 128, 128, 3 )
-			);
 		}
 	}
 

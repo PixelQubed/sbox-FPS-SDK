@@ -88,8 +88,8 @@ public class PostProcessingManager
 
 	public void SetForced( string name, bool enabled )
 	{
-		var type = TypeLibrary.GetTypeByName( name );
-		ForceEnabled[type] = enabled;
+		var type = TypeLibrary.GetDescription( name );
+		ForceEnabled[type.TargetType] = enabled;
 	}
 
 	[ConCmd.Client( "r_postprocess_force" )]

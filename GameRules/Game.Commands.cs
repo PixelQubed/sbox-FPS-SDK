@@ -120,11 +120,7 @@ partial class GameRules
 		if ( !tr.Hit )
 			return;
 
-		var type = TypeLibrary.GetTypeByName( entity );
-		if ( type == null )
-			return;
-
-		var ent = TypeLibrary.Create<Entity>( type );
+		var ent = TypeLibrary.Create<Entity>( entity );
 		if ( ent == null )
 			return;
 

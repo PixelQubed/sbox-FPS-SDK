@@ -80,7 +80,7 @@ public class FreezeCameraPanel : Panel
 		if ( WillFreeze )
 		{
 			// Fill the texture with background 
-			Render.Draw.DrawScene( ColorTexture, DepthTexture, Map.Scene, Render.Attributes, new Rect( 0, 0, Size.x, Size.y), Position, Rotation, FieldOfView, 0.1f, 9999, false);
+			// Render.Draw.DrawScene( ColorTexture, DepthTexture, Map.Scene, Render.Attributes, new Rect( 0, 0, Size.x, Size.y), Position, Rotation, FieldOfView, 0.1f, 9999, false);
 			WillFreeze = false;
 		}
 	}
