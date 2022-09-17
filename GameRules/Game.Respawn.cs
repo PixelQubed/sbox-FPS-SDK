@@ -7,7 +7,7 @@ namespace Amper.FPS;
 
 partial class GameRules
 {
-	protected Dictionary<int, SpawnPoint> LastSpawnPoint { get; set; } = new();
+	protected Dictionary<int, SDKSpawnPoint> LastSpawnPoint { get; set; } = new();
 
 	/// <summary>
 	/// Try to place the player on the spawn point.	This functions returns true if nothing occupies the player's
@@ -66,7 +66,7 @@ partial class GameRules
 		var team = player.TeamNumber;
 
 		// get all available spawn points in the list.
-		var points = All.OfType<SpawnPoint>().ToList();
+		var points = All.OfType<SDKSpawnPoint>().ToList();
 		var count = points.Count;
 
 		//
@@ -78,7 +78,7 @@ partial class GameRules
 		{
 			// we'll use this if we can't find any point that could place us
 			// without getting stuck
-			SpawnPoint firstEligiblePoint = null;
+			SDKSpawnPoint firstEligiblePoint = null;
 
 			// figuring out at which point we should start.
 			var index = -1;

@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-public partial class SpawnPoint : Entity
+public partial class SDKSpawnPoint : Entity
 {
 	/// <summary>
 	/// Can this player spawn on this spawn point.
