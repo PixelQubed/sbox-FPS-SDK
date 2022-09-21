@@ -4,7 +4,7 @@ namespace Amper.FPS;
 
 public abstract partial class SDKGameModeLogic : Entity
 {
-	public SDKGameLogic()
+	public SDKGameModeLogic()
 	{
 		EventDispatcher.Subscribe<RoundEndEvent>( RoundEnd, this );
 		EventDispatcher.Subscribe<RoundActiveEvent>( RoundActivate, this );
