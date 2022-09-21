@@ -3,15 +3,15 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-public partial class GameRules : Game
+public partial class SDKGame : Game
 {
-	public new static GameRules Current { get; set; }
+	public new static SDKGame Current { get; set; }
 
 	public GameMovement Movement { get; set; }
 	public PostProcessingManager PostProcessingManager { get; set; }
 	public NavMeshExtended NavMesh { get; set; }
 
-	public GameRules()
+	public SDKGame()
 	{
 		Current = this;
 		Movement = new();
@@ -88,6 +88,7 @@ public partial class GameRules : Game
 		NavMesh?.Update();
 	}
 
+
 	[ConVar.Client] public static bool cl_show_prediction_errors { get; set; }
 
 	public override void Simulate( Client cl )
@@ -99,6 +100,15 @@ public partial class GameRules : Game
 			DebugOverlay.ScreenText( $"Prediction Error! Rerunning ticks... (Tick: {Time.Tick})", new Vector2( Screen.Width - 400, 120 ), 0, Color.Red, .6f );
 		}
 	}
+
+	public override void ClientJoined( Client cl )
+	{
+		var player = CreatePlayerForClient( cl );
+		cl.Pawn = player;
+		player.Respawn();
+	}
+
+	public virtual SDKPlayer CreatePlayerForClient( Client cl ) => new SDKPlayer();
 
 	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
 	{

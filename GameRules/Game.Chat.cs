@@ -8,7 +8,7 @@ public enum ChatType
 	Team
 }
 
-partial class GameRules
+partial class SDKGame
 {
 	[ConCmd.Server( "say_all" )]
 	public static void Command_SendMessage( string message )

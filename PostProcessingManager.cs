@@ -95,7 +95,7 @@ public class PostProcessingManager
 	[ConCmd.Client( "r_postprocess_force" )]
 	public static void Command_ForcePostProcessing( string name, bool enabled )
 	{
-		var manager = GameRules.Current.PostProcessingManager;
+		var manager = SDKGame.Current.PostProcessingManager;
 		if ( manager == null )
 			return;
 

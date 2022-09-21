@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	protected Dictionary<int, SDKSpawnPoint> LastSpawnPoint { get; set; } = new();
 
@@ -130,7 +130,7 @@ partial class GameRules
 		// We weren't able to find any valid spawn point.
 		// try to seek some default sbox ones.
 		var sboxpoints = All
-			.OfType<Sandbox.SpawnPoint>()
+			.OfType<SpawnPoint>()
 			.OrderBy( x => Guid.NewGuid() )
 			.ToList();
 

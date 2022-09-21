@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	public void UpdateAllClientsData()
 	{

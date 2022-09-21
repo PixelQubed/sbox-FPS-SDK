@@ -2,7 +2,9 @@
 
 namespace Amper.FPS;
 
-partial class GameRules
+// TODO: Maybe rewrite this bit to wrap each state in their own class
+
+partial class SDKGame
 {
 	[Net] public GameState State { get; private set; }
 	[Net] public TimeSince TimeSinceStateChange { get; set; }
@@ -44,7 +46,7 @@ partial class GameRules
 	{
 		// If we have players that are ready to play, 
 		// start waiting for players timer.
-		if ( HasPlayers() )
+		if ( HasPlayers() && WaitingForPlayersEnabled() ) 
 		{
 			StartWaitingForPlayers();
 		}

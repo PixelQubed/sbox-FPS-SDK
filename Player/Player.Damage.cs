@@ -9,6 +9,12 @@ partial class SDKPlayer
 	/// </summary>
 	public virtual void OnAttackedBy( Entity attacker, ExtendedDamageInfo info ) { }
 
+	/// <summary>
+	/// When the entity takes damage, this function gets called.
+	/// Later by default it calls all the sub procedures that handles different effects that happen when
+	/// player takes damage.
+	/// </summary>
+	/// <param name="info"></param>
 	public virtual void TakeDamage( ExtendedDamageInfo info )
 	{
 		if ( !IsServer )
@@ -26,7 +32,7 @@ partial class SDKPlayer
 		ApplyOnPlayerDamageModifyRules( ref info );
 
 		// Apply all global damage modifications.
-		GameRules.Current.ApplyOnDamageModifyRules( ref info, this );
+		SDKGame.Current.ApplyOnDamageModifyRules( ref info, this );
 
 		// Remember this damage as the one we taken last.
 		// This is NOT networked!
@@ -50,8 +56,8 @@ partial class SDKPlayer
 		// Make an rpc to do stuff clientside.
 		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.HitPosition, info.HitboxIndex, info.Force );
 
-		// Let gamerules know about this.
-		GameRules.Current.PlayerHurt( this, info );
+		// Let SDKGame know about this.
+		SDKGame.Current.PlayerHurt( this, info );
 		DrawDebugDamage( info );
 	}
 
@@ -97,7 +103,7 @@ partial class SDKPlayer
 		if ( IsInGodMode )
 			return false;
 
-		return GameRules.Current.CanEntityTakeDamage( this, attacker, info );
+		return SDKGame.Current.CanEntityTakeDamage( this, attacker, info );
 	}
 
 	/// <summary>
@@ -110,16 +116,34 @@ partial class SDKPlayer
 	/// </summary>
 	public virtual void ApplyOnPlayerDamageModifyRules( ref ExtendedDamageInfo info ) { }
 
-	public virtual void ApplyViewPunchFromDamage( ExtendedDamageInfo info ) { }
+	/// <summary>
+	/// Punch player's view when they get punched.
+	/// </summary>
+	public virtual void ApplyViewPunchFromDamage( ExtendedDamageInfo info ) 
+	{
+		ApplyViewPunchImpulse( -2 );
+	}
+
 	public virtual bool ShouldPreventDeath( ExtendedDamageInfo info )
 	{
 		return IsInBuddhaMode;
 	}
 
-
+	/// <summary>
+	/// Will this damage apply knockback on us?
+	/// </summary>
 	public virtual bool ShouldApplyPushFromDamage( ExtendedDamageInfo info ) => true;
+	/// <summary>
+	/// Will this damage punch our view?
+	/// </summary>
 	public virtual bool ShouldApplyViewPunchFromDamage( ExtendedDamageInfo info ) => true;
+	/// <summary>
+	/// Should this damage play player flinch animations?
+	/// </summary>
 	public virtual bool ShouldFlinchFromDamage( ExtendedDamageInfo info ) => true;
+	/// <summary>
+	/// Should we bleed from this type of damage?
+	/// </summary>
 	public virtual bool ShouldBleedFromDamage( ExtendedDamageInfo info ) => true;
 
 	/// <summary>
@@ -143,16 +167,20 @@ partial class SDKPlayer
 			SendBloodDispatchRPC( info );
 	}
 
+	/// <summary>
+	/// Play flinch animation on the player from the damage type.
+	/// </summary>
 	public virtual void PlayFlinchFromDamage( ExtendedDamageInfo info )
 	{
 		// flinch the model.
 		SetAnimParameter( "b_flinch", true );
 	}
 
+	/// <summary>
+	/// Play bleeding particle effects on the origin with a given normal vector. Origin 
+	/// is the position of the damage impact on the player's hitbox.
+	/// </summary>
 	public virtual void DispatchBloodEffects( Vector3 origin, Vector3 normal ) { }
-
-
-
 
 	private void SendBloodDispatchRPC( ExtendedDamageInfo info )
 	{

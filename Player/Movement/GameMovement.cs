@@ -100,16 +100,16 @@ public partial class GameMovement
 
 		switch ( Player.MoveType )
 		{
-			case NativeMoveType.Isometric:
-			case NativeMoveType.Walk:
+			case SDKMoveType.Isometric:
+			case SDKMoveType.Walk:
 				FullWalkMove();
 				break;
 
-			case NativeMoveType.NoClip:
+			case SDKMoveType.NoClip:
 				FullNoClipMove(sv_noclip_speed, sv_noclip_accelerate);
 				break;
 
-			case NativeMoveType.Observer:
+			case SDKMoveType.Observer:
 				FullObserverMove();
 				break;
 		}
@@ -254,7 +254,7 @@ public partial class GameMovement
 		var end = Position;
 
 		start.z += 2;
-		end.z -= Player.m_flStepSize;
+		end.z -= Player.StepSize;
 
 		// See how far up we can go without getting stuck
 		var trace = TraceBBox( Position, start );
@@ -305,7 +305,7 @@ public partial class GameMovement
 
 		// Was on ground, but now suddenly am not
 		if ( bMovingUpRapidly ||
-			(bMovingUp && Player.MoveType == NativeMoveType.Ladder) )
+			(bMovingUp && Player.MoveType == SDKMoveType.Ladder) )
 		{
 			SetGroundEntity( null );
 		}
@@ -325,7 +325,7 @@ public partial class GameMovement
 					SetGroundEntity( null );
 
 					if ( Velocity.z > 0 &&
-						Player.MoveType != NativeMoveType.NoClip )
+						Player.MoveType != SDKMoveType.NoClip )
 					{
 						Player.SurfaceFriction = 0.25f;
 					}
@@ -406,9 +406,9 @@ public partial class GameMovement
 
 	public virtual void CheckParameters()
 	{
-		if ( Player.MoveType != NativeMoveType.Isometric &&
-			Player.MoveType != NativeMoveType.NoClip &&
-			Player.MoveType != NativeMoveType.Observer ) 
+		if ( Player.MoveType != SDKMoveType.Isometric &&
+			Player.MoveType != SDKMoveType.NoClip &&
+			Player.MoveType != SDKMoveType.Observer ) 
 		{
 			if ( !Player.CanMove() )
 			{
@@ -446,8 +446,8 @@ public partial class GameMovement
 			v_angle = v_angle + Player.ViewPunchAngle;
 
 			// Now adjust roll angle
-			if ( Player.MoveType != NativeMoveType.Isometric &&
-				 Player.MoveType != NativeMoveType.NoClip )
+			if ( Player.MoveType != SDKMoveType.Isometric &&
+				 Player.MoveType != SDKMoveType.NoClip )
 			{
 				// ViewAngles.Roll = CalcRoll( v_angle, Velocity, sv_rollangle, sv_rollspeed );
 			}

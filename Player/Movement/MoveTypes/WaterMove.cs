@@ -113,7 +113,7 @@ partial class GameMovement
 		var pm = TraceBBox( Position, dest );
 		if ( pm.Fraction == 1 )
 		{
-			var start = dest.WithZ( dest.z + sv_stepsize + 1 );
+			var start = dest.WithZ( dest.z + Player.StepSize + 1 );
 
 			pm = TraceBBox( start, dest );
 			if ( !pm.StartedSolid )

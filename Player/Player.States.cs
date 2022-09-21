@@ -5,7 +5,6 @@ namespace Amper.FPS;
 
 partial class SDKPlayer
 {
-
 	public bool InWater => WaterLevelType >= WaterLevelType.Feet;
 	public bool IsGrounded => GroundEntity.IsValid();
 	public bool IsInAir => !IsGrounded;

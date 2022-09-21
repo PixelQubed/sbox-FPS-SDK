@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	[Net] public IDictionary<int, int> Score { get; set; }
 	[Net] public int TotalRoundsPlayed { get; protected set; }
@@ -20,7 +20,7 @@ partial class GameRules
 
 	public virtual void OnGameRestart() { }
 
-	[ConCmd.Server( "mp_restartgame" )]
+	[ConCmd.Admin( "mp_restartgame" )]
 	public static void Command_RestartGame()
 	{
 		Current?.RestartGame();

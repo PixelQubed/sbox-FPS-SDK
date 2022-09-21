@@ -18,7 +18,7 @@ partial class GameMovement
 		mover.Trace = SetupBBoxTrace( 0, 0 );
 		mover.MaxStandableAngle = sv_maxstandableangle;
 
-		mover.TryMoveWithStep( Time.Delta, Player.m_flStepSize );
+		mover.TryMoveWithStep( Time.Delta, Player.StepSize );
 
 		Position = mover.Position;
 		Velocity = mover.Velocity;
@@ -46,7 +46,7 @@ partial class GameMovement
 
 		// Move up a stair height.
 		vecEndPos = Position;
-		vecEndPos.z += Player.m_flStepSize + DIST_EPSILON;
+		vecEndPos.z += Player.StepSize + DIST_EPSILON;
 
 		var trace = TraceBBox( Position, vecEndPos );
 		Position = trace.EndPosition;
@@ -56,7 +56,7 @@ partial class GameMovement
 
 		// Move down a stair (attempt to).
 		vecEndPos = Position;
-		vecEndPos.z -= Player.m_flStepSize + DIST_EPSILON;
+		vecEndPos.z -= Player.StepSize + DIST_EPSILON;
 
 		trace = TraceBBox( Position, vecEndPos );
 
@@ -215,7 +215,7 @@ partial class GameMovement
 			// Only give this a try for first impact plane because you can get yourself stuck in an acute corner by jumping in place
 			//  and pressing forward and nobody was really using this bounce/reflection feature anyway...
 			if ( numplanes == 1 &&
-				Player.MoveType == NativeMoveType.Walk && 
+				Player.MoveType == SDKMoveType.Walk && 
 				Player.GroundEntity == null )
 			{
 				for ( i = 0; i < numplanes; i++ )

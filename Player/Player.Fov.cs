@@ -9,6 +9,9 @@ partial class SDKPlayer
 	[Net, Predicted] public float ForcedFieldOfViewChangeTime { get; set; }
 	[Net, Predicted] public float? ForcedFieldOfViewStartWith { get; set; }
 
+	/// <summary>
+	/// Requests a change of the FOV with a smooth ease in transition.
+	/// </summary>
 	public void SetFieldOfView( Entity requester, float fov, float speed = 0, float startWith = -1 )
 	{
 		if ( fov > 0 && !requester.IsValid() )

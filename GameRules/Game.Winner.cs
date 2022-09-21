@@ -2,7 +2,7 @@ using Sandbox;
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	/// <summary>
 	/// This team has won the round! This will be Unassigned any other time.

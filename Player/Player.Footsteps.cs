@@ -12,7 +12,7 @@ partial class SDKPlayer
 	public virtual bool CanPlayFootsteps()
 	{
 		// dont play footstep sounds if we're in noclip or in observer mode.
-		if ( MoveType == NativeMoveType.NoClip || MoveType == NativeMoveType.Observer )
+		if ( MoveType == SDKMoveType.NoClip || MoveType == SDKMoveType.Observer )
 			return false;
 
 		// always cool down footsteps for at least .3 seconds.
@@ -30,17 +30,24 @@ partial class SDKPlayer
 		return true;
 	}
 
+	/// <summary>
+	/// The minimum speed at which we will play foostep sounds.
+	/// </summary>
+	public virtual float MinStepSpeed => 30;
+	public virtual float MaxStepSpeed => 250;
+
+	/// <summary>
+	/// Returns the frequency of the footsteps based on the velocity
+	/// at which we are currently moving. 
+	/// </summary>
 	public float GetStepFrequencyForVelocity( float velocity )
 	{
-		return velocity.Remap( 30, 250, 1, .1f );
+		return velocity.Remap( MinStepSpeed, MaxStepSpeed, 1, .1f );
 	}
 
-	public float MinStepSpeed => 30;
-
-
-	// 30  - 1
-	// 250 - .3
-
+	/// <summary>
+	/// Handles playing footsteps.
+	/// </summary>
 	public virtual void SimulateFootsteps( Vector3 position, Vector3 velocity )
 	{
 		// can't play footsteps.
@@ -57,9 +64,6 @@ partial class SDKPlayer
 		var stepTime = GetStepFrequencyForVelocity( groundSpeed );
 		if ( TimeSinceFootstep < stepTime )
 			return;
-
-		// To hear step sounds you must be either on a ladder or moving along the ground AND
-		// You must be moving fast enough
 
 		var volume = 1f;
 
@@ -137,7 +141,7 @@ partial class SDKPlayer
 			return;
 
 		PlayStepSound( origin, sounds.FootLaunch, volume );
-		OnLandStep( origin, sounds.FootLaunch, volume );
+		OnJumpStep( origin, sounds.FootLaunch, volume );
 	}
 
 	[ConVar.Replicated] public static bool sv_footsteps { get; set; } = true;

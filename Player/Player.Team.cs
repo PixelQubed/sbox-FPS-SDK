@@ -16,11 +16,11 @@ partial class SDKPlayer : ITeam
 			return false;
 
 		// The player is not allowed to change their team right now.
-		if ( !GameRules.Current.CanPlayerChangeTeamTo( this, team ) )
+		if ( !SDKGame.Current.CanPlayerChangeTeamTo( this, team ) )
 			return false;
 
 		// see if gamemode wants to override our team with something else.
-		team = GameRules.Current.GetTeamAssignmentOverride( this, team, autobalance );
+		team = SDKGame.Current.GetTeamAssignmentOverride( this, team, autobalance );
 
 		// cant change team if we're already on this team.
 		if ( TeamNumber == team ) 
@@ -39,7 +39,7 @@ partial class SDKPlayer : ITeam
 		}
 
 		AttemptRespawn();
-		GameRules.Current.PlayerChangeTeam( this, team );
+		SDKGame.Current.PlayerChangeTeam( this, team );
 		return true;
 	}
 }

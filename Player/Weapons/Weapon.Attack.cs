@@ -24,7 +24,7 @@ partial class SDKWeapon
 		if ( !Owner.IsValid() )
 			return false;
 
-		if ( !GameRules.Current.CanWeaponsAttack() )
+		if ( !SDKGame.Current.CanWeaponsAttack() )
 			return false;
 
 		if ( !Player.CanAttack() )
@@ -75,8 +75,7 @@ partial class SDKWeapon
 
 	public virtual void SendAnimParametersOnAttack()
 	{
-		SendPlayerAnimParameter( "b_fire" );
-		SendViewModelAnimParameter( "b_fire" );
+		SendAnimParameter( "fire" );
 	}
 
 

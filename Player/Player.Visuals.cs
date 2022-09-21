@@ -18,23 +18,5 @@ partial class SDKPlayer : IHasEffectEntity
 		ViewPunchAngle = angle;
 	}
 
-	public void DecayAngles( ref Vector3 angle, float exp, float lin, float time )
-	{
-		exp *= time;
-		lin *= time;
-
-		angle *= MathF.Exp( -exp );
-
-		var mag = angle.Length;
-		if ( mag > lin )
-		{
-			angle *= (1 - lin / mag);
-		}
-		else
-		{
-			angle = 0;
-		}
-	}
-
 	public ModelEntity GetEffectEntity() => this;
 }

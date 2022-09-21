@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class GameRules 
+partial class SDKGame
 {
 	//
 	// Game Sounds

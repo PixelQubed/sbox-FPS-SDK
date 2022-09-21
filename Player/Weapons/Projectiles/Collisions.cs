@@ -79,7 +79,7 @@ partial class Projectile
 			.Ignore( this )
 			.Ignore( Owner );
 
-		if ( !GameRules.mp_friendly_fire ) 
+		if ( !SDKGame.mp_friendly_fire ) 
 			tr = tr.WithoutTags( TeamManager.GetTag( TeamNumber ) );
 
 		if ( mins != 0 || maxs != 0 ) tr = tr.Size( mins, maxs );

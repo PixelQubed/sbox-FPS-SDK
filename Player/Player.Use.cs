@@ -5,6 +5,10 @@ namespace Amper.FPS;
 
 partial class SDKPlayer
 {
+	/// <summary>
+	/// The entity we are currently hovering. The distance to this entity is
+	/// stored in <see cref="HoveredDistance"/>
+	/// </summary>
 	public Entity HoveredEntity { get; private set; }
 	public float HoveredDistance { get; private set; }
 
@@ -139,6 +143,7 @@ partial class SDKPlayer
 		return null;
 	}
 
+	// Source SDK function.
 	float IntervalDistance( float x, float x0, float x1 )
 	{
 		// swap so x0 < x1
@@ -155,7 +160,6 @@ partial class SDKPlayer
 			return x - x1;
 		return 0;
 	}
-
 
 	public virtual bool AttemptUse()
 	{

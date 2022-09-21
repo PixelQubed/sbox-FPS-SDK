@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sandbox;
+﻿using Sandbox;
 
 namespace Amper.FPS;
+
+//
+// This code is 1:1 taken from Valve's Source SDK.
+// It probably needs a rewrite to make it make more sense.
+//
 
 partial class GameMovement
 {
@@ -15,10 +15,10 @@ partial class GameMovement
 
 	public bool CanStuck()
 	{
-		return Player.MoveType != NativeMoveType.NoClip &&
-				Player.MoveType != NativeMoveType.Observer &&
-				Player.MoveType != NativeMoveType.None &&
-				Player.MoveType != NativeMoveType.Isometric;
+		return Player.MoveType != SDKMoveType.NoClip &&
+				Player.MoveType != SDKMoveType.Observer &&
+				Player.MoveType != SDKMoveType.None &&
+				Player.MoveType != SDKMoveType.Isometric;
 	}
 
 	protected void ResetStuckOffsets()

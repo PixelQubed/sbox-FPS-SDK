@@ -38,7 +38,7 @@ partial class SDKWeapon
 		// Play the reload start animation.
 		// If weapon reloads entire clip at once, this will trigger the full animation.
 		// If it reloads clip one by one, this will raise our hand, and insert animation will be triggered by b_insert.
-		SendAnimParameter( "b_reload" );
+		SendAnimParametersOnReloadStart();
 
 		// We're now reloading.
 		IsReloading = true;
@@ -105,27 +105,12 @@ partial class SDKWeapon
 		return 1;
 	}
 
-	public virtual void StartReload()
-	{
-		if ( !CanReload() )
-			return;
-
-		SendAnimParameter( "b_reload_start" );
-		SendAnimParameter( "b_reload" );
-
-		IsReloading = true;
-		FullReloadCycle = false;
-
-		NextReloadCycleTime = Time.Now + GetReloadStartTime();
-	}
-
 	public virtual void StopReload()
 	{
 		if ( !IsReloading )
 			return;
 
-		SendAnimParameter( "b_reload_end" );
-		SendAnimParameter( "b_reload", false );
+		SendAnimParametersOnReloadStop();
 		IsReloading = false;
 	}
 
@@ -135,7 +120,7 @@ partial class SDKWeapon
 			return;
 
 		FullReloadCycle = true;
-		SendAnimParameter( "b_insert" );
+		SendAnimParametersOnReloadInsert();
 		NextReloadCycleTime = Time.Now + GetReloadTime();
 	}
 
@@ -160,4 +145,17 @@ partial class SDKWeapon
 		return true;
 	}
 
+	public virtual void SendAnimParametersOnReloadInsert()
+	{
+	}
+
+	public virtual void SendAnimParametersOnReloadStart()
+	{
+		SendAnimParameter( "reload", true );
+	}
+
+	public virtual void SendAnimParametersOnReloadStop()
+	{
+		SendAnimParameter( "reload", false );
+	}
 }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	public bool IsRoundStarting => State == GameState.PreRound;
 	public bool IsRoundActive => State == GameState.Gameplay;
@@ -26,6 +26,7 @@ partial class GameRules
 		// Reset the winner.
 		Winner = 0;
 		WinReason = 0;
+		TotalRoundsPlayed++;
 
 		if ( !IsEnoughPlayersToStartRound() )
 		{

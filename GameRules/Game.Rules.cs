@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	#region Teams
 	public virtual bool AreTeamChangesAllowed() => State != GameState.GameOver;

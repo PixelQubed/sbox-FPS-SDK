@@ -41,7 +41,7 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 		base.FrameSimulate( cl );
 
 		Animator?.Simulate( this );
-		GameRules.Current.Movement?.FrameSimulate( this );
+		SDKGame.Current.Movement?.FrameSimulate( this );
 		ActiveWeapon?.FrameSimulate( cl );
 
 		InterpolateFrame();
@@ -85,7 +85,7 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 	public virtual void SimulateMovement()
 	{
 		StartInterpolating();
-		GameRules.Current.Movement?.Simulate( this );
+		SDKGame.Current.Movement?.Simulate( this );
 		StopInterpolating();
 	}
 
@@ -125,7 +125,7 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 		// Movement
 		//
 		Velocity = Vector3.Zero;
-		MoveType = NativeMoveType.Walk;
+		MoveType = SDKMoveType.Walk;
 		FallVelocity = 0;
 		BaseVelocity = 0;
 		UpdateMaxSpeed();
@@ -145,13 +145,13 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 		TimeSinceSprayed = sv_spray_cooldown + 1;
 
 		// move the player to the spawn point
-		GameRules.Current.FindAndMovePlayerToSpawnPoint( this );
+		SDKGame.Current.FindAndMovePlayerToSpawnPoint( this );
 		ResetInterpolation();
 
 		if ( !IsObserver )
 		{
-			// let gamerules know that we have respawned.
-			GameRules.Current.PlayerRespawn( this );
+			// let SDKGame know that we have respawned.
+			SDKGame.Current.PlayerRespawn( this );
 		}
 	}
 
@@ -180,7 +180,7 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 
 		OnKilledRPC();
 
-		GameRules.Current.PlayerDeath( this, LastDamageInfo );
+		SDKGame.Current.PlayerDeath( this, LastDamageInfo );
 	}
 
 	public void DeleteAllChildren()
@@ -325,15 +325,15 @@ public partial class SDKPlayer : AnimatedEntity, IHasMaxHealth, IAcceptsExtended
 	public virtual void AttemptRespawn()
 	{
 		// See if we're allowed to respawn right now.
-		if ( !GameRules.Current.AreRespawnsAllowed() )
+		if ( !SDKGame.Current.AreRespawnsAllowed() )
 			return;
 
 		// team is not allowed to respawn right now.
-		if ( !GameRules.Current.CanTeamRespawn( TeamNumber ) )
+		if ( !SDKGame.Current.CanTeamRespawn( TeamNumber ) )
 			return;
 
 		// can the player respawn right now.
-		if ( !GameRules.Current.CanPlayerRespawn( this ) )
+		if ( !SDKGame.Current.CanPlayerRespawn( this ) )
 			return;
 
 		Respawn();

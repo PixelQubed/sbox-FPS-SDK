@@ -166,7 +166,7 @@ public abstract partial class Projectile : ModelEntity, ITeam
 		{
 			var dmgInfo = CreateDamageInfo();
 			var radius = new RadiusDamageInfo( dmgInfo, Radius, this, AttackerRadius, Enemy );
-			GameRules.Current.ApplyRadiusDamage( radius );
+			SDKGame.Current.ApplyRadiusDamage( radius );
 		}
 
 		DoScorchTrace( Position, trace.Normal );

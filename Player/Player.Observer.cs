@@ -215,9 +215,9 @@ partial class SDKPlayer
 		// update the movetype, depending on whether we are or are not
 		// in observer mode
 		if ( ObserverMode == ObserverMode.None )
-			MoveType = NativeMoveType.None;
+			MoveType = SDKMoveType.None;
 		else
-			MoveType = NativeMoveType.Observer;
+			MoveType = SDKMoveType.Observer;
 	}
 
 	public virtual float DeathAnimationTime => 3;

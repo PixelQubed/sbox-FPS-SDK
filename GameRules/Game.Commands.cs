@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-partial class GameRules
+partial class SDKGame
 {
 	[ConCmd.Server( "lastweapon" )]
 	public static void Command_LastWeapon()
@@ -15,44 +15,41 @@ partial class GameRules
 	public override void DoPlayerSuicide( Client cl )
 	{
 		var player = cl.Pawn as SDKPlayer;
-		if ( player == null ) return;
+		if ( !player.IsValid() )
+			return;
 
 		player.CommitSuicide( explode: false );
 	}
 
-	[ConCmd.Server( "noclip", Help = "Spontaneous combustion!" )]
-	public static void Command_Noclip()
+	// This is being called by Sandbox's native "noclip" command.
+	public override void DoPlayerNoclip( Client client )
 	{
-		var client = ConsoleSystem.Caller;
-		if ( client == null )
-			return;
-
 		var player = client.Pawn as SDKPlayer;
-		if ( player == null ) 
+		if ( !player.IsValid() ) 
 			return;
 
 		// If player is not in noclip, enable it.
-		if ( player.MoveType != NativeMoveType.NoClip )
+		if ( player.MoveType != SDKMoveType.NoClip )
 		{
 			player.SetParent( null );
-			player.MoveType = NativeMoveType.NoClip;
+			player.MoveType = SDKMoveType.NoClip;
 			Log.Info( $"noclip ON for {client.Name}" );
 			return;
 		}
 
-		player.MoveType = NativeMoveType.Walk;
+		player.MoveType = SDKMoveType.Walk;
 		Log.Info( $"noclip OFF for {client.Name}" );
 	}
 
-	[ConCmd.Server( "explode", Help = "Spontaneous combustion!" )]
+	[ConCmd.Server( "explode", Help = "Spontaneous Combustion!" )]
 	public static void Command_Explode()
 	{
 		var client = ConsoleSystem.Caller;
-		if ( client == null )
+		if ( !client.IsValid() )
 			return;
 
 		var player = client.Pawn as SDKPlayer;
-		if ( player == null )
+		if ( !player.IsValid() )
 			return;
 
 		player.CommitSuicide( explode: true );
@@ -62,11 +59,11 @@ partial class GameRules
 	public static void Command_God()
 	{
 		var client = ConsoleSystem.Caller;
-		if ( client == null )
+		if ( !client.IsValid() )
 			return;
 
 		var player = client.Pawn as SDKPlayer;
-		if ( player == null )
+		if ( !player.IsValid() )
 			return;
 
 		player.IsInGodMode = !player.IsInGodMode;
@@ -127,19 +124,4 @@ partial class GameRules
 		ent.Position = tr.EndPosition + Vector3.Up * 10;
 	}
 	[ConVar.Server] public static float sv_damageforce_scale { get; set; } = 1;
-
-#if false
-	[ConCmd.Server( "sv_dumpteams" ), ConCmd.Client( "cl_dumpteams" )]
-	public static void Command_DumpTeams()
-	{
-		foreach ( var team in TeamManager.Teams.Values )
-		{
-			Log.Info( $"Team: {team.Name}" );
-			Log.Info( $"- Title: {team.Title}" );
-			Log.Info( $"- Color: {team.Color}" );
-			Log.Info( $"- Is Playable: {team.IsPlayable}" );
-			Log.Info( $"- Is Joinable: {team.IsJoinable}" );
-		}
-	}
-#endif
 }

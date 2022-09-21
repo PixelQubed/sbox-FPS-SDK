@@ -24,7 +24,7 @@ public struct RadiusDamageInfo
 		Ignore = ignore;
 		AttackerRadius = attackerRadius;
 		Target = target;
-		Falloff = GameRules.Current.GetRadiusDamageFalloff();
+		Falloff = SDKGame.Current.GetRadiusDamageFalloff();
 		DoLosCheck = losCheck;
 	}
 
@@ -88,7 +88,7 @@ public struct RadiusDamageInfo
 		//
 
 		var dir = (eyePos - dmgPos).Normal;
-		var force = GameRules.Current.CalculateForceFromDamage( dir, adjustedDamage );
+		var force = SDKGame.Current.CalculateForceFromDamage( dir, adjustedDamage );
 
 		var info = DamageInfo
 			.UsingTraceResult( tr )
@@ -97,7 +97,7 @@ public struct RadiusDamageInfo
 
 		entity.TakeDamage( info );
 
-		if( GameRules.sv_debug_draw_radius_damage )
+		if( SDKGame.sv_debug_draw_radius_damage )
 		{
 			DebugOverlay.Sphere( entity.Position, 5, Color.Magenta, 5, true );
 			DebugOverlay.Line( DamageInfo.HitPosition, entity.Position, Color.Magenta, 5, true );
@@ -142,8 +142,11 @@ public struct RadiusDamageInfo
 	}
 }
 
-partial class GameRules
+partial class SDKGame
 {
+	/// <summary>
+	/// Apply damage in radius. I.e. a explosion.
+	/// </summary>
 	public void ApplyRadiusDamage( RadiusDamageInfo info )
 	{
 		if ( sv_debug_draw_radius_damage )
