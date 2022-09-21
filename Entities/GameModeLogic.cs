@@ -2,7 +2,7 @@
 
 namespace Amper.FPS;
 
-public abstract partial class SDKGameLogic : Entity
+public abstract partial class SDKGameModeLogic : Entity
 {
 	public SDKGameLogic()
 	{
