@@ -222,20 +222,10 @@ public partial class SDKGame : Game
 		if ( player == null )
 			return;
 
-		//
-		// scale the screen using a matrix, so the scale math doesn't invade everywhere
-		// (other than having to pass the new scale around)
-		//
+		// Update screen size in case of resolution change
 
-		var scale = Screen.Height / 1080.0f;
-		var screenSize = Screen.Size / scale;
-		var matrix = Matrix.CreateScale( scale );
-		ScreenSize = screenSize;
-
-		using ( Render.Draw2D.MatrixScope( matrix ) )
-		{
-			player.RenderHud( screenSize );
-		}
+		ScreenSize = Screen.Size;
+		player.RenderHud( ScreenSize );
 	}
 
 	public override void BuildInput( InputBuilder input )
