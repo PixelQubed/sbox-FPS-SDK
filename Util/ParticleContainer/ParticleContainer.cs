@@ -7,12 +7,13 @@ namespace Amper.FPS;
 
 public class ParticleContainer : IValid
 {
+	public EntityParticle Particle { get; private set; }
+
 	ModelEntity Entity;
 	Func<string> AttachmentDelegate;
 	Func<bool> EnabledDelegate;
 	bool Follow;
 
-	EntityParticle Particle;
 	List<Binding> Bindings = new();
 	bool IsDestroyed;
 

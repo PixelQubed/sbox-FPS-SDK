@@ -36,7 +36,8 @@ public class EntityParticle : IValid
 	public readonly ModelEntity Entity;
 	public readonly string EffectName;
 
-	Particles Particle;
+	public Particles Particle { get; private set; }
+	
 	float LifeTime;
 	float? ExpirationTime;
 
