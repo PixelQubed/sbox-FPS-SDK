@@ -6,12 +6,10 @@ namespace Amper.FPS;
 
 public class PostProcessingManager
 {
-	private const string EnabledCombo = "D_ENABLED";
-
-	Dictionary<Type, BasePostProcess> Effects = new();
+	Dictionary<Type, RenderHook> Effects = new();
 	Dictionary<Type, bool> EnabledCached = new();
 	Dictionary<Type, bool> ForceEnabled = new();
-
+	
 	public void FrameSimulate()
 	{
 		Update();
@@ -27,25 +25,26 @@ public class PostProcessingManager
 
 	public virtual void Update() { }
 
-	public T GetOrCreate<T>() where T : BasePostProcess, new()
+	public T GetOrCreate<T>() where T : RenderHook, new()
 	{
 		var type = typeof( T );
 		return (T)GetOrCreate( type );
 	}
 
-	public BasePostProcess GetOrCreate( Type type )
+	public RenderHook GetOrCreate( Type type )
 	{
 		if ( Effects.TryGetValue( type, out var effect ) )
 			return effect;
 
-		effect = TypeLibrary.Create<BasePostProcess>(type); 
+		effect = TypeLibrary.Create<RenderHook>(type); 
 		Effects.Add( type, effect );
-		PostProcess.Add( effect );
+
+		Map.Camera.AddHook( effect );
 		SetVisible( effect, false );
 		return effect;
 	}
 
-	public bool IsVisible<T>() where T : BasePostProcess
+	public bool IsVisible<T>() where T : RenderHook
 	{
 		var type = typeof( T );
 
@@ -53,7 +52,7 @@ public class PostProcessingManager
 		return enabled;
 	}
 
-	public void SetVisible<T>( bool visible ) where T : BasePostProcess, new()
+	public void SetVisible<T>( bool visible ) where T : RenderHook, new()
 	{
 		if ( !Host.IsClient )
 			return;
@@ -66,12 +65,13 @@ public class PostProcessingManager
 		SetVisible( effect, visible );
 	}
 
-	public void SetVisible( BasePostProcess effect, bool visible )
+	public void SetVisible( RenderHook effect, bool visible )
 	{
 		if ( effect == null )
 			return;
 
-		effect.Attributes.SetCombo( EnabledCombo, visible );
+		Log.Info( $"SetVisible {effect.GetType().Name} {visible}" );
+		effect.Enabled = true;
 
 		var type = effect.GetType();
 		EnabledCached[type] = visible;

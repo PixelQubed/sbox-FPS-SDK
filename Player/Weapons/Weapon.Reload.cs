@@ -151,6 +151,7 @@ partial class SDKWeapon
 
 	public virtual void SendAnimParametersOnReloadStart()
 	{
+		//Log.NetInfo( "SendAnimParametersOnReloadStart" );
 		SendAnimParameter( "reload", true );
 	}
 
