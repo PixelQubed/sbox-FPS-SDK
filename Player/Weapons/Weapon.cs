@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 
 namespace Amper.FPS;
 
@@ -96,9 +97,13 @@ public partial class SDKWeapon : AnimatedEntity, ITeam
 			return;
 
 		var deployTime = GetDeployTime();
-		NextAttackTime = Time.Now + deployTime;
-		NextPrimaryAttackTime = Time.Now + deployTime;
-		NextSecondaryAttackTime = Time.Now + deployTime;
+		var remainingTime = MathF.Max( NextAttackTime - Time.Now - deployTime, 0f );
+		var remainingPrimaryTime = MathF.Max( NextPrimaryAttackTime - Time.Now - deployTime, 0f );
+		var remainingSecondaryTime = MathF.Max( NextSecondaryAttackTime - Time.Now - deployTime, 0f );
+
+		NextAttackTime = Time.Now + deployTime + remainingTime;
+		NextPrimaryAttackTime = Time.Now + deployTime + remainingPrimaryTime;
+		NextSecondaryAttackTime = Time.Now + deployTime + remainingSecondaryTime;
 
 		EnableDrawing = true;
 		IsDeployed = true;
@@ -118,7 +123,7 @@ public partial class SDKWeapon : AnimatedEntity, ITeam
 			return;
 
 		EnableDrawing = false;
-		NextAttackTime = Time.Now;
+		//NextAttackTime = Time.Now;
 		IsDeployed = false;
 
 		ClearViewModel();
