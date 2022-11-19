@@ -11,7 +11,7 @@ public struct ExtendedDamageInfo
 	public float Damage { get; set; }
 	public DamageFlags Flags { get; set; }
 	public PhysicsBody Body { get; set; } 
-	public int HitboxIndex { get; set; } 
+	public Hitbox Hitbox { get; set; } 
 	public int BoneIndex { get; set; } 
 	public int KillType { get; set; }
 	/// <summary>
@@ -72,9 +72,9 @@ public struct ExtendedDamageInfo
 		return this;
 	}
 
-	public ExtendedDamageInfo WithHitbox( int hitbox )
+	public ExtendedDamageInfo WithHitbox( Hitbox hitbox )
 	{
-		HitboxIndex = hitbox;
+		Hitbox = hitbox;
 		return this;
 	}
 
@@ -142,7 +142,7 @@ public struct ExtendedDamageInfo
 	{
 		HitPosition = result.EndPosition;
 		OriginPosition = result.StartPosition;
-		HitboxIndex = result.HitboxIndex;
+		Hitbox = result.Hitbox;
 		BoneIndex = result.Bone;
 		Body = result.Body;
 		return this;
@@ -158,8 +158,7 @@ public struct ExtendedDamageInfo
 			Force = Force,
 			Damage = Damage,
 			Flags = Flags,
-			Body = Body,
-			HitboxIndex = HitboxIndex,
+			Hitbox = Hitbox,
 			BoneIndex = BoneIndex,
 		};
 	}

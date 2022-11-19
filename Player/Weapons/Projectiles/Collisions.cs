@@ -65,13 +65,10 @@ partial class Projectile
 		var tr = Trace.Ray( start, end )
 
 			// Collides with:
-			.WithAnyTags( CollisionTags.Solid )
-			.WithAnyTags( CollisionTags.Clip )
-			.WithAnyTags( CollisionTags.ProjectileClip )
+			.WithAnyTags( CollisionTags.Solid, CollisionTags.Clip, CollisionTags.ProjectileClip )
 
 			// Except weapons and other projectiles.
-			.WithoutTags( CollisionTags.Projectile )
-			.WithoutTags( CollisionTags.Weapon )
+			.WithoutTags( CollisionTags.Projectile, CollisionTags.Weapon )
 
 			// Doesn't collide with debris
 			.WithoutTags( CollisionTags.Debris )
