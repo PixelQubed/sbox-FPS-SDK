@@ -8,7 +8,6 @@ public partial class SDKSpawnPoint : Entity
 	/// Can this player spawn on this spawn point.
 	/// </summary>
 	/// <param name="player"></param>
-	/// <returns></returns>
 	public virtual bool CanSpawn( SDKPlayer player )
 	{
 		return true;
