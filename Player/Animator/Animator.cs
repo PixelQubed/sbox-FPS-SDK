@@ -83,7 +83,6 @@ public partial class PlayerAnimator : BaseNetworkable
 	public virtual void UpdateDucking()
 	{
 		SetAnimParameter( "f_duck", Player.DuckProgress );
-		SetAnimParameter( "duck", Player.DuckProgress );
 		SetAnimParameter( "b_ducked", Player.IsDucked );
 		SetAnimParameter( "b_crouch", Player.IsDucked );
 	}
