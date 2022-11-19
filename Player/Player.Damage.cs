@@ -54,7 +54,7 @@ partial class SDKPlayer
 		OnTakeDamageReaction( info );
 
 		// Make an rpc to do stuff clientside.
-		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.HitPosition, info.Hitbox, info.Force );
+		TakeDamageRPC( info.Attacker, info.Weapon, info.Damage, info.Flags, info.HitPosition, info.Force );
 
 		// Let SDKGame know about this.
 		SDKGame.Current.PlayerHurt( this, info );
@@ -75,12 +75,12 @@ partial class SDKPlayer
 	}
 
 	[ClientRpc]
-	void TakeDamageRPC( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, Hitbox hitbox, Vector3 force )
+	void TakeDamageRPC( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, Vector3 force )
 	{
-		OnTakeDamageEffects( attacker, weapon, damage, flags, position, hitbox, force );
+		OnTakeDamageEffects( attacker, weapon, damage, flags, position, force );
 	}
 
-	public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, Hitbox hitbox, Vector3 force ) { }
+	public virtual void OnTakeDamageEffects( Entity attacker, Entity weapon, float damage, DamageFlags flags, Vector3 position, Vector3 force ) { }
 
 	public bool PreventDeath( ExtendedDamageInfo info )
 	{
